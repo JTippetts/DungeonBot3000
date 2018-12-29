@@ -1,0 +1,14 @@
+Build/
+Bin/*.png
+Bin/*.dll
+Bin/*.chm
+Bin/CoreData
+DungeonBot3000.dir/
+build.bat
+*.exe
+*.log
+*.ps3
+*.vs3
+*.ps4
+*.vs4
+*.obj
