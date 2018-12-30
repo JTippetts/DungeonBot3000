@@ -63,7 +63,7 @@ void Game::SetWindowTitleAndIcon()
     Graphics* graphics = GetSubsystem<Graphics>();
     Image* icon = cache->GetResource<Image>("Textures/UrhoIcon.png");
     graphics->SetWindowIcon(icon);
-    graphics->SetWindowTitle("Urho3D Game");
+    graphics->SetWindowTitle("DungeonBot3000");
 }
 
 void Game::CreateConsoleAndDebugHud()
@@ -76,6 +76,7 @@ void Game::CreateConsoleAndDebugHud()
     Console* console = engine_->CreateConsole();
     console->SetDefaultStyle(xmlFile);
     console->GetBackground()->SetOpacity(0.8f);
+	console->Toggle();
 
     // Create debug HUD.
     DebugHud* debugHud = engine_->CreateDebugHud();
@@ -106,22 +107,17 @@ void Game::HandleKeyDown(StringHash eventType, VariantMap& eventData)
     using namespace KeyDown;
 
     int key = eventData[P_KEY].GetInt();
-
-    // Toggle console with F1
     if (key == KEY_F1)
         GetSubsystem<Console>()->Toggle();
 
-    // Toggle debug HUD with F2
     else if (key == KEY_F2)
         GetSubsystem<DebugHud>()->ToggleAll();
 
-    // Common rendering quality controls, only when UI has no focused element
     else if (key == '9')
     {
         Graphics* graphics = GetSubsystem<Graphics>();
         Image screenshot(context_);
         graphics->TakeScreenShot(screenshot);
-        // Here we save in the Data folder with date and time appended
         screenshot.SavePNG(GetSubsystem<FileSystem>()->GetProgramDir() + "Data/Screenshot_" +
             Time::GetTimeStamp().Replaced(':', '_').Replaced('.', '_').Replaced(' ', '_') + ".png");
     }
