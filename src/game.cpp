@@ -59,7 +59,7 @@ void Game::Start()
 	StringHasherType hasher;
 
 	auto m=stats.AddMod("TestStat1", StatModifier::FLAT, "5");
-	auto m2=stats.AddMod("TestStat2", StatModifier::FLAT, "TestStat1*8");
+	auto m2=stats.AddMod("TestStat2", StatModifier::FLAT, "3+test(TestStat1*8,3)");
 
 	StatSetCollection sc;
 	sc.push_back(stats);

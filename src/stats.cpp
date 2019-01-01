@@ -14,7 +14,7 @@ static FunctionMapType modfuncs=
 		"test",
 		{
 			2,
-			[](const double *a, unsigned int n)->double{return (n>=2) ? a[0]+a[1] : 0;}
+			[](const double *a, unsigned int n)->double{Log::Write(LOG_INFO, "test"); return (n>=2) ? (a[0]+a[1]*400) : 0;}
 		}
 	}
 };
@@ -54,7 +54,8 @@ StatModifierHandle StatSet::AddMod(StringHashType stat, StatModifier::Type type,
 	s.push_back(StatModifier(type, pf.ToPostfix()));
 
 	// Debug
-	/*auto p=pf.ToPostfix();
+	/*
+	auto p=pf.ToPostfix();
 	for(auto i : p)
 	{
 		Log::Write(LOG_INFO, String(i.GetToken().c_str()) + String(" ") + String((int)i.GetType()));
@@ -174,9 +175,9 @@ double EvaluateStatMod(const StatSetCollection &stats, const StatModifier &mod)
 				if(numargs>0)
 				{
 					double ar[numargs];
-					for(unsigned int m=numargs-1; m>=0; --m)
+					for(unsigned int m=0; m<numargs; ++m)
 					{
-						ar[m]=stk.top();
+						ar[(numargs-1)-m]=stk.top();
 						stk.pop();
 					}
 					stk.push(fn.func_(ar,numargs));
