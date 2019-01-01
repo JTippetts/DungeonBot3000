@@ -80,6 +80,45 @@ void StatSet::RemoveMod(StringHashType stat, StatModifierHandle mod)
 
 void StatSet::LoadJSON(const Urho3D::JSONValue &json)
 {
+	StringHasherType StringHasher;
+	if(!json.IsObject())
+	{
+		return; // Needs to be an object
+	}
+
+	const JSONObject &obj=json.GetObject();
+	for(auto i=obj.Begin(); i!=obj.End(); ++i)
+	{
+		// name of stat being built is i->First
+		// array of mods is i->Second
+		std::string name=i->first_.CString();
+		const JSONValue &val=i->second_;
+		//BaseStat &stat=GetStat(name);
+		if(val.IsArray())
+		{
+			const JSONArray &mods=val.GetArray();
+			for(unsigned int m=0; m<mods.Size(); ++m)
+			{
+				const JSONValue &md=mods[m];
+				if(md.IsObject())
+				{
+					const JSONObject &mod=md.GetObject();
+
+					const String type=GetStringFromJSONObject("Type", mod);
+					const std::string expr=GetStringFromJSONObject("Exp", mod).CString();
+
+					StatModifier::Type tp=StatModifier::FLAT;
+					if(type=="Mult") tp=StatModifier::MULT;
+					else if(type=="Scale") tp=StatModifier::SCALE;
+					else if(type=="Min") tp=StatModifier::MIN;
+					else tp=StatModifier::MAX;
+
+					AddMod(name, tp, expr);
+				}
+
+			}
+		}
+	}
 }
 
 void StatSet::ConcatenateStat(Stat &stat, std::string name) const
