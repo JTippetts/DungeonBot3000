@@ -6,6 +6,8 @@
 #include <vector>
 #include <list>
 #include <map>
+#include <functional>
+#include <unordered_map>
 
 using StringHasherType = std::hash<std::string>;
 using StringHashType = std::hash<std::string>::result_type;
@@ -41,13 +43,23 @@ protected:
 };
 
 using TokenStream = std::vector<Token>;
-using FunctionMapType = std::map<StringHashType, int>;
-using VarMapType = std::vector<StringHashType>;
+//using FunctionMapType = std::map<StringHashType, int>;
+//using VarMapType = std::vector<StringHashType>;
+
+// Define a type for a stat mod function
+struct ExpressionFunction
+{
+	unsigned int numargs_;
+	std::function<double (const double *, unsigned int)> func_;
+};
+
+// Function map
+using FunctionMapType = std::unordered_map<std::string, ExpressionFunction>;
 
 class Tokenizer
 {
 public:
-    Tokenizer(const std::string expr, const std::map<std::string, int> &fmap, const std::vector<std::string> &vars);
+    Tokenizer(const std::string expr, const FunctionMapType &fmap/*, const VarMapType &vars*/);
     bool HasNext();
     Token NextToken();
 
@@ -55,8 +67,11 @@ protected:
     std::string expression_;
     std::string::iterator pos_;
     Token lastToken_;
-    std::map<std::string, int> functions_;
-    std::vector<std::string> vars_;
+    //std::map<std::string, int> functions_;
+    //std::vector<std::string> vars_;
+
+	const FunctionMapType &functions_;
+	//const VarMapType &vars_;
 
     bool IsValidOperator(char ch);
     bool IsDigit(char ch);
@@ -74,13 +89,13 @@ protected:
 class ExpressionToPostfix
 {
 public:
-    ExpressionToPostfix(const std::string &expr, const std::map<std::string, int> &f, const std::vector<std::string> &v);
+    ExpressionToPostfix(const std::string &expr, const FunctionMapType &fmap/*, const VarMapType &vars*/);
     std::vector<Token> ToPostfix();
 
 protected:
     std::string expr_;
-    const std::map<std::string, int> &f_;
-    const std::vector<std::string> &vars_;
+    const FunctionMapType &f_;
+    //const VarMapType &vars_;
 
     int GetNumOperands(const Token &tk);
     bool IsLeftAssociative(const Token &tk);

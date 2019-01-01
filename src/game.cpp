@@ -21,7 +21,9 @@
 #include <Urho3D/UI/UI.h>
 #include <Urho3D/Resource/XMLFile.h>
 #include <Urho3D/IO/Log.h>
+#include <Urho3D/Container/Str.h>
 
+#include "stats.h"
 
 Game::Game(Context* context) :
     Application(context)
@@ -50,6 +52,22 @@ void Game::Start()
     CreateConsoleAndDebugHud();
     SubscribeToEvent(E_KEYDOWN, URHO3D_HANDLER(Game, HandleKeyDown));
     SubscribeToEvent(E_KEYUP, URHO3D_HANDLER(Game, HandleKeyUp));
+
+
+	// Testing
+	StatSet stats;
+	StringHasherType hasher;
+
+	auto m=stats.AddMod("TestStat1", StatModifier::FLAT, "5");
+	auto m2=stats.AddMod("TestStat2", StatModifier::FLAT, "TestStat1*8");
+
+	StatSetCollection sc;
+	sc.push_back(stats);
+
+	String st=String("TestStat1: ") + String(GetStatValue(sc, "TestStat1"));
+	Log::Write(LOG_INFO, st);
+	st=String("TestStat2: ") + String(GetStatValue(sc, "TestStat2"));
+	Log::Write(LOG_INFO, st);
 }
 
 void Game::Stop()

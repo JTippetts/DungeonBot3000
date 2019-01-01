@@ -22,8 +22,8 @@ const std::string &Token::GetToken() const
 }
 
 
-Tokenizer::Tokenizer(const std::string expr, const std::map<std::string, int> &fmap, const std::vector<std::string> &vars) :
-    expression_(expr), pos_(expression_.begin()), lastToken_(Token::NONE, ""), functions_(fmap), vars_(vars)
+Tokenizer::Tokenizer(const std::string expr, const FunctionMapType &fmap/*, const VarMapType &vars*/) :
+    expression_(expr), pos_(expression_.begin()), lastToken_(Token::NONE, ""), functions_(fmap)/*, vars_(vars)*/
 {
 }
 
@@ -201,7 +201,7 @@ bool Tokenizer::IsNumeric(char ch, bool lastCharE)
 
 bool Tokenizer::IsSpecialToken(const std::string &t)
 {
-    for(auto i : vars_) if(t==i) return true;
+    //for(auto i : vars_) if(t==i) return true;
     return false;
 }
 
@@ -211,8 +211,8 @@ bool Tokenizer::IsFunctionName(const std::string &t)
 }
 
 
-ExpressionToPostfix::ExpressionToPostfix(const std::string &expr, const std::map<std::string, int> &f, const std::vector<std::string> &v) : expr_(expr),
-    f_(f), vars_(v)
+ExpressionToPostfix::ExpressionToPostfix(const std::string &expr, const FunctionMapType &fmap) : expr_(expr),
+    f_(fmap)/*, vars_(v)*/
 {
 
 
@@ -220,7 +220,7 @@ ExpressionToPostfix::ExpressionToPostfix(const std::string &expr, const std::map
 
 std::vector<Token> ExpressionToPostfix::ToPostfix()
 {
-    Tokenizer tz(expr_, f_, vars_);
+    Tokenizer tz(expr_, f_/*, vars_*/);
     std::stack<Token> stk;
     std::vector<Token> output;
 
