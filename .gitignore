@@ -3,7 +3,7 @@ Bin/*.png
 Bin/*.dll
 Bin/*.chm
 Bin/CoreData
-DungeonBot3000.dir/
+editor/Build/
 build.bat
 *.exe
 *.log

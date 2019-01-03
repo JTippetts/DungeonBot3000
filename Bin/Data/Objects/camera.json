@@ -1,0 +1,77 @@
+{
+	"id": 16777217,
+	"attributes": {
+		"Is Enabled": true,
+		"Name": "",
+		"Tags": [],
+		"Position": "0 0 0",
+		"Rotation": "0 0 0 0",
+		"Scale": "1 1 1",
+		"Variables": {}
+	},
+	"components": [
+		{
+			"type": "ThirdPersonCamera",
+			"id": 16777229,
+			"attributes": {
+				"Min Zoom Distance": 1.0,
+				"Max Zoom Distance": 20.0
+			}
+		}
+	],
+	"children": [
+		{
+			"id": 16777218,
+			"attributes": {
+				"Is Enabled": true,
+				"Name": "ShakeNode",
+				"Tags": [],
+				"Position": "0 0 0",
+				"Rotation": "1 0 0 0",
+				"Scale": "1 1 1",
+				"Variables": {}
+			},
+			"components": [],
+			"children": [
+				{
+					"id": 16777219,
+					"attributes": {
+						"Is Enabled": true,
+						"Name": "AngleNode",
+						"Tags": [],
+						"Position": "0 0 0",
+						"Rotation": "0.965926 0.258819 0 0",
+						"Scale": "1 1 1",
+						"Variables": {}
+					},
+					"components": [],
+					"children": [
+						{
+							"id": 16777220,
+							"attributes": {
+								"Is Enabled": true,
+								"Name": "CameraNode",
+								"Tags": [],
+								"Position": "0 0 -10",
+								"Rotation": "1 0 0 0",
+								"Scale": "1 1 1",
+								"Variables": {}
+							},
+							"components": [
+								{
+									"type": "Camera",
+									"id": 16777228,
+									"attributes": {
+										"Far Clip": 60.0,
+										"Aspect Ratio": 1.3333333730697632
+									}
+								}
+							],
+							"children": []
+						}
+					]
+				}
+			]
+		}
+	]
+}
