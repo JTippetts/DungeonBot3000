@@ -115,7 +115,6 @@ void StatSet::LoadJSON(const Urho3D::JSONValue &json)
 
 					AddMod(name, tp, expr);
 				}
-
 			}
 		}
 	}

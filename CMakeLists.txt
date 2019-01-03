@@ -34,6 +34,6 @@ set (TARGET_NAME DungeonBot3000)
 
 
 # Define source files
-define_source_files (GLOB_CPP_PATTERNS src/*.cpp *.c  GLOB_H_PATTERNS src/*.h)
+define_source_files (GLOB_CPP_PATTERNS src/*.cpp src/Components/*.cpp *.c  GLOB_H_PATTERNS src/*.h src/Components/*.h)
 # Setup target with resource copying
 setup_main_executable ()

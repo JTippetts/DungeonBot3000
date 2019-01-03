@@ -1,0 +1,8 @@
+// Register Components
+
+#include <Urho3D/Urho3D.h>
+#include <Urho3D/Core/Context.h>
+
+using namespace Urho3D;
+
+void RegisterCustomComponents(Context *context);
