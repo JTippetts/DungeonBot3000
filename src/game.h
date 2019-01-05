@@ -1,7 +1,10 @@
 #include <Urho3D/Engine/Application.h>
+#include <Urho3D/Scene/Scene.h>
+#include <Urho3D/Scene/Node.h>
 
 // All Urho3D classes reside in namespace Urho3D
 using namespace Urho3D;
+
 
 class Game : public Application
 {
@@ -20,5 +23,8 @@ class Game : public Application
     void CreateConsoleAndDebugHud();
 	void HandleKeyDown(StringHash eventType, VariantMap& eventData);
     void HandleKeyUp(StringHash eventType, VariantMap& eventData);
+
+	SharedPtr<Scene> scene_;
+	SharedPtr<Node> test_;
 };
 

@@ -22,9 +22,18 @@
 #include <Urho3D/Resource/XMLFile.h>
 #include <Urho3D/IO/Log.h>
 #include <Urho3D/Container/Str.h>
+#include <Urho3D/Graphics/Octree.h>
+#include <Urho3D/Graphics/StaticModel.h>
+#include <Urho3D/Graphics/Material.h>
+#include <Urho3D/Graphics/Model.h>
+#include <Urho3D/UI/UI.h>
+#include <Urho3D/UI/Cursor.h>
+#include <Urho3D/Resource/Image.h>
 
 #include "stats.h"
 #include "RegisterComponents.h"
+
+#include "lightingcamera.h"
 Game::Game(Context* context) :
     Application(context)
 {
@@ -56,6 +65,15 @@ void Game::Start()
     SubscribeToEvent(E_KEYDOWN, URHO3D_HANDLER(Game, HandleKeyDown));
     SubscribeToEvent(E_KEYUP, URHO3D_HANDLER(Game, HandleKeyUp));
 
+	ResourceCache* cache = GetSubsystem<ResourceCache>();
+	UI *ui=GetSubsystem<UI>();
+
+	Cursor* cursor=new Cursor(context_);
+	cursor->DefineShape(CS_NORMAL, cache->GetResource<Image>("UI/buttons.png"), IntRect(950,50,1000,100), IntVector2(20,15));
+	ui->SetCursor(cursor);
+	cursor->SetVisible(true);
+	cursor->SetPosition(ui->GetRoot()->GetWidth()/2, ui->GetRoot()->GetHeight()/2);
+
 
 	// Testing
 	StatSet stats;
@@ -71,6 +89,16 @@ void Game::Start()
 	Log::Write(LOG_INFO, st);
 	st=String("TestStat2: ") + String(GetStatValue(sc, "TestStat2"));
 	Log::Write(LOG_INFO, st);
+
+	scene_=new Scene(context_);
+	scene_->CreateComponent<Octree>();
+
+	LoadLightingAndCamera(scene_, String("Objects"));
+
+	test_=scene_->CreateChild();
+	auto md=test_->CreateComponent<StaticModel>();
+	md->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
+	md->SetModel(cache->GetResource<Model>("Models/Plane.mdl"));
 }
 
 void Game::Stop()
