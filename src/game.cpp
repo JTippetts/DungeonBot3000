@@ -24,6 +24,8 @@
 #include <Urho3D/Container/Str.h>
 #include <Urho3D/Graphics/Octree.h>
 #include <Urho3D/Graphics/StaticModel.h>
+#include <Urho3D/Graphics/AnimatedModel.h>
+#include <Urho3D/Graphics/AnimationController.h>
 #include <Urho3D/Graphics/Material.h>
 #include <Urho3D/Graphics/Model.h>
 #include <Urho3D/UI/UI.h>
@@ -79,11 +81,9 @@ void Game::Start()
 	StatSet stats;
 	StringHasherType hasher;
 
-	auto m=stats.AddMod("TestStat1", StatModifier::FLAT, "5");
-	auto m2=stats.AddMod("TestStat2", StatModifier::FLAT, "3+test(TestStat1*8,3)");
-
+	stats.LoadJSON(cache->GetResource<JSONFile>("Objects/teststat.json")->GetRoot());
 	StatSetCollection sc;
-	sc.push_back(stats);
+	sc.push_back(&stats);
 
 	String st=String("TestStat1: ") + String(GetStatValue(sc, "TestStat1"));
 	Log::Write(LOG_INFO, st);
@@ -96,9 +96,50 @@ void Game::Start()
 	LoadLightingAndCamera(scene_, String("Objects"));
 
 	test_=scene_->CreateChild();
+	{
 	auto md=test_->CreateComponent<StaticModel>();
 	md->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
 	md->SetModel(cache->GetResource<Model>("Models/Plane.mdl"));
+	md->SetCastShadows(true);
+	}
+
+	Node *n_=scene_->CreateChild();
+	{
+	auto md=n_->CreateComponent<AnimatedModel>();
+	md->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
+	md->SetModel(cache->GetResource<Model>("Models/Body.mdl"));
+	md->SetCastShadows(true);
+	md=n_->CreateComponent<AnimatedModel>();
+	md->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
+	md->SetModel(cache->GetResource<Model>("Models/Carriage.mdl"));
+	md->SetCastShadows(true);
+	md=n_->CreateComponent<AnimatedModel>();
+	md->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
+	md->SetModel(cache->GetResource<Model>("Models/Turret.mdl"));
+	md->SetCastShadows(true);
+
+	auto rb=md->GetSkeleton().GetBone("LBlade");
+	if(rb)
+	{
+		Node *bl=rb->node_->CreateChild();
+		auto smd=bl->CreateComponent<StaticModel>();
+		smd->SetModel(cache->GetResource<Model>("Models/Blade.mdl"));
+		smd->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
+	}
+
+	rb=md->GetSkeleton().GetBone("RBlade");
+	if(rb)
+	{
+		Node *bl=rb->node_->CreateChild();
+		auto smd=bl->CreateComponent<StaticModel>();
+		smd->SetModel(cache->GetResource<Model>("Models/Blade.mdl"));
+		smd->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
+	}
+	}
+
+	auto ac=n_->CreateComponent<AnimationController>();
+	ac->Play("Models/Idle.ani", 0, true, 0.0f);
+
 }
 
 void Game::Stop()

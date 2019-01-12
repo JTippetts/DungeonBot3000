@@ -68,7 +68,7 @@ class StatSet
 	std::unordered_map<StringHashType, Stat> stats_;
 };
 
-using StatSetCollection = std::vector<StatSet>;
+using StatSetCollection = std::vector<StatSet*>;
 
 double GetStatValue(const StatSetCollection &stats, std::string stat);
 double GetStatValue(const StatSetCollection &stats, StringHashType stat);

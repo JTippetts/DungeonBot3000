@@ -43,14 +43,12 @@ protected:
 };
 
 using TokenStream = std::vector<Token>;
-//using FunctionMapType = std::map<StringHashType, int>;
-//using VarMapType = std::vector<StringHashType>;
 
 // Define a type for a stat mod function
 struct ExpressionFunction
 {
 	unsigned int numargs_;
-	std::function<double (const double *, unsigned int)> func_;
+	double (*func_)(const double *, unsigned int);
 };
 
 // Function map

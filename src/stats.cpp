@@ -16,6 +16,138 @@ static FunctionMapType modfuncs=
 			2,
 			[](const double *a, unsigned int n)->double{Log::Write(LOG_INFO, "test"); return (n>=2) ? (a[0]+a[1]*400) : 0;}
 		}
+	},
+
+	{
+		"logistic",
+		{
+			3,
+			[](const double *a, unsigned int n)->double
+			{
+				double e=2.71828;
+				if(n!=3) return 0.0;
+				double stat=a[0];
+				double base=a[1];
+				double slope=a[2];
+
+				return (1.0 / (1.0 + std::pow(e, -slope * (stat-base))));
+			}
+		}
+	},
+
+	{
+		"spread",
+		{
+			3,
+			[](const double *a, unsigned int n)->double
+			{
+				double stat=a[0];
+				double base=a[1];
+				double spread=a[2];
+
+				double low=base-spread;
+				double high=base+spread;
+				double v=stat;
+				v = (v-low) / (high - low);
+				return v;
+			}
+		}
+	},
+
+	{
+		"center",
+		{
+			1,
+			[](const double *a, unsigned int n)->double
+			{
+				double stat=a[0];
+				return stat*2.0-1.0;
+			}
+		}
+	},
+
+	{
+		"clamp",
+		{
+			3,
+			[](const double *a, unsigned int n)->double
+			{
+				double stat=a[0];
+				double low=a[1];
+				double high=a[2];
+
+				return std::max(low, std::min(high, stat));
+			}
+		}
+	},
+
+	{
+		"min",
+		{
+			2,
+			[](const double *a, unsigned int n)->double
+			{
+				double stat=a[0];
+				double val=a[1];
+
+				return std::min(stat,val);
+			}
+		}
+	},
+
+	{
+		"max",
+		{
+			2,
+			[](const double *a, unsigned int n)->double
+			{
+				double stat=a[0];
+				double val=a[1];
+
+				return std::max(stat,val);
+			}
+		}
+	},
+
+	{
+		"pow",
+		{
+			2,
+			[](const double *a, unsigned int n)->double
+			{
+				double stat=a[0];
+				double val=a[1];
+
+				return std::pow(stat,val);
+			}
+		}
+	},
+
+	{
+		"saturate",
+		{
+			1,
+			[](const double *a, unsigned int n)->double
+			{
+				double stat=a[0];
+
+				return std::max(0.0, std::min(1.0, stat));
+			}
+		}
+	},
+
+	{
+		"saturatecenter",
+		{
+			1,
+			[](const double *a, unsigned int n)->double
+			{
+				double stat=a[0];
+
+				stat=stat*2.0-1.0;
+				return std::max(-1.0, std::min(1.0, stat));
+			}
+		}
 	}
 };
 
@@ -54,8 +186,8 @@ StatModifierHandle StatSet::AddMod(StringHashType stat, StatModifier::Type type,
 	s.push_back(StatModifier(type, pf.ToPostfix()));
 
 	// Debug
-	/*
-	auto p=pf.ToPostfix();
+
+	/*auto p=pf.ToPostfix();
 	for(auto i : p)
 	{
 		Log::Write(LOG_INFO, String(i.GetToken().c_str()) + String(" ") + String((int)i.GetType()));
@@ -83,6 +215,7 @@ void StatSet::LoadJSON(const Urho3D::JSONValue &json)
 	StringHasherType StringHasher;
 	if(!json.IsObject())
 	{
+		Log::Write(LOG_INFO, "JSON file not an object");
 		return; // Needs to be an object
 	}
 
@@ -93,7 +226,7 @@ void StatSet::LoadJSON(const Urho3D::JSONValue &json)
 		// array of mods is i->Second
 		std::string name=i->first_.CString();
 		const JSONValue &val=i->second_;
-		//BaseStat &stat=GetStat(name);
+
 		if(val.IsArray())
 		{
 			const JSONArray &mods=val.GetArray();
@@ -106,12 +239,11 @@ void StatSet::LoadJSON(const Urho3D::JSONValue &json)
 
 					const String type=GetStringFromJSONObject("Type", mod);
 					const std::string expr=GetStringFromJSONObject("Exp", mod).CString();
-
 					StatModifier::Type tp=StatModifier::FLAT;
 					if(type=="Mult") tp=StatModifier::MULT;
 					else if(type=="Scale") tp=StatModifier::SCALE;
 					else if(type=="Min") tp=StatModifier::MIN;
-					else tp=StatModifier::MAX;
+					else if(type=="Max") tp=StatModifier::MAX;
 
 					AddMod(name, tp, expr);
 				}
@@ -150,7 +282,7 @@ double GetStatValue(const StatSetCollection &stats, StringHashType stat)
 
 	for(auto &i : stats)
 	{
-		i.ConcatenateStat(s, stat);
+		i->ConcatenateStat(s, stat);
 	}
 
 	double flat=0.0, mult=0.0, scale=1.0, mn=0, mx=0;

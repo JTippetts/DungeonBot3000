@@ -43,7 +43,7 @@ bool LoadLightingAndCamera(Scene *scene, String levelpath)
 		Node *childnode=lightnode->CreateChild();
 		if(childnode)
 		{
-			childnode->SetDirection(Vector3(1.5f,-1.0f,0.1f));
+			childnode->SetDirection(Vector3(-1.5f,-1.0f,-0.1f));
 			const JSONArray &mainInfo=lightingObject["main"]->GetArray();
 			if(mainInfo.Size()<3)
 			{
@@ -65,7 +65,7 @@ bool LoadLightingAndCamera(Scene *scene, String levelpath)
 		childnode=lightnode->CreateChild();
 		if(childnode)
 		{
-			childnode->SetDirection(Vector3(-1.5f,-1.0f,-0.1f));
+			childnode->SetDirection(Vector3(1.5f,1.0f,0.1f));
 			const JSONArray &backInfo=lightingObject["back"]->GetArray();
 			if(backInfo.Size()<3)
 			{
@@ -106,7 +106,7 @@ bool LoadLightingAndCamera(Scene *scene, String levelpath)
 
 			zone->SetFogStart(lightingObject["near"]->GetFloat());
 			zone->SetFogEnd(lightingObject["far"]->GetFloat());
-			zone->SetBoundingBox(BoundingBox(-1000,1000));
+			zone->SetBoundingBox(BoundingBox(-100,100));
 		}
 
 	}
@@ -121,7 +121,7 @@ bool LoadLightingAndCamera(Scene *scene, String levelpath)
 	cam->SetCellSize(128);
 	cam->SetOrthographic(false);
 	cam->SetAllowSpin(false);
-	cam->SetAllowPitch(true);
+	cam->SetAllowPitch(false);
 	cam->SetRotAngle(0);
 	cam->SetCamAngle(40);
 	cam->SetMinFollow(2);

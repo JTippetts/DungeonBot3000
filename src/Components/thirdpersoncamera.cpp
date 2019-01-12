@@ -52,7 +52,7 @@ void ThirdPersonCamera::Update(float dt)
 	if(allowzoom_ && !ui->GetElementAt(cursor->GetPosition()))
 	{
 		float wheel=input->GetMouseMoveWheel();
-		follow_-=wheel*dt*20.0f;
+		follow_-=wheel*dt*200.0f;
 		follow_=std::max(minfollow_, std::min(maxfollow_, follow_));
 	}
 

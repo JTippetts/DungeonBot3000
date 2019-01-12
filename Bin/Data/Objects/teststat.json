@@ -1,0 +1,4 @@
+{
+	"TestStat1": [{"Type":"Flat", "Exp": "8"}],
+	"TestStat2": [{"Type": "Flat", "Exp": "spread(TestStat1, 2, 10)"}]
+}
