@@ -50,6 +50,13 @@ class ThirdPersonCamera : public LogicComponent
 	float GetMaxFollow() const{return maxfollow_;}
 	Viewport *GetViewport(){return viewport_.Get();}
 
+	Ray GetMouseRay();
+	Ray GetScreenRay(int mx, int my);
+	Vector2 GetMouseGround();
+	bool PickGround(Vector2 &ground, int mx, int my, float maxdistance=1000.0f);
+	Vector2 GetScreenGround(int mx, int my);
+	float CameraPick(Ray &ray, float followdist);
+
 
 	protected:
 	void HandleSetCameraPosition(StringHash eventType, VariantMap &eventData);
@@ -61,12 +68,7 @@ class ThirdPersonCamera : public LogicComponent
 	void HandleSetCamera(StringHash eventType, VariantMap &eventData);
 	virtual void Start();
 
-	Ray GetMouseRay();
-	Ray GetScreenRay(int mx, int my);
-	Vector2 GetMouseGround();
-	bool PickGround(Vector2 &ground, int mx, int my, float maxdistance=1000.0f);
-	Vector2 GetScreenGround(int mx, int my);
-	float CameraPick(Ray &ray, float followdist);
+
 	void SpringFollow(float dt);
 	void SpringPosition(float dt);
 

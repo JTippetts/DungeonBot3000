@@ -34,6 +34,8 @@
 #include <Urho3D/Graphics/DebugRenderer.h>
 #include <Urho3D/Navigation/DynamicNavigationMesh.h>
 #include <Urho3D/Navigation/Navigable.h>
+#include <Urho3D/Navigation/CrowdManager.h>
+#include <Urho3D/Navigation/CrowdAgent.h>
 
 #include "stats.h"
 #include "RegisterComponents.h"
@@ -135,6 +137,7 @@ void Game::Start()
 	auto dbg=scene_->CreateComponent<DebugRenderer>();
 	auto nav=scene_->CreateComponent<DynamicNavigationMesh>();
 	scene_->CreateComponent<Navigable>();
+	scene_->CreateComponent<CrowdManager>();
 
 	nav->SetAgentHeight(1.0);
 	nav->SetAgentRadius(1.0f);
@@ -185,6 +188,13 @@ void Game::Start()
 
 	Node *n_=scene_->CreateChild("Dude");
 	{
+	auto ca=n_->CreateComponent<CrowdAgent>();
+	ca->SetRadius(1.0);
+	ca->SetHeight(2.0);
+	ca->SetMaxSpeed(30.0);
+	ca->SetMaxAccel(400.0);
+
+
 	auto md=n_->CreateComponent<AnimatedModel>();
 	md->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
 	md->SetModel(cache->GetResource<Model>("Models/Body.mdl"));
@@ -309,7 +319,7 @@ void Game::HandleUpdate(StringHash eventType, VariantMap &eventData)
 
 	auto cam=scene_->GetChild("Camera")->GetComponent<ThirdPersonCamera>();
 
-	float rot=cam->GetRotAngle();
+	/*float rot=cam->GetRotAngle();
 	Quaternion qrot(rot, Vector3(0,1,0));
 	Vector3 forward=(qrot*Vector3(0,0,1)) * 30.0f;
 	Vector3 right(forward.z_, 0, -forward.x_);
@@ -334,7 +344,31 @@ void Game::HandleUpdate(StringHash eventType, VariantMap &eventData)
 
 	VariantMap vm;
 	vm[position]=pt;
+	SendEvent(CameraSetPosition, vm);*/
+
+	IntVector2 mousepos;
+	if(input->IsMouseVisible()) mousepos=input->GetMousePosition();
+	else mousepos=context_->GetSubsystem<UI>()->GetCursorPosition();
+	Vector2 ground=cam->GetScreenGround(mousepos.x_,mousepos.y_);
+	if(input->GetMouseButtonDown(MOUSEB_LEFT) /*&& cam->PickGround(ground,mousepos.x_,mousepos.y_)*/)
+	{
+		auto ca=scene_->GetChild("Dude")->GetComponent<CrowdAgent>();
+		ca->SetTargetPosition(Vector3(ground.x_,0,ground.y_));
+		Log::Write(LOG_INFO, String("Mousepos:") + String(mousepos.x_) + "," + String(mousepos.y_));
+		Log::Write(LOG_INFO, String("Groundpos:") + String(ground.x_) + "," + String(ground.y_));
+
+	}
+	else
+	{
+		auto dd=scene_->GetChild("Dude");
+		auto ca=dd->GetComponent<CrowdAgent>();
+		//ca->SetTargetPosition(dd->GetPosition());
+	}
+
+	VariantMap vm;
+	vm[position]=scene_->GetChild("Dude")->GetPosition();
 	SendEvent(CameraSetPosition, vm);
+	//else Log::Write(LOG_INFO, "No pick");
 }
 
 URHO3D_DEFINE_APPLICATION_MAIN(Game)

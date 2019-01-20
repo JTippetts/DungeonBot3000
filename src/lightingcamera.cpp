@@ -120,12 +120,12 @@ bool LoadLightingAndCamera(Scene *scene, String levelpath)
 	cam->SetClipDist(lightingObject["far"]->GetFloat());
 	cam->SetCellSize(128);
 	cam->SetOrthographic(false);
-	cam->SetAllowSpin(true);
+	cam->SetAllowSpin(false);
 	cam->SetAllowPitch(false);
-	cam->SetRotAngle(45);
-	cam->SetCamAngle(50);
-	cam->SetMinFollow(8);
-	cam->SetMaxFollow(300);
+	cam->SetRotAngle(-45);
+	cam->SetCamAngle(55);
+	cam->SetMinFollow(12);
+	cam->SetMaxFollow(100);
 	//cam->SetMinFollowAngle(15);
 	//cam->SetMaxFollowAngle(99);
 
