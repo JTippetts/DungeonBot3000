@@ -106,7 +106,7 @@ bool LoadLightingAndCamera(Scene *scene, String levelpath)
 
 			zone->SetFogStart(lightingObject["near"]->GetFloat());
 			zone->SetFogEnd(lightingObject["far"]->GetFloat());
-			zone->SetBoundingBox(BoundingBox(-100,100));
+			zone->SetBoundingBox(BoundingBox(-1000,1000));
 		}
 
 	}
@@ -120,12 +120,12 @@ bool LoadLightingAndCamera(Scene *scene, String levelpath)
 	cam->SetClipDist(lightingObject["far"]->GetFloat());
 	cam->SetCellSize(128);
 	cam->SetOrthographic(false);
-	cam->SetAllowSpin(false);
+	cam->SetAllowSpin(true);
 	cam->SetAllowPitch(false);
-	cam->SetRotAngle(0);
-	cam->SetCamAngle(40);
-	cam->SetMinFollow(2);
-	cam->SetMaxFollow(30);
+	cam->SetRotAngle(45);
+	cam->SetCamAngle(50);
+	cam->SetMinFollow(8);
+	cam->SetMaxFollow(300);
 	//cam->SetMinFollowAngle(15);
 	//cam->SetMaxFollowAngle(99);
 

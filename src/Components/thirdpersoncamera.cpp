@@ -94,7 +94,7 @@ void ThirdPersonCamera::Update(float dt)
 		node_->SetPosition(pos_);
 		//LOGINFO(String(pos_.x_)+","+String(pos_.z_));
 	}
-	//else node_->SetPosition(newpos_);
+	else node_->SetPosition(newpos_);
 
 	//LOGINFO(String(newpos_.x_)+","+String(newpos_.z_));
 
@@ -105,7 +105,7 @@ void ThirdPersonCamera::Update(float dt)
 
 void ThirdPersonCamera::HandleSetCameraPosition(StringHash eventType, VariantMap &eventData)
 {
-	//LOGINFO("Hihihi");
+	//Log::Write(LOG_INFO,"Hihihi");
 	static StringHash position("position");
 	newpos_=eventData[position].GetVector3();
 }

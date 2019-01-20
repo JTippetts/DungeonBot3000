@@ -23,8 +23,13 @@ class Game : public Application
     void CreateConsoleAndDebugHud();
 	void HandleKeyDown(StringHash eventType, VariantMap& eventData);
     void HandleKeyUp(StringHash eventType, VariantMap& eventData);
+	void HandlePostRenderUpdate(StringHash eventType, VariantMap &eventData);
+
+	void HandleUpdate(StringHash eventType, VariantMap &eventData);
 
 	SharedPtr<Scene> scene_;
 	SharedPtr<Node> test_;
+
+	float x,z;
 };
 
