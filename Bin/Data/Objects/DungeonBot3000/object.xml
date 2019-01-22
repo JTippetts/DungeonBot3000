@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<node id="16777217">
+	<attribute name="Is Enabled" value="true" />
+	<attribute name="Name" value="Dude" />
+	<attribute name="Tags" />
+	<attribute name="Position" value="0 0 0" />
+	<attribute name="Rotation" value="1 0 0 0" />
+	<attribute name="Scale" value="1 1 1" />
+	<attribute name="Variables" />
+	<component type="AnimatedModel" id="16777228">
+		<attribute name="Model" value="Model;Objects/DungeonBot3000/Models/Body.mdl" />
+		<attribute name="Material" value="Material;Objects/DungeonBot3000/Materials/drivewheel.xml" />
+		<attribute name="Cast Shadows" value="true" />
+
+	</component>
+	<component type="AnimatedModel" id="16777229">
+		<attribute name="Model" value="Model;Objects/DungeonBot3000/Models/Carriage.mdl" />
+		<attribute name="Material" value="Material;Objects/DungeonBot3000/Materials/Green.xml" />
+		<attribute name="Cast Shadows" value="true" />
+
+	</component>
+	<component type="AnimatedModel" id="16777230">
+		<attribute name="Model" value="Model;Objects/DungeonBot3000/Models/Turret.mdl" />
+		<attribute name="Material" value="Material;Objects/DungeonBot3000/Materials/Green.xml" />
+		<attribute name="Cast Shadows" value="true" />
+
+	</component>
+	<component type="CrowdAgent" id="16777231">
+		<attribute name="Max Accel" value="400" />
+		<attribute name="Max Speed" value="30" />
+		<attribute name="Radius" value="1" />
+		<attribute name="Height" value="2" />
+		<attribute name="Navigation Pushiness" value="High" />
+	</component>
+	<component type="CombatController" id="16777232">
+		<attribute name="Object Path" value="Objects/DungeonBot3000" />
+	</component>
+	<component type="PlayerController" >
+	</component>
+</node>

@@ -124,7 +124,7 @@ bool LoadLightingAndCamera(Scene *scene, String levelpath)
 	cam->SetAllowPitch(false);
 	cam->SetRotAngle(-45);
 	cam->SetCamAngle(55);
-	cam->SetMinFollow(12);
+	cam->SetMinFollow(20);
 	cam->SetMaxFollow(100);
 	//cam->SetMinFollowAngle(15);
 	//cam->SetMaxFollowAngle(99);

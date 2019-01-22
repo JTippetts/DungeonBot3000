@@ -1,0 +1,13 @@
+<material>
+    <technique name="Techniques/Floor4.xml" />
+	<texture unit="0" name="Areas/Test/blend1.png" />
+	<texture unit="1" name="Areas/Test/blend2.png" />
+	<texture unit="2" name="Areas/Test/floors.xml" />
+	<texture unit="3" name="Areas/Test/floors_normal.xml" />
+
+    <parameter name="MatSpecColor" value="0.0125 0.0125 0.0125 4" />
+	<parameter name="TilingFactors" value="800 800"/>
+	<parameter name="TopTilingScale" value="0.0625 0.0625 0.0625 0.0625" />
+	<parameter name="SideTilingScale" value="0.5 0.5 0.5 0.5" />
+	<shadowcull value="none" />
+</material>

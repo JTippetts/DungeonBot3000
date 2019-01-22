@@ -1,0 +1,13 @@
+<material>
+    <technique name="Techniques/Triplanar4.xml" />
+	<texture unit="0" name="Areas/Test/floor.png" />
+	<texture unit="1" name="Areas/Test/walls.png" />
+	<texture unit="2" name="Areas/Test/walls_array.xml" />
+	<texture unit="3" name="Areas/Test/walls_normal.xml" />
+
+    <parameter name="MatSpecColor" value="0.0125 0.0125 0.0125 4" />
+	<parameter name="TilingFactors" value="800 800"/>
+	<parameter name="TopTilingScale" value="0.0625 0.0625 0.0625 0.0625" />
+	<parameter name="SideTilingScale" value="0.0625 0.0625 0.0625 0.0625" />
+	<shadowcull value="none" />
+</material>

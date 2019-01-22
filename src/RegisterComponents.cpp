@@ -3,10 +3,14 @@
 
 #include "Components/thirdpersoncamera.h"
 #include "Components/rotationsmoothing.h"
+#include "Components/combatcontroller.h"
+#include "Components/playercontroller.h"
 
 void RegisterCustomComponents(Context *context)
 {
 	ThirdPersonCamera::RegisterObject(context);
 	context->RegisterFactory<CombatCameraController>("Custom");
 	RotationSmoothing::RegisterObject(context);
+	CombatController::RegisterObject(context);
+	PlayerController::RegisterObject(context);
 }

@@ -1,0 +1,6 @@
+<material>
+	<technique name="Techniques/DiffNormal.xml"/>
+    <texture unit="diffuse" name="Objects/Dude/Textures/clothes_diff.png" />
+	<texture unit="normal" name="Objects/Dude/Textures/clothes_normal.png" />
+    <shadowcull value="cw" />
+</material>

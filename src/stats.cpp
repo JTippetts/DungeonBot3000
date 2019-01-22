@@ -215,7 +215,7 @@ void StatSet::LoadJSON(const Urho3D::JSONValue &json)
 	StringHasherType StringHasher;
 	if(!json.IsObject())
 	{
-		Log::Write(LOG_INFO, "JSON file not an object");
+		Log::Write(LOG_ERROR, "JSON file not an object");
 		return; // Needs to be an object
 	}
 
@@ -233,21 +233,35 @@ void StatSet::LoadJSON(const Urho3D::JSONValue &json)
 			for(unsigned int m=0; m<mods.Size(); ++m)
 			{
 				const JSONValue &md=mods[m];
-				if(md.IsObject())
+				if(md.IsArray())
 				{
-					const JSONObject &mod=md.GetObject();
+					const JSONArray &mod=md.GetArray();
+					if(mod.Size()>=2)
+					{
+						const String type=mod[0].GetString();//GetStringFromJSONObject("Type", mod);
+						const std::string expr=mod[1].GetString().CString();//GetStringFromJSONObject("Exp", mod).CString();
+						StatModifier::Type tp=StatModifier::FLAT;
+						if(type=="Mult") tp=StatModifier::MULT;
+						else if(type=="Scale") tp=StatModifier::SCALE;
+						else if(type=="Min") tp=StatModifier::MIN;
+						else if(type=="Max") tp=StatModifier::MAX;
 
-					const String type=GetStringFromJSONObject("Type", mod);
-					const std::string expr=GetStringFromJSONObject("Exp", mod).CString();
-					StatModifier::Type tp=StatModifier::FLAT;
-					if(type=="Mult") tp=StatModifier::MULT;
-					else if(type=="Scale") tp=StatModifier::SCALE;
-					else if(type=="Min") tp=StatModifier::MIN;
-					else if(type=="Max") tp=StatModifier::MAX;
-
-					AddMod(name, tp, expr);
+						AddMod(name, tp, expr);
+					}
+					else
+					{
+						Log::Write(LOG_ERROR, String("Mod definition array is too short in list for ") + i->first_);
+					}
+				}
+				else
+				{
+					Log::Write(LOG_ERROR, String("Mod definition is not an array in list for ") + i->first_);
 				}
 			}
+		}
+		else
+		{
+			Log::Write(LOG_ERROR, String("Mod list for ") + i->first_ + " is not an array");
 		}
 	}
 }

@@ -36,12 +36,15 @@
 #include <Urho3D/Navigation/Navigable.h>
 #include <Urho3D/Navigation/CrowdManager.h>
 #include <Urho3D/Navigation/CrowdAgent.h>
+#include <Urho3D/Resource/XMLFile.h>
+#include <Urho3D/Resource/XMLElement.h>
 
 #include "stats.h"
 #include "RegisterComponents.h"
 
 #include "lightingcamera.h"
 #include "Components/thirdpersoncamera.h"
+#include "Components/combatcontroller.h"
 
 #include "maze.h"
 
@@ -49,7 +52,37 @@ float roll(int low, int high)
 {
 	static std::mt19937 gen;
 	static bool first=true;
-	static std::uniform_int_distribution<int> dist(low,high);
+	std::uniform_int_distribution<int> dist(low,high);
+
+	if(first)
+	{
+		unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+		gen.seed(seed);
+		first=false;
+	}
+	return dist(gen);
+}
+
+float rollf(float low, float high)
+{
+	static std::mt19937 gen;
+	static bool first=true;
+	std::uniform_real_distribution<float> dist(low,high);
+
+	if(first)
+	{
+		unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+		gen.seed(seed);
+		first=false;
+	}
+	return dist(gen);
+}
+
+double rolld(double low, double high)
+{
+	static std::mt19937 gen;
+	static bool first=true;
+	std::uniform_real_distribution<double> dist(low,high);
 
 	if(first)
 	{
@@ -142,11 +175,11 @@ void Game::Start()
 	nav->SetAgentHeight(1.0);
 	nav->SetAgentRadius(1.0f);
 	nav->SetAgentMaxClimb(0.01);
-	nav->SetCellSize(0.1);
+	nav->SetCellSize(1.0);
 	nav->SetCellHeight(0.5);
 	nav->SetTileSize(64);
 
-	LoadLightingAndCamera(scene_, String("Objects"));
+	LoadLightingAndCamera(scene_, String("Areas/Test"));
 
 
 	for(unsigned int x=0; x<maze.getCellWidth(); ++x)
@@ -161,13 +194,14 @@ void Game::Start()
 			else type="A";
 
 			auto md=nd->CreateComponent<StaticModel>();
-			md->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
 			md->SetModel(cache->GetResource<Model>(String("Areas/Test/Models/Floor") + String(p) + String("_") + type + String(".mdl")));
+			//md->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
+			md->SetMaterial(cache->GetResource<Material>("Areas/Test/floormaterial.xml"));
 			md->SetCastShadows(true);
 
 			md=nd->CreateComponent<StaticModel>();
-			md->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
 			md->SetModel(cache->GetResource<Model>(String("Areas/Test/Models/Wall") + String(p) + String("_") + type + String(".mdl")));
+			md->SetMaterial(cache->GetResource<Material>("Areas/Test/wallmaterial.xml"));
 			md->SetCastShadows(true);
 
 			nd->SetPosition(Vector3(y*100, 0, x*100));
@@ -186,26 +220,28 @@ void Game::Start()
 	}
 */
 
-	Node *n_=scene_->CreateChild("Dude");
+	/*Node *n_=scene_->CreateChild("Dude");
 	{
 	auto ca=n_->CreateComponent<CrowdAgent>();
 	ca->SetRadius(1.0);
 	ca->SetHeight(2.0);
 	ca->SetMaxSpeed(30.0);
 	ca->SetMaxAccel(400.0);
+	ca->SetNavigationQuality(NAVIGATIONQUALITY_HIGH);
+	ca->SetNavigationPushiness(NAVIGATIONPUSHINESS_HIGH);
 
 
 	auto md=n_->CreateComponent<AnimatedModel>();
-	md->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
-	md->SetModel(cache->GetResource<Model>("Models/Body.mdl"));
+	md->SetModel(cache->GetResource<Model>("Objects/DungeonBot3000/Models/Body.mdl"));
+	md->SetMaterial(cache->GetResource<Material>("Objects/DungeonBot3000/Materials/drivewheel.xml"));
 	md->SetCastShadows(true);
 	md=n_->CreateComponent<AnimatedModel>();
+	md->SetModel(cache->GetResource<Model>("Objects/DungeonBot3000/Models/Carriage.mdl"));
 	md->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
-	md->SetModel(cache->GetResource<Model>("Models/Carriage.mdl"));
 	md->SetCastShadows(true);
 	md=n_->CreateComponent<AnimatedModel>();
+	md->SetModel(cache->GetResource<Model>("Objects/DungeonBot3000/Models/Turret.mdl"));
 	md->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
-	md->SetModel(cache->GetResource<Model>("Models/Turret.mdl"));
 	md->SetCastShadows(true);
 
 	auto rb=md->GetSkeleton().GetBone("LBlade");
@@ -213,7 +249,7 @@ void Game::Start()
 	{
 		Node *bl=rb->node_->CreateChild();
 		auto smd=bl->CreateComponent<StaticModel>();
-		smd->SetModel(cache->GetResource<Model>("Models/Blade.mdl"));
+		smd->SetModel(cache->GetResource<Model>("Objects/DungeonBot3000/Models/Blade.mdl"));
 		smd->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
 	}
 
@@ -222,13 +258,73 @@ void Game::Start()
 	{
 		Node *bl=rb->node_->CreateChild();
 		auto smd=bl->CreateComponent<StaticModel>();
-		smd->SetModel(cache->GetResource<Model>("Models/Blade.mdl"));
+		smd->SetModel(cache->GetResource<Model>("Objects/DungeonBot3000/Models/Blade.mdl"));
 		smd->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
 	}
+
+		auto cc=n_->CreateComponent<CombatController>();
+		if(cc) cc->SetObjectPath("Objects/DungeonBot3000");
+	}*/
+	XMLFile *file=cache->GetResource<XMLFile>("Objects/DungeonBot3000/object.xml");
+	Node *n_=scene_->InstantiateXML(file->GetRoot(), Vector3(0,0,0), Quaternion(0,Vector3(0,1,0)));
+	auto rb=n_->GetComponent<AnimatedModel>()->GetSkeleton().GetBone("LBlade");
+	if(rb)
+	{
+		Node *bl=rb->node_->CreateChild();
+		auto smd=bl->CreateComponent<StaticModel>();
+		smd->SetModel(cache->GetResource<Model>("Objects/DungeonBot3000/Models/Blade.mdl"));
+		smd->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
+	}
+
+	rb=n_->GetComponent<AnimatedModel>()->GetSkeleton().GetBone("RBlade");
+	if(rb)
+	{
+		Node *bl=rb->node_->CreateChild();
+		auto smd=bl->CreateComponent<StaticModel>();
+		smd->SetModel(cache->GetResource<Model>("Objects/DungeonBot3000/Models/Blade.mdl"));
+		smd->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
+	}
+
+
+
+	//BoundingBox bbox=scene_->GetBoundingBox();
+	for(unsigned int i=0; i<40; ++i)
+	{
+		Node *en=scene_->CreateChild();
+		auto ca=en->CreateComponent<CrowdAgent>();
+		ca->SetRadius(1.0);
+		ca->SetHeight(2.0);
+		ca->SetMaxSpeed(rollf(20.0f, 30.0f));
+		ca->SetMaxAccel(400.0);
+		ca->SetNavigationQuality(NAVIGATIONQUALITY_HIGH);
+		ca->SetNavigationPushiness(NAVIGATIONPUSHINESS_MEDIUM);
+
+		auto md=en->CreateComponent<AnimatedModel>();
+		md->SetModel(cache->GetResource<Model>("Objects/Dude/Models/dude-base.mdl"));
+		md->SetMaterial(cache->GetResource<Material>("Objects/Dude/Materials/skin.xml"));
+		md->SetCastShadows(true);
+		md=en->CreateComponent<AnimatedModel>();
+		md->SetModel(cache->GetResource<Model>("Objects/Dude/Models/dude-male_casualsuit04.mdl"));
+		md->SetMaterial(cache->GetResource<Material>("Objects/Dude/Materials/clothes.xml"));
+		md->SetCastShadows(true);
+
+		float x=rollf(0.0f,1000.0f);
+		float z=rollf(0.0f,1000.0f);
+
+		Vector3 pos=nav->MoveAlongSurface(Vector3(0,0,0), Vector3(x,0,z));
+		pos.y_=0;
+		en->SetPosition(pos);
+
+		dudes_.push_back(en);
+		auto ac=en->CreateComponent<AnimationController>();
+		ac->Play("Objects/DungeonBot3000/Models/Walk.ani", 0, true, 0.0f);
+
+		auto cc=en->CreateComponent<CombatController>();
+		if(cc) cc->SetObjectPath("Objects/DungeonBot3000");
 	}
 
 	auto ac=n_->CreateComponent<AnimationController>();
-	ac->Play("Models/Idle.ani", 0, true, 0.0f);
+	ac->Play("Objects/DungeonBot3000/Models/Walk.ani", 0, true, 0.0f);
 
 }
 
@@ -293,7 +389,7 @@ void Game::HandleKeyDown(StringHash eventType, VariantMap& eventData)
     else if (key == KEY_F2)
         GetSubsystem<DebugHud>()->ToggleAll();
 
-    else if (key == '9')
+    else if (key == KEY_PRINTSCREEN)
     {
         Graphics* graphics = GetSubsystem<Graphics>();
         Image screenshot(context_);
@@ -316,46 +412,17 @@ void Game::HandleUpdate(StringHash eventType, VariantMap &eventData)
 	float dt=eventData[TimeStep].GetFloat();
 
 	auto input=GetSubsystem<Input>();
-
 	auto cam=scene_->GetChild("Camera")->GetComponent<ThirdPersonCamera>();
-
-	/*float rot=cam->GetRotAngle();
-	Quaternion qrot(rot, Vector3(0,1,0));
-	Vector3 forward=(qrot*Vector3(0,0,1)) * 30.0f;
-	Vector3 right(forward.z_, 0, -forward.x_);
-
-	Vector3 old(x,0,z);
-	Vector3 nw(x,0,z);
-
-	if(input->GetKeyDown(KEY_W)) nw+=forward*dt;
-	if(input->GetKeyDown(KEY_S)) nw-=forward*dt;
-	if(input->GetKeyDown(KEY_A)) nw-=right*dt;
-	if(input->GetKeyDown(KEY_D)) nw+=right*dt;
-
-	Vector3 pt=scene_->GetComponent<DynamicNavigationMesh>()->MoveAlongSurface(old,nw);
-	x=pt.x_;
-	z=pt.z_;
-	pt.y_=0.0f;
-
-	scene_->GetChild("Dude")->SetPosition(pt);
-	//Log::Write(LOG_INFO, String("pt: ") + String(x) + "," + String(z));
-
-	//pt=Vector3(x,0,z);
-
-	VariantMap vm;
-	vm[position]=pt;
-	SendEvent(CameraSetPosition, vm);*/
-
-	IntVector2 mousepos;
+	/*IntVector2 mousepos;
 	if(input->IsMouseVisible()) mousepos=input->GetMousePosition();
 	else mousepos=context_->GetSubsystem<UI>()->GetCursorPosition();
 	Vector2 ground=cam->GetScreenGround(mousepos.x_,mousepos.y_);
-	if(input->GetMouseButtonDown(MOUSEB_LEFT) /*&& cam->PickGround(ground,mousepos.x_,mousepos.y_)*/)
+	if(input->GetMouseButtonDown(MOUSEB_LEFT) )
 	{
 		auto ca=scene_->GetChild("Dude")->GetComponent<CrowdAgent>();
 		ca->SetTargetPosition(Vector3(ground.x_,0,ground.y_));
-		Log::Write(LOG_INFO, String("Mousepos:") + String(mousepos.x_) + "," + String(mousepos.y_));
-		Log::Write(LOG_INFO, String("Groundpos:") + String(ground.x_) + "," + String(ground.y_));
+		//Log::Write(LOG_INFO, String("Mousepos:") + String(mousepos.x_) + "," + String(mousepos.y_));
+		//Log::Write(LOG_INFO, String("Groundpos:") + String(ground.x_) + "," + String(ground.y_));
 
 	}
 	else
@@ -363,6 +430,12 @@ void Game::HandleUpdate(StringHash eventType, VariantMap &eventData)
 		auto dd=scene_->GetChild("Dude");
 		auto ca=dd->GetComponent<CrowdAgent>();
 		//ca->SetTargetPosition(dd->GetPosition());
+	}*/
+
+	for(auto i : dudes_)
+	{
+		auto *ca=i->GetComponent<CrowdAgent>();
+		ca->SetTargetPosition(scene_->GetChild("Dude")->GetPosition()+Vector3(rollf(-8.0f,8.0f),0,rollf(-8.0f,8.0f)));
 	}
 
 	VariantMap vm;

@@ -2,6 +2,8 @@
 #include <Urho3D/Scene/Scene.h>
 #include <Urho3D/Scene/Node.h>
 
+#include <vector>
+
 // All Urho3D classes reside in namespace Urho3D
 using namespace Urho3D;
 
@@ -29,6 +31,8 @@ class Game : public Application
 
 	SharedPtr<Scene> scene_;
 	SharedPtr<Node> test_;
+
+	std::vector<Node *> dudes_;
 
 	float x,z;
 };
