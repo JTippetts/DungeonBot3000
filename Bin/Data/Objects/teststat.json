@@ -1,4 +1,8 @@
 {
 	"TestStat1": [["Flat", "8"]],
-	"TestStat2": [["Flat", "spread(TestStat1, 2, 10)"]]
+	"TestStat2": [["Flat", "spread(TestStat1, 2, 10)"]],
+
+	"IncreasedPhysical": [["Flat", "0.5"]],
+	"PhysicalAsExtraBurn": [["Flat", "0.2"]],
+	"MoreBurn": [["Flat", "0.1"]]
 }

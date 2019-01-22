@@ -1,41 +1,15 @@
 #include "combat.h"
-#include <vector>
-#include <string>
 
 double rolld(double low, double high);
 
-enum DamageTypes
-{
-	DPhysical,
-	DBurn,
-	DElectrical,
-	DNumTypes
-};
 
-static std::vector<std::string> DamageNames
+
+std::vector<std::string> DamageNames
 {
 	"Physical",
 	"Burn",
 	"Electrical"
 };
-
-struct DamageRange
-{
-	int type_;
-	double low_, high_;
-
-	DamageRange(int type, double low, double high) : type_(type), low_(low), high_(high){}
-};
-using DamageRangeList=std::vector<DamageRange>;
-
-struct DamageValue
-{
-	int type_;
-	double value_;
-
-	DamageValue(int type, double val) : type_(type), value_(val){}
-};
-using DamageValueList=std::vector<DamageValue>;
 
 void BoostDamage(StatSetCollection &attacker, DamageValue &damage)
 {

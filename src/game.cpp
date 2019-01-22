@@ -47,6 +47,7 @@
 #include "Components/combatcontroller.h"
 
 #include "maze.h"
+#include "combat.h"
 
 float roll(int low, int high)
 {
@@ -144,10 +145,19 @@ void Game::Start()
 	StatSetCollection sc;
 	sc.push_back(&stats);
 
-	String st=String("TestStat1: ") + String(GetStatValue(sc, "TestStat1"));
-	Log::Write(LOG_INFO, st);
-	st=String("TestStat2: ") + String(GetStatValue(sc, "TestStat2"));
-	Log::Write(LOG_INFO, st);
+	StatSet physatt;
+	physatt.AddMod("PhysicalLow", StatModifier::FLAT, "20");
+	physatt.AddMod("PhysicalHigh", StatModifier::FLAT, "400");
+
+	sc.push_back(&physatt);
+
+	DamageValueList dmg=BuildDamageList(sc);
+
+	for(auto i : dmg)
+	{
+		Log::Write(LOG_INFO, String("Damage ") + String(DamageNames[i.type_].c_str()) + ": " + String(i.value_));
+	}
+
 
 	MazeGenerator maze;
 
@@ -286,45 +296,18 @@ void Game::Start()
 	}
 
 
-
-	//BoundingBox bbox=scene_->GetBoundingBox();
 	for(unsigned int i=0; i<40; ++i)
 	{
-		Node *en=scene_->CreateChild();
-		auto ca=en->CreateComponent<CrowdAgent>();
-		ca->SetRadius(1.0);
-		ca->SetHeight(2.0);
-		ca->SetMaxSpeed(rollf(20.0f, 30.0f));
-		ca->SetMaxAccel(400.0);
-		ca->SetNavigationQuality(NAVIGATIONQUALITY_HIGH);
-		ca->SetNavigationPushiness(NAVIGATIONPUSHINESS_MEDIUM);
-
-		auto md=en->CreateComponent<AnimatedModel>();
-		md->SetModel(cache->GetResource<Model>("Objects/Dude/Models/dude-base.mdl"));
-		md->SetMaterial(cache->GetResource<Material>("Objects/Dude/Materials/skin.xml"));
-		md->SetCastShadows(true);
-		md=en->CreateComponent<AnimatedModel>();
-		md->SetModel(cache->GetResource<Model>("Objects/Dude/Models/dude-male_casualsuit04.mdl"));
-		md->SetMaterial(cache->GetResource<Material>("Objects/Dude/Materials/clothes.xml"));
-		md->SetCastShadows(true);
-
 		float x=rollf(0.0f,1000.0f);
 		float z=rollf(0.0f,1000.0f);
 
 		Vector3 pos=nav->MoveAlongSurface(Vector3(0,0,0), Vector3(x,0,z));
 		pos.y_=0;
-		en->SetPosition(pos);
-
-		dudes_.push_back(en);
-		auto ac=en->CreateComponent<AnimationController>();
-		ac->Play("Objects/DungeonBot3000/Models/Walk.ani", 0, true, 0.0f);
-
-		auto cc=en->CreateComponent<CombatController>();
-		if(cc) cc->SetObjectPath("Objects/DungeonBot3000");
+		XMLFile *xfile=cache->GetResource<XMLFile>("Objects/Mobs/User/object.xml");
+		Node *n=scene_->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
+		auto ca=n->GetComponent<CrowdAgent>();
+		ca->SetMaxSpeed(rollf(20.0f, 30.0f));
 	}
-
-	auto ac=n_->CreateComponent<AnimationController>();
-	ac->Play("Objects/DungeonBot3000/Models/Walk.ani", 0, true, 0.0f);
 
 }
 
@@ -411,37 +394,9 @@ void Game::HandleUpdate(StringHash eventType, VariantMap &eventData)
 	static StringHash TimeStep("TimeStep"), CameraSetPosition("CameraSetPosition"), position("position");
 	float dt=eventData[TimeStep].GetFloat();
 
-	auto input=GetSubsystem<Input>();
-	auto cam=scene_->GetChild("Camera")->GetComponent<ThirdPersonCamera>();
-	/*IntVector2 mousepos;
-	if(input->IsMouseVisible()) mousepos=input->GetMousePosition();
-	else mousepos=context_->GetSubsystem<UI>()->GetCursorPosition();
-	Vector2 ground=cam->GetScreenGround(mousepos.x_,mousepos.y_);
-	if(input->GetMouseButtonDown(MOUSEB_LEFT) )
-	{
-		auto ca=scene_->GetChild("Dude")->GetComponent<CrowdAgent>();
-		ca->SetTargetPosition(Vector3(ground.x_,0,ground.y_));
-		//Log::Write(LOG_INFO, String("Mousepos:") + String(mousepos.x_) + "," + String(mousepos.y_));
-		//Log::Write(LOG_INFO, String("Groundpos:") + String(ground.x_) + "," + String(ground.y_));
-
-	}
-	else
-	{
-		auto dd=scene_->GetChild("Dude");
-		auto ca=dd->GetComponent<CrowdAgent>();
-		//ca->SetTargetPosition(dd->GetPosition());
-	}*/
-
-	for(auto i : dudes_)
-	{
-		auto *ca=i->GetComponent<CrowdAgent>();
-		ca->SetTargetPosition(scene_->GetChild("Dude")->GetPosition()+Vector3(rollf(-8.0f,8.0f),0,rollf(-8.0f,8.0f)));
-	}
-
 	VariantMap vm;
 	vm[position]=scene_->GetChild("Dude")->GetPosition();
 	SendEvent(CameraSetPosition, vm);
-	//else Log::Write(LOG_INFO, "No pick");
 }
 
 URHO3D_DEFINE_APPLICATION_MAIN(Game)

@@ -25,15 +25,18 @@
 		<attribute name="Cast Shadows" value="true" />
 
 	</component>
+	<component type="AnimationController" >
+	</component>
 	<component type="CrowdAgent" id="16777231">
 		<attribute name="Max Accel" value="400" />
 		<attribute name="Max Speed" value="30" />
 		<attribute name="Radius" value="1" />
 		<attribute name="Height" value="2" />
-		<attribute name="Navigation Pushiness" value="High" />
+		<attribute name="Navigation Pushiness" value="Medium" />
 	</component>
 	<component type="CombatController" id="16777232">
 		<attribute name="Object Path" value="Objects/DungeonBot3000" />
+		<attribute name="Animation Path" value="Objects/DungeonBot3000" />
 	</component>
 	<component type="PlayerController" >
 	</component>

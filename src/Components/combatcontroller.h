@@ -21,6 +21,8 @@ class CombatController : public LogicComponent
 
 	void SetObjectPath(String op);
 	const String GetObjectPath() const;
+	void SetAnimPath(String ap);
+	const String GetAnimPath() const;
 
 	void MoveTo(Vector3 target);
 	void SetPushiness(NavigationPushiness pushy);
@@ -29,5 +31,5 @@ class CombatController : public LogicComponent
 	virtual void Update(float dt) override;
 	void HandleCrowdAgentReposition(StringHash eventType, VariantMap &eventData);
 
-	String objectpath_;
+	String objectpath_, animpath_;
 };

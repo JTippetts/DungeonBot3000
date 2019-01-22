@@ -1,17 +1,17 @@
 {
-	{"MaximumLife": [
+	"MaximumLife": [
 		["Flat", "Exp": "15+Level*5"],
-	]},
+	],
 
-	{"Energy": [
+	"Energy": [
 		["Flat", "100"},
-	]},
+	],
 
-	{"LifeRegen": [
+	"LifeRegen": [
 		["Flat", "0.01"]
-	]},
+	],
 
-	{"EnergyGen": [
+	"EnergyGen": [
 		["Flat", "1"]
-	]}
+	]
 }

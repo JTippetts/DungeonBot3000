@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<node>
+	<attribute name="Is Enabled" value="true" />
+	<attribute name="Name" value="User" />
+	<attribute name="Tags" />
+	<attribute name="Position" value="0 0 0" />
+	<attribute name="Rotation" value="1 0 0 0" />
+	<attribute name="Scale" value="1 1 1" />
+	<attribute name="Variables" />
+	<component type="AnimatedModel">
+		<attribute name="Model" value="Model;Objects/Mobs/Common/Models/skinny-base.mdl" />
+		<attribute name="Material" value="Material;Objects/Mobs/Common/Materials/lightskin.xml" />
+		<attribute name="Cast Shadows" value="true" />
+	</component>
+	<component type="AnimatedModel">
+		<attribute name="Model" value="Model;Objects/Mobs/Common/Models/skinny-whiteshirt.mdl" />
+		<attribute name="Material" value="Material;Objects/Mobs/Common/Materials/whiteshirt.xml" />
+		<attribute name="Cast Shadows" value="true" />
+	</component>
+	<component type="AnimationController">
+	</component>
+	<component type="CrowdAgent">
+		<attribute name="Max Accel" value="400" />
+		<attribute name="Max Speed" value="30" />
+		<attribute name="Radius" value="1" />
+		<attribute name="Height" value="2" />
+		<attribute name="Navigation Pushiness" value="Low" />
+		<attribute name="Navigation Quality" value="High" />
+	</component>
+	<component type="CombatController">
+		<attribute name="Object Path" value="Objects/Mobs/User" />
+		<attribute name="Animation Path" value="Objects/Mobs/Common" />
+	</component>
+	<component type="StupidChaseController" >
+	</component>
+</node>

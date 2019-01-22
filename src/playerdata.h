@@ -23,7 +23,7 @@ class PlayerData : public Object
 	}
 	Node *GetPlayerNode()
 	{
-		return playernode_->Get();
+		return playernode_.Get();
 	}
 
 	protected:
