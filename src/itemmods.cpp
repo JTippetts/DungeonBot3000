@@ -1,0 +1,249 @@
+#include "itemmods.h"
+#include "jsonutil.h"
+#include <Urho3D/IO/Log.h>
+
+double rolld(double low, double high);
+
+ItemModTable::ItemModTable()
+{
+}
+
+void ItemModTable::LoadJSON(const JSONValue &json)
+{
+	StringHasherType StringHasher;
+	if(!json.IsObject())
+	{
+		Log::Write(LOG_ERROR, "JSON file not an object");
+		return; // Needs to be an object
+	}
+
+	mods_.clear();
+
+	const JSONObject &obj=json.GetObject();
+	// Object with name: descriptor
+	for(auto i=obj.Begin(); i!=obj.End(); ++i)
+	{
+		std::string name=i->first_.CString();
+		const JSONValue &val=i->second_;
+		if(val.IsArray())
+		{
+			// Array with [description, statset]
+			const JSONArray &arr=val.GetArray();
+			if(arr.Size()>=3)
+			{
+				String designation=arr[1].GetString();
+				ItemModDesignation desig=IMImplicit;
+				if(designation=="Local") desig=IMLocal;
+				else if(designation=="Global") desig=IMGlobal;
+
+				String desc=arr[1].GetString();
+				const JSONValue &ss=arr[2];
+				if(ss.IsObject())
+				{
+					const JSONObject &sso=ss.GetObject();
+					StatSet statset;
+					statset.LoadJSON(sso);
+					mods_[name]=ItemModEntry(desc,statset,desig);
+					Log::Write(LOG_INFO, String("Loaded item mod ") + String(name.c_str()) + ": " + desc);
+				}
+				else
+				{
+				}
+			}
+		}
+		else
+		{
+			Log::Write(LOG_ERROR, "Error");
+		}
+	}
+}
+
+ItemModEntry *ItemModTable::GetMod(const std::string &name)
+{
+	auto seti = mods_.find(name);
+	if(seti != mods_.end())
+	{
+		return &seti->second;
+	}
+	return nullptr;
+}
+
+ItemModEntry *ItemModTable::GetMod(const String &name)
+{
+	std::string nm(name.CString());
+	auto seti = mods_.find(nm);
+	if(seti != mods_.end())
+	{
+		return &seti->second;
+	}
+	return nullptr;
+}
+
+ItemModTierTable::ItemModTierTable()
+{
+}
+
+void ItemModTierTable::LoadJSON(const JSONValue &json)
+{
+	// Format
+	// Object {
+	// Weighting: Number
+	// Tables: Array
+	//    Object {
+	//		Level: Number (minimum level it can appear)
+	//      Mods: Array
+	//			String (name of mod in master mod list)
+
+	if(json.IsObject())
+	{
+		const JSONObject &obj=json.GetObject();
+		weighting_=GetDoubleFromJSONObject("Weighting", obj);
+		const JSONValue *tables=obj[String("Tables")];
+		if(tables)
+		{
+			if(tables->IsArray())
+			{
+				const JSONArray &tablesarray=tables->GetArray();
+				for(unsigned int entry=0; entry<tablesarray.Size(); ++entry)
+				{
+					const JSONValue &tableentry=tablesarray[entry];
+					if(tableentry.IsObject())
+					{
+						const JSONObject &entryobject=tableentry.GetObject();
+						int minlevel=(int)GetDoubleFromJSONObject(String("Level"),entryobject);
+						const JSONValue *mods=entryobject[String("Mods")];
+						if(mods)
+						{
+							if(mods->IsArray())
+							{
+								const JSONArray &modlist=mods->GetArray();
+								ItemModTierSet tierset;
+								tierset.minlevel_=minlevel;
+								for(unsigned int ml=0; ml<modlist.Size(); ++ml)
+								{
+									tierset.modlist_.push_back(modlist[ml].GetString());
+								}
+								table_.push_back(tierset);
+							}
+							else
+							{
+								Log::Write(LOG_ERROR, "ItemModifierTiersTable Tables entry Mod list must be an array");
+							}
+						}
+						else
+						{
+							Log::Write(LOG_ERROR, "ItemModifierTiersTable Tables entry Mod list does not exist.");
+						}
+					}
+					else
+					{
+						Log::Write(LOG_ERROR, "ItemModifierTiersTable Tables entry must be an object");
+					}
+				}
+			}
+			else
+			{
+				Log::Write(LOG_ERROR, "ItemModTiersTable Tables must be an array");
+			}
+		}
+		else
+		{
+			Log::Write(LOG_ERROR, "ItemModTiersTable Tables entry does not exist.");
+		}
+	}
+	else
+	{
+		Log::Write(LOG_ERROR, "ItemModTiersTable entry must be an object.");
+	}
+}
+
+String ItemModTierTable::Choose(int level)
+{
+	// Iterate until the highest minlevel is found that is still less than or equal to level
+	int highest=-1;
+	for(unsigned int i=0; i<table_.size(); ++i)
+	{
+		Log::Write(LOG_INFO, String(table_[i].minlevel_));
+		if(table_[i].minlevel_ <= level) highest=i;
+	}
+
+	Log::Write(LOG_INFO, String("Highest tier level available: ") + String(highest));
+
+	if(highest==-1)
+	{
+		// No mod table found for that level
+		return String("");
+	}
+
+	int numentries=table_[highest].modlist_.size();
+
+	Log::Write(LOG_INFO, String("numentries: ") + String(numentries));
+	std::vector<double> weights;
+	double total=0.0;
+
+	for(int i=0; i<numentries; ++i)
+	{
+		double wt=std::pow((double)i, weighting_);
+		weights.push_back(wt);
+		total += wt;
+	}
+
+	double rl=rolld(0.0, total);
+
+	for(int i=numentries-1; i>=0; --i)
+	{
+		if(weights[i]<=rl)
+		{
+			return table_[highest].modlist_[i];
+		}
+	}
+
+	// No mod found
+	return String("");
+}
+
+
+ItemModTiers::ItemModTiers()
+{
+}
+
+void ItemModTiers::LoadJSON(const JSONValue &json)
+{
+	if(json.IsObject())
+	{
+		const JSONObject &obj=json.GetObject();
+		for(auto i=obj.Begin(); i!=obj.End(); ++i)
+		{
+			std::string name=i->first_.CString();
+			Log::Write(LOG_INFO, String("Loading tier group ") + i->first_);
+			const JSONValue &val=i->second_;
+			ItemModTierTable md;
+			md.LoadJSON(val);
+			map_[name]=md;
+		}
+	}
+	else
+	{
+		Log::Write(LOG_ERROR, "ItemModTiers file must be an object.");
+	}
+}
+
+String ItemModTiers::Choose(const String &which, int level)
+{
+	return Choose(std::string(which.CString()), level);
+}
+
+String ItemModTiers::Choose(const std::string &which, int level)
+{
+	auto i = map_.find(which);
+	if(i != map_.end())
+	{
+		Log::Write(LOG_INFO, String("Choosing from tier group ") + String(which.c_str()));
+		return i->second.Choose(level);
+	}
+	else
+	{
+		Log::Write(LOG_ERROR, String("Attempt to request mod tier group ") + String(which.c_str()) + " which does not exist.");
+		return String("");
+	}
+}

@@ -59,6 +59,8 @@ class StatSet
 	void RemoveMod(std::string stat, StatModifierHandle mod);
 	void RemoveMod(StringHashType stat, StatModifierHandle mod);
 
+	void Merge(const StatSet &rhs);
+
 	void LoadJSON(const Urho3D::JSONValue &json);
 
 	void ConcatenateStat(Stat &stat, std::string name) const;

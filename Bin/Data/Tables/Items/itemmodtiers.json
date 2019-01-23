@@ -1,0 +1,26 @@
+{
+	"PhysicalDamageLocalTiers": {
+		"Weighting": 2,
+		"Tables": [
+			{"Level": 1, "Mods": ["Cruel"]},
+			{"Level": 5, "Mods": ["Barbarous", "Cruel"]},
+			{"Level": 10, "Mods": ["Brutal", "Barbarous", "Cruel"]},
+		]
+	},
+	"LifeRegenTiers": {
+		"Weighting": 2,
+		"Tables": [
+			{"Level": 1, "Mods": ["Replenishing"]},
+			{"Level": 5, "Mods": ["Revitalizing", "Replenishing"]},
+			{"Level": 10, "Mods": ["Invigorating", "Revitalizing", "Replenishing"]},
+		]
+	},
+	"EnergyGenTiers":  {
+		"Weighting": 2,
+		"Tables": [
+			{"Level": 1, "Mods": ["Energizing"]},
+			{"Level": 5, "Mods": ["Galvanizing", "Energizing"]},
+			{"Level": 10, "Mods": ["Overcharging", "Galvanizing", "Energizing"]},
+		]
+	},
+}

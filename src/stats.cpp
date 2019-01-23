@@ -266,6 +266,17 @@ void StatSet::LoadJSON(const Urho3D::JSONValue &json)
 	}
 }
 
+void StatSet::Merge(const StatSet &rhs)
+{
+	for(auto i : rhs.stats_)
+	{
+		for(auto j : i.second)
+		{
+			AddMod(i.first, j);
+		}
+	}
+}
+
 void StatSet::ConcatenateStat(Stat &stat, std::string name) const
 {
 	static StringHasherType hasher;

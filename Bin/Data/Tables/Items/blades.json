@@ -1,0 +1,24 @@
+{
+	"Starter Blade": {
+		"MinLevel": 0,
+		"MaxLevel": 0,
+		"Fixed": ["StarterBladeImplicit"],
+	},
+
+	"Aluminum Blade": {
+		"MinLevel": 1,
+		"Fixed": ["AluminumBladeImplicit"],
+		"Random": ["PhysicalDamageLocalTiers", "LifeRegenTiers", "EnergyGenTiers"]}
+	},
+
+	"Steel Blade": {
+		"MinLevel": 8,
+		"Fixed": ["SteelBladeImplicit"],
+		"Random": ["PhysicalDamageLocalTiers", "LifeRegenTiers", "EnergyGenTiers"]}
+	},
+
+	"Infernal Blade": {
+		"MinLevel": 12,
+		"Fixed": ["InfernalBladePhysicalImplicit", "InfernalBladeBurnImplicit", "Barbarous", "Fiery", "Infernal", "Overcharging"]
+	},
+}

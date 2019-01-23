@@ -46,6 +46,8 @@
 #include "Components/thirdpersoncamera.h"
 #include "Components/combatcontroller.h"
 
+#include "playerdata.h"
+
 #include "maze.h"
 #include "combat.h"
 
@@ -126,6 +128,20 @@ void Game::Start()
     SubscribeToEvent(E_KEYUP, URHO3D_HANDLER(Game, HandleKeyUp));
 	SubscribeToEvent(StringHash("PostRenderUpdate"), URHO3D_HANDLER(Game, HandlePostRenderUpdate));
 	SubscribeToEvent(StringHash("Update"), URHO3D_HANDLER(Game, HandleUpdate));
+
+	context_->RegisterSubsystem(new PlayerData(context_));
+
+	auto pd=context_->GetSubsystem<PlayerData>();
+	if(pd)
+	{
+		pd->LoadItemModTable("Tables/Items/itemmods.json");
+		pd->LoadItemModTiers("Tables/Items/itemmodtiers.json");
+
+		for(unsigned int i=0; i<20; ++i)
+		{
+			Log::Write(LOG_INFO, String("Choose: ") + pd->GetItemModTiers().Choose(std::string("LifeRegenTiers"), 12));
+		}
+	}
 
 	ResourceCache* cache = GetSubsystem<ResourceCache>();
 	UI *ui=GetSubsystem<UI>();
@@ -221,60 +237,7 @@ void Game::Start()
 
 	nav->Build();
 
-	/*test_=scene_->CreateChild();
-	{
-	auto md=test_->CreateComponent<StaticModel>();
-	md->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
-	md->SetModel(cache->GetResource<Model>("Models/Plane.mdl"));
-	md->SetCastShadows(true);
-	}
-*/
 
-	/*Node *n_=scene_->CreateChild("Dude");
-	{
-	auto ca=n_->CreateComponent<CrowdAgent>();
-	ca->SetRadius(1.0);
-	ca->SetHeight(2.0);
-	ca->SetMaxSpeed(30.0);
-	ca->SetMaxAccel(400.0);
-	ca->SetNavigationQuality(NAVIGATIONQUALITY_HIGH);
-	ca->SetNavigationPushiness(NAVIGATIONPUSHINESS_HIGH);
-
-
-	auto md=n_->CreateComponent<AnimatedModel>();
-	md->SetModel(cache->GetResource<Model>("Objects/DungeonBot3000/Models/Body.mdl"));
-	md->SetMaterial(cache->GetResource<Material>("Objects/DungeonBot3000/Materials/drivewheel.xml"));
-	md->SetCastShadows(true);
-	md=n_->CreateComponent<AnimatedModel>();
-	md->SetModel(cache->GetResource<Model>("Objects/DungeonBot3000/Models/Carriage.mdl"));
-	md->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
-	md->SetCastShadows(true);
-	md=n_->CreateComponent<AnimatedModel>();
-	md->SetModel(cache->GetResource<Model>("Objects/DungeonBot3000/Models/Turret.mdl"));
-	md->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
-	md->SetCastShadows(true);
-
-	auto rb=md->GetSkeleton().GetBone("LBlade");
-	if(rb)
-	{
-		Node *bl=rb->node_->CreateChild();
-		auto smd=bl->CreateComponent<StaticModel>();
-		smd->SetModel(cache->GetResource<Model>("Objects/DungeonBot3000/Models/Blade.mdl"));
-		smd->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
-	}
-
-	rb=md->GetSkeleton().GetBone("RBlade");
-	if(rb)
-	{
-		Node *bl=rb->node_->CreateChild();
-		auto smd=bl->CreateComponent<StaticModel>();
-		smd->SetModel(cache->GetResource<Model>("Objects/DungeonBot3000/Models/Blade.mdl"));
-		smd->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
-	}
-
-		auto cc=n_->CreateComponent<CombatController>();
-		if(cc) cc->SetObjectPath("Objects/DungeonBot3000");
-	}*/
 	XMLFile *file=cache->GetResource<XMLFile>("Objects/DungeonBot3000/object.xml");
 	Node *n_=scene_->InstantiateXML(file->GetRoot(), Vector3(0,0,0), Quaternion(0,Vector3(0,1,0)));
 	auto rb=n_->GetComponent<AnimatedModel>()->GetSkeleton().GetBone("LBlade");

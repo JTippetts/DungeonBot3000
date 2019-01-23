@@ -1,0 +1,73 @@
+{
+	"Replenishing":["Global", "Increase life regeneration by 5%.", {
+		"LifeRegen": [["Flat", "0.05"]]
+	}],
+
+	"Revitalizing":["Global", "Increase life regeneration by 10%.", {
+		"LifeRegen": [["Flat", "0.10"]]
+	}],
+
+	"Invigorating":["Global", "Increase life regeneration by 15%.", {
+		"LifeRegen": [["Flat", "0.15"]]
+	}],
+
+	"Energizing":["Global", "Increase energy generation by 5%.", {
+		"EnergyGen": [["Flat", "0.05"]]
+	}],
+
+	"Galvanizing":["Global", "Increase energy generation by 10%.", {
+		"EnergyGen": [["Flat", "0.10"]]
+	}],
+
+	"Overcharging":["Global", "Increase energy generation by 15%.", {
+		"EnergyGen": [["Flat", "0.10"]]
+	}],
+
+	"Cruel":["Local", "Increase physical damage by 10 to 15.", {
+		"PhysicalLow": [["Flat", "10"]],
+		"PhysicalHigh": [["Flat", "15"]]
+	}],
+
+	"Barbarous":["Local", "Increase physical damage by 20 to 35.", {
+		"PhysicalLow": [["Flat", "20"]],
+		"PhysicalHigh": [["Flat", "35"]]
+	}],
+
+	"Brutal":["Local", "Increase physical damage by 40 to 65.", {
+		"PhysicalLow": [["Flat", "40"]],
+		"PhysicalHigh": [["Flat", "65"]]
+	}],
+
+	"Fiery": ["Local", "Convert 50% of physical damage to fire.", {
+		"PhysicalAsFire": [["Flat", "0.5"]]
+	}],
+
+	"Infernal": ["Global", "Increase fire damage by 100%.", {
+		"IncreasedFireDamage": [["Flat", "1.0"]]
+	}],
+
+	"StarterBladeImplicit":["Implicit", "Damage: 4 to 8", {
+		"PhysicalLow": [["Flat", "4"]],
+		"PhysicalHigh": [["Flat", "8"]]
+	}],
+
+	"AluminumBladeImplicit":["Implicit", "Damage: 10 to 12", {
+		"PhysicalLow": [["Flat", "10"]],
+		"PhysicalHigh": [["Flat", "12"]]
+	}],
+
+	"SteelBladeImplicit":["Implicit", "Damage: 20 to 50", {
+		"PhysicalLow": [["Flat", "20"]],
+		"PhysicalHigh": [["Flat", "50"]]
+	}],
+
+	"InfernalBladePhysicalImplicit":["Implicit", "Damage: 20 to 50", {
+		"PhysicalLow": [["Flat", "20"]],
+		"PhysicalHigh": [["Flat", "50"]]
+	}],
+
+	"InfernalBladeBurnImplicit":["Implicit", "Fire Damage: 20 to 50", {
+		"BurnLow": [["Flat", "20"]],
+		"BurnHigh": [["Flat", "50"]]
+	}],
+}
