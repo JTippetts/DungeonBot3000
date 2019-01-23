@@ -395,3 +395,12 @@ double EvaluateStatMod(const StatSetCollection &stats, const StatModifier &mod)
 
     return stk.top();
 }
+
+StatSetCollectionSnapshot::StatSetCollectionSnapshot(const StatSetCollection &collection) : statsets_(collection.size()), collection_(collection)
+{
+	unsigned int i=0;
+	for(auto ss : collection)
+	{
+		statsets_[i++]=*ss;
+	}
+}

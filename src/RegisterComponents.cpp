@@ -6,6 +6,7 @@
 #include "Components/combatcontroller.h"
 #include "Components/playercontroller.h"
 #include "Components/stupidchasecontroller.h"
+#include "Components/vitals.h"
 
 void RegisterCustomComponents(Context *context)
 {
@@ -15,4 +16,5 @@ void RegisterCustomComponents(Context *context)
 	CombatController::RegisterObject(context);
 	PlayerController::RegisterObject(context);
 	StupidChaseController::RegisterObject(context);
+	PlayerVitals::RegisterObject(context);
 }

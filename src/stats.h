@@ -72,6 +72,14 @@ class StatSet
 
 using StatSetCollection = std::vector<StatSet*>;
 
+struct StatSetCollectionSnapshot
+{
+	std::vector<StatSet> statsets_;
+	StatSetCollection collection_;
+
+	StatSetCollectionSnapshot(const StatSetCollection &collection);
+};
+
 double GetStatValue(const StatSetCollection &stats, std::string stat);
 double GetStatValue(const StatSetCollection &stats, StringHashType stat);
 double EvaluateStatMod(const StatSetCollection &stats, const StatModifier &mod);

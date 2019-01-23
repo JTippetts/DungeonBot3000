@@ -25,6 +25,27 @@ void BoostDamage(StatSetCollection &attacker, DamageValue &damage)
 	damage.value_ = std::max(0.0,damage.value_ * increased * more);
 }
 
+void BoostIncomingDamage(StatSetCollection &defender, DamageValue &damage)
+{
+	double increased=1.0+GetStatValue(defender, "IncreasedDamageTaken");
+	increased += GetStatValue(defender, "Increased" + DamageNames[damage.type_] + "DamageTaken");
+	if(damage.type_==DBurn || damage.type_==DElectrical) increased += GetStatValue(defender, "IncreasedElementalDamageTaken");
+
+	increased -= GetStatValue(defender, "DecreasedDamageTaken");
+	increased -= GetStatValue(defender, "Decreased" + DamageNames[damage.type_] + "DamageTaken");
+	if(damage.type_==DBurn || damage.type_==DElectrical) increased -= GetStatValue(defender, "DecreasedElementalDamageTaken");
+
+	double more=1.0+GetStatValue(defender, "MoreDamageTaken");
+	more *= 1.0 + GetStatValue(defender, "More" + DamageNames[damage.type_] + "DamageTaken");
+	if(damage.type_==DBurn || damage.type_==DElectrical) more *= 1.0 + GetStatValue(defender, "MoreElementalDamageTaken");
+
+	more *= 1.0 - GetStatValue(defender, "LessDamageTaken");
+	more *= 1.0 - GetStatValue(defender, "Less" + DamageNames[damage.type_] + "DamageTaken");
+	if(damage.type_==DBurn || damage.type_==DElectrical) more *= 1.0 - GetStatValue(defender, "LessElementalDamageTaken");
+
+	damage.value_ = std::max(0.0,damage.value_ * increased * more);
+}
+
 void ConvertDamage(StatSetCollection &attacker, DamageValueList &out, DamageValue &damage, int level)
 {
 	BoostDamage(attacker, damage);
@@ -66,6 +87,47 @@ void ConvertDamage(StatSetCollection &attacker, DamageValueList &out, DamageValu
 	out.push_back(td);
 }
 
+void ConvertIncomingDamage(StatSetCollection &defender, DamageValueList &out, DamageValue &damage, int level)
+{
+	BoostIncomingDamage(defender, damage);
+	if(level<0) return;
+	double conversion=1.0;
+	DamageValue td=damage;
+
+	// Damage conversions
+	for(int d=DPhysical; d<DNumTypes; ++d)
+	{
+		if(d!=damage.type_)
+		{
+			double convamount=GetStatValue(defender, DamageNames[damage.type_] + "TakenAs" + DamageNames[d]);
+			if(convamount>0.0)
+			{
+				convamount=std::min(conversion,convamount); // Don't allow conversion to overflow for extra damage
+				conversion-=convamount;
+				DamageValue newd(d, td.value_ * convamount);
+				td.value_ -= td.value_ * convamount;
+				ConvertIncomingDamage(defender, out, newd, level-1);
+			}
+		}
+	}
+
+	//Extra damages
+	for(int d=DPhysical; d<DNumTypes; ++d)
+	{
+		if(d!=damage.type_)
+		{
+			double a=GetStatValue(defender, DamageNames[damage.type_] + "TakenAsExtra" + DamageNames[d]);
+			if(a>0.0)
+			{
+				DamageValue newd(d, td.value_ * a);
+				ConvertIncomingDamage(defender, out, newd, level-1);
+			}
+		}
+	}
+
+	out.push_back(td);
+}
+
 DamageValueList BuildDamageList(StatSetCollection &attacker)
 {
 	// Collect flats, apply increases/decreases
@@ -97,6 +159,42 @@ DamageValueList BuildDamageList(StatSetCollection &attacker)
 	return finalvalues;
 }
 
+DamageValueList BuildDamageList(StatSetCollection &attacker, DamageRangeList &damage)
+{
+	DamageValueList values;
+	for(auto i : damage)
+	{
+		double val=rolld(i.low_, i.high_);
+		values.push_back(DamageValue(i.type_, val));
+	}
+	// Add extra damage
+	DamageValueList finalvalues;
+	for(auto i : values)
+	{
+		ConvertDamage(attacker, finalvalues, i, 2);
+	}
+
+	return finalvalues;
+}
+
+DamageValueList BuildDamageList(StatSetCollection &attacker, DamageValue &damage)
+{
+	DamageValueList finalvalues;
+	ConvertDamage(attacker, finalvalues, damage, 2);
+	return finalvalues;
+}
+
+DamageValueList ProcessIncomingDamage(StatSetCollection &defender, const DamageValueList &damages)
+{
+	DamageValueList dmg;
+	for(auto i : damages)
+	{
+		ConvertIncomingDamage(defender, dmg, i, 2);
+	}
+
+	return dmg;
+}
+
 bool MakeHitRoll(StatSetCollection &attacker, StatSetCollection &defender)
 {
 	// Calculate base chance to hit from level differentials
@@ -124,3 +222,4 @@ bool MakeHitRoll(StatSetCollection &attacker, StatSetCollection &defender)
 	// And roll
 	return rolld(0,1) <= chance;
 }
+
