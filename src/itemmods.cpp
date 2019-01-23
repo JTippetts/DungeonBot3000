@@ -1,6 +1,7 @@
 #include "itemmods.h"
 #include "jsonutil.h"
 #include <Urho3D/IO/Log.h>
+#include "weightedtable.h"
 
 double rolld(double low, double high);
 
@@ -163,11 +164,8 @@ String ItemModTierTable::Choose(int level)
 	int highest=-1;
 	for(unsigned int i=0; i<table_.size(); ++i)
 	{
-		Log::Write(LOG_INFO, String(table_[i].minlevel_));
 		if(table_[i].minlevel_ <= level) highest=i;
 	}
-
-	Log::Write(LOG_INFO, String("Highest tier level available: ") + String(highest));
 
 	if(highest==-1)
 	{
@@ -176,27 +174,32 @@ String ItemModTierTable::Choose(int level)
 	}
 
 	int numentries=table_[highest].modlist_.size();
-
-	Log::Write(LOG_INFO, String("numentries: ") + String(numentries));
+/*
 	std::vector<double> weights;
 	double total=0.0;
 
 	for(int i=0; i<numentries; ++i)
 	{
-		double wt=std::pow((double)i, weighting_);
-		weights.push_back(wt);
+		double wt=std::pow(weighting_, (double)i);
 		total += wt;
+		weights.push_back(total);
 	}
 
-	double rl=rolld(0.0, total);
+	for(int i=0; i<numentries; ++i) weights[i] /= total;
+	//for(int i=1; i<numentries; ++i) weights[i]=weights[i]+weights[i-1];
 
-	for(int i=numentries-1; i>=0; --i)
+	double rl=rolld(0.0, 1.0);
+
+	for(int i=0; i<numentries; ++i)
 	{
-		if(weights[i]<=rl)
+		if(rl < weights[i])
 		{
 			return table_[highest].modlist_[i];
 		}
-	}
+	}*/
+	WeightedTable tbl(weighting_, numentries);
+	int choice=tbl.Choose();
+	if(choice < table_[highest].modlist_.size()) return table_[highest].modlist_[choice];
 
 	// No mod found
 	return String("");
@@ -238,7 +241,6 @@ String ItemModTiers::Choose(const std::string &which, int level)
 	auto i = map_.find(which);
 	if(i != map_.end())
 	{
-		Log::Write(LOG_INFO, String("Choosing from tier group ") + String(which.c_str()));
 		return i->second.Choose(level);
 	}
 	else

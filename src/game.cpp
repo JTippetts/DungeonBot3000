@@ -137,10 +137,16 @@ void Game::Start()
 		pd->LoadItemModTable("Tables/Items/itemmods.json");
 		pd->LoadItemModTiers("Tables/Items/itemmodtiers.json");
 
-		for(unsigned int i=0; i<20; ++i)
+		int c1=0, c2=0, c3=0;
+		for(unsigned int i=0; i<20000; ++i)
 		{
-			Log::Write(LOG_INFO, String("Choose: ") + pd->GetItemModTiers().Choose(std::string("LifeRegenTiers"), 12));
+			//Log::Write(LOG_INFO, String("Choose: ") + pd->GetItemModTiers().Choose(std::string("LifeRegenTiers"), 12));
+			auto choice=pd->GetItemModTiers().Choose(std::string("LifeRegenTiers"), 12);
+			if(choice=="Replenishing") ++c1;
+			else if(choice=="Revitalizing") ++c2;
+			else ++c3;
 		}
+		Log::Write(LOG_INFO, String(c1) + " " + String(c2) + " " + String(c3));
 	}
 
 	ResourceCache* cache = GetSubsystem<ResourceCache>();
