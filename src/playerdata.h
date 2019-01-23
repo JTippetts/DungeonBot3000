@@ -34,10 +34,21 @@ class PlayerData : public Object
 
 	StatSetCollection &GetStatSetCollection(int eqslot);
 
+	StatSetCollection &GetVitalsStats()  // Get the stat set collection pertinent to vitals.
+	{
+		vitalsstats_.clear();
+		vitalsstats_.push_back(&basestats_);
+		return vitalsstats_;
+	}
+
+	void LoadBaseStats(const String &name);
+
 	protected:
 	WeakPtr<Node> playernode_;
 
 	StatSet basestats_;
+	StatSetCollection vitalsstats_;
+	StatModifierHandle levelmodifier_;
 
 	ItemModTable itemmodtable_;
 	ItemModTiers itemmodtiers_;

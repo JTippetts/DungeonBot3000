@@ -45,6 +45,7 @@
 #include "lightingcamera.h"
 #include "Components/thirdpersoncamera.h"
 #include "Components/combatcontroller.h"
+#include "Components/vitals.h"
 
 #include "playerdata.h"
 
@@ -136,17 +137,7 @@ void Game::Start()
 	{
 		pd->LoadItemModTable("Tables/Items/itemmods.json");
 		pd->LoadItemModTiers("Tables/Items/itemmodtiers.json");
-
-		int c1=0, c2=0, c3=0;
-		for(unsigned int i=0; i<20000; ++i)
-		{
-			//Log::Write(LOG_INFO, String("Choose: ") + pd->GetItemModTiers().Choose(std::string("LifeRegenTiers"), 12));
-			auto choice=pd->GetItemModTiers().Choose(std::string("LifeRegenTiers"), 12);
-			if(choice=="Replenishing") ++c1;
-			else if(choice=="Revitalizing") ++c2;
-			else ++c3;
-		}
-		Log::Write(LOG_INFO, String(c1) + " " + String(c2) + " " + String(c3));
+		pd->LoadBaseStats("Tables/Player/base.json");
 	}
 
 	ResourceCache* cache = GetSubsystem<ResourceCache>();
@@ -262,6 +253,11 @@ void Game::Start()
 		auto smd=bl->CreateComponent<StaticModel>();
 		smd->SetModel(cache->GetResource<Model>("Objects/DungeonBot3000/Models/Blade.mdl"));
 		smd->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
+	}
+	auto vtls = n_->GetComponent<PlayerVitals>();
+	if(vtls)
+	{
+		vtls->SetStats(&pd->GetVitalsStats());
 	}
 
 

@@ -48,6 +48,8 @@ class ThirdPersonCamera : public LogicComponent
 	float GetMinFollow() const{return minfollow_;}
 	void SetMaxFollow(float f){maxfollow_=f;if(follow_>maxfollow_) follow_=maxfollow_;}
 	float GetMaxFollow() const{return maxfollow_;}
+
+	void SetFollow(float f);
 	Viewport *GetViewport(){return viewport_.Get();}
 
 	Ray GetMouseRay();

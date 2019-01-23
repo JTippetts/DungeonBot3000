@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<element>
+	<attribute name="Position" value="512 384" />
+	<attribute name="Pivot" value="0 0" />
+	<element type="Sprite" style="Sprite">
+		<attribute name="Name" value="Bubble" />
+		<attribute name="Position" value="64 64" />
+		<attribute name="Size" value="128 128" />
+		<attribute name="Image Rect" value="0 0 127 127" />
+		<attribute name="Horiz Alignment" value="Center" />
+		<attribute name="Vert Alignment" value="Center" />
+	</element>
+	<element type="Sprite" style="Sprite">
+		<attribute name="Size" value="256 256" />
+		<attribute name="Texture" value="Texture2D;Textures/ring.png" />
+		<attribute name="Image Rect" value="0 0 256 256" />
+		<attribute name="Blend Mode" value="alpha" />
+	</element>
+</element>

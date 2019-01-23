@@ -28,3 +28,15 @@ void PlayerData::LoadItemModTiers(const String &name)
 		itemmodtiers_.LoadJSON(file->GetRoot());
 	}
 }
+
+void PlayerData::LoadBaseStats(const String &name)
+{
+	ResourceCache *cache=context_->GetSubsystem<ResourceCache>();
+	JSONFile *file = cache->GetResource<JSONFile>(name);
+	if(file)
+	{
+		basestats_.LoadJSON(file->GetRoot());
+	}
+
+	levelmodifier_ = basestats_.AddMod("Level", StatModifier::FLAT, "10");
+}

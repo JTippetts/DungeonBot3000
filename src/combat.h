@@ -39,3 +39,6 @@ DamageValueList BuildDamageList(StatSetCollection &attacker, DamageRangeList &da
 DamageValueList BuildDamageList(StatSetCollection &attacker, DamageValue &damage);
 
 DamageValueList ProcessIncomingDamage(StatSetCollection &defender, const DamageValueList &damages);
+
+double ProcessHoT(StatSetCollection &attacker, double hot);
+double ProcessIncomingHoT(StatSetCollection &defender, double hot);

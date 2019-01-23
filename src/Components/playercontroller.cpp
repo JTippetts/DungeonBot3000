@@ -5,6 +5,7 @@
 #include <Urho3D/UI/Cursor.h>
 #include <Urho3D/UI/UI.h>
 #include "thirdpersoncamera.h"
+#include "vitals.h"
 
 
 void PlayerController::RegisterObject(Context *context)
@@ -19,10 +20,23 @@ PlayerController::PlayerController(Context *context) : LogicComponent(context)
 
 void PlayerController::Update(float dt)
 {
+	// Testing
+	auto input=GetSubsystem<Input>();
+	if(input->GetKeyPress(KEY_A))
+	{
+		auto vitals=node_->GetComponent<PlayerVitals>();
+		if(vitals)
+		{
+			DamageValueList dmg;
+			DamageValue d1(DPhysical, 10.0);
+			dmg.push_back(d1);
+			vitals->ApplyDamageList(dmg);
+		}
+	}
+
 	auto ca=node_->GetComponent<CrowdAgent>();
 	if(ca)
 	{
-		auto input=GetSubsystem<Input>();
 		auto cam=node_->GetScene()->GetChild("Camera")->GetComponent<ThirdPersonCamera>();
 		IntVector2 mousepos;
 		if(input->IsMouseVisible()) mousepos=input->GetMousePosition();

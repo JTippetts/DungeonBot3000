@@ -1,4 +1,5 @@
 #include "vitals.h"
+#include <Urho3D/IO/Log.h>
 
 void PlayerVitals::RegisterObject(Context *context)
 {
@@ -37,11 +38,10 @@ void PlayerVitals::Update(float dt)
 {
 	if(!vitalsstats_) return;
 	// First, update life
-	double oldmax=GetMaximumLife();
-	double oldratio = currentlife_ / oldmax;
 	maximumlife_=GetStatValue(*vitalsstats_, "MaximumLife");
-	currentlife_=maximumlife_ * oldratio;
+	currentlife_=std::min(maximumlife_, currentlife_);
 
+	// Apply over-time effects
 	UpdateDoTs(dt);
 	UpdateHoTs(dt);
 }
@@ -72,7 +72,7 @@ void PlayerVitals::UpdateDoTs(float dt)
 			}
 		}
 
-		DamageValue val(DBurn, dot.dps_*dt);
+		DamageValue val(DBurn, dot.dps_*mytime);
 		DamageValueList dmg=BuildDamageList(dot.ownerstats_.collection_, val);
 		ApplyDamageList(dmg);
 		node_->SendEvent(DoTApplied, vm);
@@ -83,7 +83,14 @@ void PlayerVitals::UpdateDoTs(float dt)
 
 void PlayerVitals::UpdateHoTs(float dt)
 {
+	static StringHash LifeRegen("LifeRegen");
 	// First do life regen tick
+	double regen=GetStatValue(*vitalsstats_, "LifeRegen")*dt;
+	double regenamt = ProcessHoT(*vitalsstats_, maximumlife_ * regen);
+	//Log::Write(LOG_INFO, String("Life regen amt: ") + String(regenamt));
+	ApplyHealing(regenamt);
+
+
 
 	// Now do hots
 	static StringHash HoTExpiring("HoTExpiring"), HoTApplied("HoTApplied"), Attacker("Attacker");
@@ -110,6 +117,9 @@ void PlayerVitals::UpdateHoTs(float dt)
 		}
 
 		// Todo, apply heal
+		double amt=hot.hps_ * mytime;
+		double actual=ProcessHoT(*vitalsstats_, amt);
+		ApplyHealing(actual);
 		node_->SendEvent(HoTApplied, vm);
 		if(erase) i=hots_.erase(i);
 		else ++i;
@@ -135,5 +145,16 @@ void PlayerVitals::ApplyDamageList(const DamageValueList &dmg)
 	node_->SendEvent(DamageTaken, vm);
 	if(currentlife_ <= 0.0) node_->SendEvent(LifeDepleted, vm);
 	else if(currentlife_ < maximumlife_ * 0.1) node_->SendEvent(LifeLow, vm);
+}
+
+void PlayerVitals::ApplyHealing(double h)
+{
+	static StringHash HealingTaken("HealingTaken"), Healing("Healing");
+	double actual = ProcessIncomingHoT(*vitalsstats_, h);
+	VariantMap vm;
+
+	vm[Healing]=actual;
+	currentlife_ =std::min(maximumlife_, currentlife_+actual);
+	node_->SendEvent(HealingTaken, vm);
 }
 

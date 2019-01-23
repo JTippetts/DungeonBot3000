@@ -195,6 +195,29 @@ DamageValueList ProcessIncomingDamage(StatSetCollection &defender, const DamageV
 	return dmg;
 }
 
+
+double ProcessHoT(StatSetCollection &attacker, double hot)
+{
+	double increased = 1.0 + GetStatValue(attacker, "IncreasedHealing");
+	double more = 1.0 + GetStatValue(attacker,  "MoreHealing");
+
+	increased -= GetStatValue(attacker, "DecreasedHealing");
+	more *= 1.0 - GetStatValue(attacker, "LessHealing");
+
+	return std::max(0.0, hot * increased * more);
+}
+
+double ProcessIncomingHoT(StatSetCollection &defender, double hot)
+{
+	double increased = 1.0 + GetStatValue(defender, "IncreasedHealingTaken");
+	double more = 1.0 + GetStatValue(defender,  "MoreHealingTaken");
+
+	increased -= GetStatValue(defender, "DecreasedHealingTaken");
+	more *= 1.0 - GetStatValue(defender, "LessHealingTaken");
+
+	return std::max(0.0, hot * increased * more);
+}
+
 bool MakeHitRoll(StatSetCollection &attacker, StatSetCollection &defender)
 {
 	// Calculate base chance to hit from level differentials

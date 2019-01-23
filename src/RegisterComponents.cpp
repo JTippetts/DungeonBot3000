@@ -7,6 +7,7 @@
 #include "Components/playercontroller.h"
 #include "Components/stupidchasecontroller.h"
 #include "Components/vitals.h"
+#include "Components/lifebubbleui.h"
 
 void RegisterCustomComponents(Context *context)
 {
@@ -17,4 +18,5 @@ void RegisterCustomComponents(Context *context)
 	PlayerController::RegisterObject(context);
 	StupidChaseController::RegisterObject(context);
 	PlayerVitals::RegisterObject(context);
+	LifeBubbleUI::RegisterObject(context);
 }

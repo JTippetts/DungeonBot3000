@@ -48,6 +48,9 @@ class PlayerVitals : public LogicComponent
 	double GetMaximumLife();
 	double GetEnergy();
 
+	void ApplyDamageList(const DamageValueList &dmg);
+	void ApplyHealing(double h);
+
 
 	protected:
 	StatSetCollection *vitalsstats_;
@@ -60,7 +63,5 @@ class PlayerVitals : public LogicComponent
 	virtual void Update(float dt) override;
 	void UpdateDoTs(float dt);
 	void UpdateHoTs(float dt);
-
-	void ApplyDamageList(const DamageValueList &dmg);
 };
 
