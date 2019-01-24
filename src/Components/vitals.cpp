@@ -81,7 +81,11 @@ void PlayerVitals::UpdateDoTs(float dt)
 		currentlife_ -= taken;
 		vm[Damage]=taken;
 		node_->SendEvent(DamageTaken, vm);
-		if(currentlife_ <= 0.0) node_->SendEvent(LifeDepleted, vm);
+		if(currentlife_ <= 0.0)
+		{
+			node_->SendEvent(LifeDepleted, vm);
+			return;
+		}
 		else if(currentlife_ < maximumlife_ * 0.1) node_->SendEvent(LifeLow, vm);
 		node_->SendEvent(DoTApplied, vm);
 		if(erase) i=dots_.erase(i);
@@ -169,7 +173,11 @@ void PlayerVitals::ApplyDamageList(Node *attackernode, const StatSetCollection &
 	currentlife_ -= taken;
 	vm[Damage]=taken;
 	node_->SendEvent(DamageTaken, vm);
-	if(currentlife_ <= 0.0) node_->SendEvent(LifeDepleted, vm);
+	if(currentlife_ <= 0.0)
+	{
+		node_->SendEvent(LifeDepleted, vm);
+		return;
+	}
 	else if(currentlife_ < maximumlife_ * 0.1) node_->SendEvent(LifeLow, vm);
 }
 
@@ -216,7 +224,9 @@ void EnemyVitals::Update(float dt)
 	currentlife_=std::min(maximumlife_, currentlife_);
 
 	// Apply over-time effects
+	WeakPtr<EnemyVitals> ptr(this);
 	UpdateDoTs(dt);
+	if(ptr.Expired()) return;
 	UpdateHoTs(dt);
 }
 
@@ -255,7 +265,13 @@ void EnemyVitals::UpdateDoTs(float dt)
 		//Log::Write(LOG_INFO, String("Burn damage taken: ") + String(taken));
 		vm[Damage]=taken;
 		node_->SendEvent(DamageTaken, vm);
-		if(currentlife_ <= 0.0) node_->SendEvent(LifeDepleted, vm);
+
+		if(currentlife_ <= 0.0)
+		{
+			node_->SendEvent(LifeDepleted, vm);
+			return;
+		}
+
 		else if(currentlife_ < maximumlife_ * 0.1) node_->SendEvent(LifeLow, vm);
 		node_->SendEvent(DoTApplied, vm);
 
@@ -344,7 +360,11 @@ void EnemyVitals::ApplyDamageList(Node *attackernode, const StatSetCollection &a
 	currentlife_ -= taken;
 	vm[Damage]=taken;
 	node_->SendEvent(DamageTaken, vm);
-	if(currentlife_ <= 0.0) node_->SendEvent(LifeDepleted, vm);
+	if(currentlife_ <= 0.0)
+	{
+		node_->SendEvent(LifeDepleted, vm);
+		return;
+	}
 	else if(currentlife_ < maximumlife_ * 0.1) node_->SendEvent(LifeLow, vm);
 }
 

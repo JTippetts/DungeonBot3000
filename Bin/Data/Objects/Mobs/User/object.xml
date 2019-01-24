@@ -41,4 +41,6 @@
 	</component>
 	<component type="BurnIndicator">
 	</component>
+	<component type="EnemyOnDeath" >
+	</component>
 </node>

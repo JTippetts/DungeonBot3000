@@ -33,4 +33,5 @@ class EnemyLifeBar : public LogicComponent
 
 	virtual void DelayedStart() override;
 	virtual void Update(float dt) override;
+	void HandleLifeDepleted(StringHash eventType, VariantMap &eventData);
 };

@@ -40,6 +40,13 @@ void EnemyLifeBar::DelayedStart()
 	element_ = ui->LoadLayout(cache->GetResource<XMLFile>("UI/enemybar.xml"));
 	ui->GetRoot()->AddChild(element_);
 	element_->SetVisible(false);
+
+	SubscribeToEvent(node_, StringHash("LifeDepleted"), URHO3D_HANDLER(EnemyLifeBar, HandleLifeDepleted));
+}
+
+void EnemyLifeBar::HandleLifeDepleted(StringHash eventType, VariantMap &eventData)
+{
+	if(element_) element_->Remove();
 }
 
 void EnemyLifeBar::Update(float dt)

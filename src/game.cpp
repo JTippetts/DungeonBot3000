@@ -269,7 +269,7 @@ void Game::Start()
 	}
 
 
-	for(unsigned int i=0; i<400; ++i)
+	for(unsigned int i=0; i<1000; ++i)
 	{
 		//BoundingBox bb=nav->GetBoundingBox();
 		//do
