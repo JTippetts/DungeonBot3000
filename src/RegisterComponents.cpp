@@ -9,6 +9,7 @@
 #include "Components/vitals.h"
 #include "Components/lifebubbleui.h"
 #include "Components/enemylifebar.h"
+#include "Components/burnindicator.h"
 
 void RegisterCustomComponents(Context *context)
 {
@@ -22,4 +23,5 @@ void RegisterCustomComponents(Context *context)
 	EnemyVitals::RegisterObject(context);
 	LifeBubbleUI::RegisterObject(context);
 	EnemyLifeBar::RegisterObject(context);
+	BurnIndicator::RegisterObject(context);
 }

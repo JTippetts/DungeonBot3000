@@ -3,6 +3,7 @@ Bin/*.png
 Bin/*.dll
 Bin/*.chm
 Bin/CoreData
+Bin/Data/*.png
 editor/Build/
 build.bat
 *.exe

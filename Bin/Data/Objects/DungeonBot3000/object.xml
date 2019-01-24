@@ -42,4 +42,6 @@
 	</component>
 	<component type="LifeBubbleUI" >
 	</component>
+	<component type="BurnIndicator" >
+	</component>
 </node>

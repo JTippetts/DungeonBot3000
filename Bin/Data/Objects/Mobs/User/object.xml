@@ -39,4 +39,6 @@
 	<component type="EnemyLifeBar" >
 		<attribute name="Offset" value="10.0" />
 	</component>
+	<component type="BurnIndicator">
+	</component>
 </node>
