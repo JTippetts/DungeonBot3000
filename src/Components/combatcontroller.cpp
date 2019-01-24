@@ -84,7 +84,7 @@ void CombatController::HandleCrowdAgentReposition(StringHash eventType, VariantM
         {
             float speedRatio = speed / agent->GetMaxSpeed();
             // Face the direction of its velocity but moderate the turning speed based on the speed ratio and timeStep
-            node->SetRotation(node->GetRotation().Slerp(Quaternion(Vector3::FORWARD, velocity), 10.0f * timeStep * speedRatio*0.0625));
+            node->SetRotation(node->GetRotation().Slerp(Quaternion(Vector3::FORWARD, velocity), 10.0f * timeStep * speedRatio*0.00625));
             // Throttle the animation speed based on agent speed ratio (ratio = 1 is full throttle)
             animCtrl->SetSpeed(animpath_ + "/Models/Walk.ani", speedRatio * 0.25f);
         }

@@ -4,4 +4,5 @@
 	"LifeRegen": [["Flat", "0.01"]],
 	"EnergyGen": [["Flat", "1"]],
 	"IncreasedHealingTaken": [["Flat", "0.25"]],
+	"PhysicalAsElectrical": [["Flat", "0.5"]],
 }

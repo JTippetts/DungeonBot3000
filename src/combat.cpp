@@ -3,14 +3,6 @@
 double rolld(double low, double high);
 
 
-
-std::vector<std::string> DamageNames
-{
-	"Physical",
-	"Burn",
-	"Electrical"
-};
-
 void BoostDamage(StatSetCollection &attacker, DamageValue &damage)
 {
 	// Collect mults and scales

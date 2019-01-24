@@ -1,0 +1,6 @@
+{
+	"SpinAttack": {
+		"PhysicalLow": [["Flat", "5+SpinAttackLevel*5 + PhysicalDamageToSpinAttackLow"]],
+		"PhysicalHigh": [["Flat", "10+SpinAttackLevel*8 + PhysicalDamageToSpinAttackHigh"]],
+	},
+}

@@ -21,5 +21,15 @@ class PlayerController : public LogicComponent
 
 	virtual void Update(float dt) override;
 
+	void SetObjectPath(String op);
+	const String GetObjectPath() const;
+	void SetAnimPath(String ap);
+	const String GetAnimPath() const;
+
 	protected:
+	void HandleCrowdAgentReposition(StringHash eventType, VariantMap &eventData);
+	void HandleAnimationTrigger(StringHash eventType, VariantMap &eventData);
+
+	String objectpath_, animpath_;
+	virtual void DelayedStart() override;
 };

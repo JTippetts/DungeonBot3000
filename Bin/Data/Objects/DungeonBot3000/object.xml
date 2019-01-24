@@ -34,11 +34,9 @@
 		<attribute name="Height" value="2" />
 		<attribute name="Navigation Pushiness" value="High" />
 	</component>
-	<component type="CombatController" id="16777232">
+	<component type="PlayerController" >
 		<attribute name="Object Path" value="Objects/DungeonBot3000" />
 		<attribute name="Animation Path" value="Objects/DungeonBot3000" />
-	</component>
-	<component type="PlayerController" >
 	</component>
 	<component type="PlayerVitals" >
 	</component>

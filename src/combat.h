@@ -13,6 +13,13 @@ enum DamageTypes
 	DNumTypes
 };
 
+static std::vector<std::string> DamageNames
+{
+	"Physical",
+	"Burn",
+	"Electrical"
+};
+
 struct DamageRange
 {
 	int type_;

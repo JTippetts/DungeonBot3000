@@ -87,6 +87,8 @@ class EnemyVitals : public LogicComponent
 
 	void SetLevel(unsigned int level);
 
+	const StatSetCollection &GetStats(){return basestatscollection_;}
+
 	protected:
 	StatSet basestats_;
 	StatSetCollection basestatscollection_;

@@ -31,7 +31,23 @@ class StupidChaseController : public LogicComponent
 	protected:
 	void Update(float dt) override
 	{
-		auto *ca=node_->GetComponent<CrowdAgent>();
-		ca->SetTargetPosition(node_->GetScene()->GetChild("Dude")->GetPosition()+Vector3(rollf(-8.0f,8.0f),0,rollf(-8.0f,8.0f)));
+		auto ca=node_->GetComponent<CrowdAgent>();
+		auto pl=node_->GetScene()->GetChild("Dude");
+		Vector3 pos=node_->GetWorldPosition();
+		Vector3 dudepos=pl->GetWorldPosition();
+		Vector3 delta=dudepos-pos;
+
+		if(delta.Length() < 50)
+		{
+			if(!ca->IsEnabled())
+			{
+				ca->SetEnabled(true);
+			}
+			ca->SetTargetPosition(node_->GetScene()->GetChild("Dude")->GetPosition()+Vector3(rollf(-8.0f,8.0f),0,rollf(-8.0f,8.0f)));
+		}
+		else
+		{
+			ca->SetEnabled(false);
+		}
 	}
 };

@@ -138,6 +138,7 @@ void Game::Start()
 		pd->LoadItemModTable("Tables/Items/itemmods.json");
 		pd->LoadItemModTiers("Tables/Items/itemmodtiers.json");
 		pd->LoadBaseStats("Tables/Player/base.json");
+		pd->LoadSkillStats("Tables/Skills/skillstats.json");
 	}
 
 	ResourceCache* cache = GetSubsystem<ResourceCache>();
@@ -261,17 +262,22 @@ void Game::Start()
 	}
 
 
-	for(unsigned int i=0; i<40; ++i)
+	for(unsigned int i=0; i<400; ++i)
 	{
-		float x=rollf(0.0f,1000.0f);
-		float z=rollf(0.0f,1000.0f);
+		//BoundingBox bb=nav->GetBoundingBox();
+		//do
+		//{
+			//float x=rollf(bbox.min_.x_, bbox.max_.x_);
+			//float z=rollf(bbox.min_.z_, bbox.max_.z_);
+			//Vector3 pos(x,0,z);
+		//} while(!nav->
 
-		Vector3 pos=nav->MoveAlongSurface(Vector3(0,0,0), Vector3(x,0,z));
+		Vector3 pos=nav->GetRandomPoint(); //nav->MoveAlongSurface(Vector3(0,0,0), Vector3(x,0,z));
 		pos.y_=0;
 		XMLFile *xfile=cache->GetResource<XMLFile>("Objects/Mobs/User/object.xml");
 		Node *n=scene_->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
 		auto ca=n->GetComponent<CrowdAgent>();
-		ca->SetMaxSpeed(rollf(20.0f, 30.0f));
+		ca->SetMaxSpeed(rollf(10.0f, 20.0f));
 
 		auto vtls=n->GetComponent<EnemyVitals>();
 		if(vtls)

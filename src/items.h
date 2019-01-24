@@ -20,11 +20,11 @@ Item mods: Name, StatSet
 enum EquipmentSlots
 {
 	EqBlade,
-	//EqTurret,
-	//EqAntenna,
-	//EqProcessor,
-	//EqDriveSystem,
-	//EqGeneratorSystem,
+	EqTurret,
+	EqAntenna,
+	EqProcessor,
+	EqDriveSystem,
+	EqGeneratorSystem,
 	EqNumEquipmentSlots
 };
 

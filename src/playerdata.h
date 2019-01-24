@@ -6,6 +6,8 @@
 #include <Urho3D/Core/Context.h>
 #include <Urho3D/Scene/Node.h>
 #include "itemmods.h"
+#include "items.h"
+#include <unordered_map>
 
 
 using namespace Urho3D;
@@ -42,6 +44,11 @@ class PlayerData : public Object
 	}
 
 	void LoadBaseStats(const String &name);
+	void LoadSkillStats(const String &name);
+
+	StatSet *GetSkillStatSet(const std::string &name);
+
+	StatSetCollection GetStatSetCollection(EquipmentSlots slot=EqNumEquipmentSlots, const std::string &skillname="");  // Pass EqNumEquipmentSlots and/or "" to disregard these parameters
 
 	protected:
 	WeakPtr<Node> playernode_;
@@ -49,6 +56,8 @@ class PlayerData : public Object
 	StatSet basestats_;
 	StatSetCollection vitalsstats_;
 	StatModifierHandle levelmodifier_;
+
+	std::unordered_map<std::string, StatSet> skillstats_;
 
 	ItemModTable itemmodtable_;
 	ItemModTiers itemmodtiers_;
