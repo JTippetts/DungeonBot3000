@@ -74,6 +74,16 @@ CombatActionState *CASPlayerIdle::Update(CombatController *actor, float dt)
 	return nullptr;
 }
 
+void CASPlayerIdle::HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt)
+{
+	auto node=actor->GetNode();
+	auto ca=node->GetComponent<CrowdAgent>();
+	if(ca)
+	{
+		ca->SetTargetPosition(node->GetWorldPosition());
+	}
+}
+
 ////// PlayerMove
 CASPlayerMove::CASPlayerMove() : CombatActionState()
 {
@@ -194,6 +204,7 @@ void CASPlayerSpinAttack::End(CombatController *actor)
 		if(ca)
 		{
 			ca->SetNavigationPushiness(NAVIGATIONPUSHINESS_MEDIUM);
+			ca->SetTargetPosition(node->GetWorldPosition());
 		}
 	}
 }
