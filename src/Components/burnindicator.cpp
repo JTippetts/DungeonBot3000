@@ -23,7 +23,8 @@ void BurnIndicator::DelayedStart()
 	{
 		emitter_->SetEffect(pe);
 	}
-	emitter_->SetEnabled(false);
+	//emitter_->SetEnabled(false);
+	emitter_->SetEmitting(false);
 }
 
 void BurnIndicator::HandleBurnPresent(StringHash eventType, VariantMap &eventData)
@@ -35,8 +36,9 @@ void BurnIndicator::HandleBurnPresent(StringHash eventType, VariantMap &eventDat
 
 	if(count >0)
 	{
-		if(!emitter_->IsEnabled()) emitter_->Reset();
-		emitter_->SetEnabled(true);
+		//if(!emitter_->IsEnabled()) emitter_->Reset();
+		//emitter_->SetEnabled(true);
+		emitter_->SetEmitting(true);
 	}
-	else emitter_->SetEnabled(false);
+	else emitter_->SetEmitting(false);
 }
