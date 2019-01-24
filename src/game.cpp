@@ -197,7 +197,7 @@ void Game::Start()
 	scene_->CreateComponent<CrowdManager>();
 
 	nav->SetAgentHeight(1.0);
-	nav->SetAgentRadius(1.0f);
+	nav->SetAgentRadius(2.0f);
 	nav->SetAgentMaxClimb(0.01);
 	nav->SetCellSize(1.0);
 	nav->SetCellHeight(0.5);
@@ -261,6 +261,13 @@ void Game::Start()
 		vtls->SetStats(&pd->GetVitalsStats());
 	}
 
+	auto cc=n_->GetComponent<CombatController>();
+	if(cc)
+	{
+		Log::Write(LOG_INFO, "Setting combat action state.");
+		cc->SetCombatActionState(&g_playeridle);
+	}
+
 
 	for(unsigned int i=0; i<400; ++i)
 	{
@@ -276,7 +283,7 @@ void Game::Start()
 		do
 		{
 			pos=nav->GetRandomPoint(); //nav->MoveAlongSurface(Vector3(0,0,0), Vector3(x,0,z));
-		} while(pos.y_ > 0.6);
+		} while(pos.y_ > 0.5);
 		//Log::Write(LOG_INFO, String(pos.y_));
 		pos.y_=0;
 		XMLFile *xfile=cache->GetResource<XMLFile>("Objects/Mobs/User/object.xml");

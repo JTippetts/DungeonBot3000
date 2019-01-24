@@ -8,6 +8,7 @@
 #include "itemmods.h"
 #include "items.h"
 #include <unordered_map>
+#include <vector>
 
 
 using namespace Urho3D;
@@ -34,7 +35,7 @@ class PlayerData : public Object
 	void LoadItemModTiers(const String &name);
 	ItemModTiers &GetItemModTiers(){return itemmodtiers_;}
 
-	StatSetCollection &GetStatSetCollection(int eqslot);
+	//StatSetCollection &GetStatSetCollection(int eqslot);
 
 	StatSetCollection &GetVitalsStats()  // Get the stat set collection pertinent to vitals.
 	{

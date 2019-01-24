@@ -6,9 +6,12 @@
 #include <Urho3D/Navigation/CrowdAgent.h>
 #include <Urho3D/Navigation/NavigationEvents.h>
 #include <Urho3D/Graphics/AnimationController.h>
+#include <Urho3D/Navigation/DynamicNavigationMesh.h>
 #include "thirdpersoncamera.h"
 #include "vitals.h"
 #include "../playerdata.h"
+#include "combatcontroller.h"
+#include "../combatactionstates.h"
 
 
 void PlayerController::RegisterObject(Context *context)
@@ -27,6 +30,12 @@ void PlayerController::DelayedStart()
 {
 	SubscribeToEvent(node_, StringHash("AnimationTrigger"), URHO3D_HANDLER(PlayerController, HandleAnimationTrigger));
 	SubscribeToEvent(node_, StringHash("CrowdAgentNodeReposition"), URHO3D_HANDLER(PlayerController, HandleCrowdAgentReposition));
+
+	auto cc=node_->GetComponent<CombatController>();
+	if(cc)
+	{
+		cc->SetCombatActionState(&g_playeridle);
+	}
 }
 
 void PlayerController::SetObjectPath(String op)
@@ -84,8 +93,12 @@ void PlayerController::Update(float dt)
 {
 	// Testing
 	auto input=GetSubsystem<Input>();
+	auto pd=GetSubsystem<PlayerData>();
 
-	auto ca=node_->GetComponent<CrowdAgent>();
+
+	//StatSetCollection ssc=pd->GetStatSetCollection(EqNumEquipmentSlots, "SpinAttack");
+
+	/*auto ca=node_->GetComponent<CrowdAgent>();
 	if(ca)
 	{
 		auto cam=node_->GetScene()->GetChild("Camera")->GetComponent<ThirdPersonCamera>();
@@ -93,73 +106,72 @@ void PlayerController::Update(float dt)
 		if(input->IsMouseVisible()) mousepos=input->GetMousePosition();
 		else mousepos=context_->GetSubsystem<UI>()->GetCursorPosition();
 		Vector2 ground=cam->GetScreenGround(mousepos.x_,mousepos.y_);
-		if(input->GetMouseButtonDown(MOUSEB_LEFT) /*&& cam->PickGround(ground,mousepos.x_,mousepos.y_)*/)
+		auto animCtrl=node_->GetComponent<AnimationController>();
+
+		if(input->GetMouseButtonDown(MOUSEB_LEFT) )
 		{
+			auto nav=node_->GetScene()->GetComponent<DynamicNavigationMesh>();
+
 			ca->SetMaxSpeed(30.0f);
-			ca->SetTargetPosition(Vector3(ground.x_, 0, ground.y_));
+			Vector3 gp=nav->FindNearestPoint(Vector3(ground.x_,0,ground.y_), Vector3(10,10,10));
+			ca->SetTargetPosition(gp);
+
+			if(!animCtrl->IsPlaying(animpath_ + "/Models/Walk.ani"))
+			{
+				animCtrl->Play(animpath_ + "/Models/Walk.ani", 0, true, 0.1f);
+			}
+			if(animCtrl->IsPlaying(animpath_ + "/Models/Idle.ani"))
+			{
+				animCtrl->Stop(animpath_ + "/Models/Idle.ani", 0.1f);
+			}
+		}
+		else
+		{
+			if(animCtrl->IsPlaying(animpath_ + "/Models/Walk.ani"))
+			{
+				animCtrl->Stop(animpath_ + "/Models/Walk.ani", 0.1f);
+			}
+			if(!animCtrl->IsPlaying(animpath_ + "/Models/Idle.ani"))
+			{
+				animCtrl->Play(animpath_ + "/Models/Idle.ani", 0, true, 0.1f);
+			}
 		}
 
-		if(input->GetMouseButtonDown(MOUSEB_RIGHT))
+
+
+		if(input->GetMouseButtonDown(MOUSEB_RIGHT) && input->GetMouseButtonDown(MOUSEB_LEFT))
 		{
+			auto ssc=pd->GetStatSetCollection(EqNumEquipmentSlots, "SpinAttack");
+			double movespeed=GetStatValue(ssc, "MovementSpeed");
+			double attackspeed=GetStatValue(ssc, "AttackSpeed");
 			auto animCtrl=node_->GetComponent<AnimationController>();
 			if(!animCtrl->IsPlaying(animpath_ + "/Models/Spin.ani"))
 			{
+
 				animCtrl->Play(animpath_ + "/Models/Spin.ani", 0, true, 0.1f);
-				animCtrl->SetSpeed(animpath_ + "/Models/Spin.ani", 3.0);
 			}
+			animCtrl->SetSpeed(animpath_ + "/Models/Spin.ani", attackspeed);
+
 			ca->SetNavigationPushiness(NAVIGATIONPUSHINESS_HIGH);
-			ca->SetMaxSpeed(15.0f);
+			ca->SetMaxSpeed(movespeed);
 			//ca->SetTargetPosition(Vector3(ground.x_, 0, ground.y_));
 		}
 		else
 		{
+			auto ssc=pd->GetStatSetCollection(EqNumEquipmentSlots, "");
+			double movespeed=GetStatValue(ssc, "MovementSpeed");
 			auto animCtrl=node_->GetComponent<AnimationController>();
 			if(animCtrl->IsPlaying(animpath_ + "/Models/Spin.ani"))
 			{
 				animCtrl->Stop(animpath_ + "/Models/Spin.ani");
 			}
 			ca->SetNavigationPushiness(NAVIGATIONPUSHINESS_MEDIUM);
-			ca->SetMaxSpeed(30.0f);
+			ca->SetMaxSpeed(movespeed);
 		}
-	}
+	}*/
 }
 
 void PlayerController::HandleCrowdAgentReposition(StringHash eventType, VariantMap &eventData)
 {
-	using namespace CrowdAgentReposition;
 
-	auto* node = static_cast<Node*>(eventData[P_NODE].GetPtr());
-    auto* agent = static_cast<CrowdAgent*>(eventData[P_CROWD_AGENT].GetPtr());
-    Vector3 velocity = eventData[P_VELOCITY].GetVector3();
-    float timeStep = eventData[P_TIMESTEP].GetFloat();
-
-	auto* animCtrl = node->GetComponent<AnimationController>();
-    if (animCtrl)
-    {
-		if(animCtrl->IsPlaying(animpath_ + "/Models/Idle.ani"))
-		{
-			animCtrl->Stop(animpath_ + "/Models/Idle.ani", 0.5f);
-		}
-
-        float speed = velocity.Length(); // TODO
-        if (animCtrl->IsPlaying(animpath_ + "/Models/Walk.ani") && !animCtrl->IsPlaying(animpath_ + "/Models/Spin.ani"))
-        {
-            float speedRatio = speed / agent->GetMaxSpeed();
-            // Face the direction of its velocity but moderate the turning speed based on the speed ratio and timeStep
-            node->SetRotation(node->GetRotation().Slerp(Quaternion(Vector3::FORWARD, velocity), 10.0f * timeStep * speedRatio*1.0));
-            // Throttle the animation speed based on agent speed ratio (ratio = 1 is full throttle)
-            animCtrl->SetSpeed(animpath_ + "/Models/Walk.ani", speedRatio * 0.25f);
-        }
-        else
-		{
-            animCtrl->Play(animpath_ + "/Models/Walk.ani", 0, true, 0.1f);
-		}
-
-        // If speed is too low then stop the animation
-        if (speed < agent->GetRadius())
-        {
-			animCtrl->Stop(animpath_ + "/Models/Walk.ani", 0.5f);
-			animCtrl->Play(animpath_ + "/Models/Idle.ani", 0, true, 0.5f);
-		}
-    }
 }

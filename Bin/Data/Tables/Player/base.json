@@ -5,4 +5,6 @@
 	"EnergyGen": [["Flat", "1"]],
 	"IncreasedHealingTaken": [["Flat", "0.25"]],
 	"PhysicalAsElectrical": [["Flat", "0.5"]],
+	"MovementSpeed": [["Flat", "30.0"]],
+	"AttackSpeed": [["Flat", "0"], ["Mult", "IncreasedAttackSpeed"]],
 }

@@ -1,4 +1,6 @@
 {
 	"MaximumLife": [["Flat", "15+Level*5"]],
 	"LifeRegen": [["Flat", "0.05"]],
+	"MovementSpeed": [["Flat", "30.0"]],
+	"AttackSpeed": [["Flat", "0"], ["Mult", "IncreasedAttackSpeed"]],
 }
