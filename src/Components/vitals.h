@@ -24,7 +24,7 @@ struct BurnDoT
 	double counter_;
 	double dps_;
 	WeakPtr<Node> owner_;
-	StatSetCollectionSnapshot ownerstats_;
+	//StatSetCollectionSnapshot ownerstats_;
 };
 
 struct HealHoT
@@ -48,7 +48,7 @@ class PlayerVitals : public LogicComponent
 	double GetMaximumLife();
 	double GetEnergy();
 
-	void ApplyDamageList(const DamageValueList &dmg);
+	void ApplyDamageList(Node *attackernode, const StatSetCollection &attackerstats, const DamageValueList &dmg);
 	void ApplyHealing(double h);
 
 
@@ -79,7 +79,7 @@ class EnemyVitals : public LogicComponent
 
 	double GetCurrentLife();
 	double GetMaximumLife();
-	void ApplyDamageList(const DamageValueList &dmg);
+	void ApplyDamageList(Node *attackernode, const StatSetCollection &attackerstats, const DamageValueList &dmg);
 	void ApplyHealing(double h);
 
 	void SetBaseStatsFilename(const String &filename);

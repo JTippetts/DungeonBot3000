@@ -52,6 +52,8 @@ void PlayerVitals::Update(float dt)
 void PlayerVitals::UpdateDoTs(float dt)
 {
 	static StringHash DoTExpiring("DoTExpiring"), DoTApplied("DoTApplied"), Attacker("Attacker");
+	static StringHash LifeLow("LifeLow"), LifeDepleted("LifeDepleted"), DamageTaken("DamageTaken"), Damage("Damage");
+	static StringHash BurnsPresent("BurnsPresent"), Count("Count");
 	VariantMap vm;
 
 	auto i=dots_.begin();
@@ -75,13 +77,20 @@ void PlayerVitals::UpdateDoTs(float dt)
 			}
 		}
 
-		DamageValue val(DBurn, dot.dps_*mytime);
-		DamageValueList dmg=BuildDamageList(dot.ownerstats_.collection_, val);
-		ApplyDamageList(dmg);
+		double taken=dot.dps_*mytime;
+		currentlife_ -= taken;
+		vm[Damage]=taken;
+		node_->SendEvent(DamageTaken, vm);
+		if(currentlife_ <= 0.0) node_->SendEvent(LifeDepleted, vm);
+		else if(currentlife_ < maximumlife_ * 0.1) node_->SendEvent(LifeLow, vm);
 		node_->SendEvent(DoTApplied, vm);
 		if(erase) i=dots_.erase(i);
 		else ++i;
 	}
+
+	unsigned int numdots=dots_.size();
+	vm[Count]=numdots;
+	node_->SendEvent(BurnsPresent, vm);
 }
 
 void PlayerVitals::UpdateHoTs(float dt)
@@ -129,7 +138,7 @@ void PlayerVitals::UpdateHoTs(float dt)
 	}
 }
 
-void PlayerVitals::ApplyDamageList(const DamageValueList &dmg)
+void PlayerVitals::ApplyDamageList(Node *attackernode, const StatSetCollection &attackerstats, const DamageValueList &dmg)
 {
 	static StringHash LifeLow("LifeLow"), LifeDepleted("LifeDepleted"), DamageTaken("DamageTaken"), Damage("Damage");
 	if(!vitalsstats_) return;
@@ -141,7 +150,21 @@ void PlayerVitals::ApplyDamageList(const DamageValueList &dmg)
 
 	for(auto i : actual)
 	{
-		taken += i.value_;
+		if(i.type_==DBurn)
+		{
+			// Apply burn as a dot
+			BurnDoT dot;
+			dot.dps_=i.value_/4.0; // Value assumes per second
+			double incdur=GetStatValue(attackerstats, "IncreasedBurnDuration");
+			double reddur=GetStatValue(*vitalsstats_, "ReducedBurnDuration");
+			double dur=4.0 * (1.0 + incdur - reddur);
+			dot.ttl_=dur;
+			dot.counter_=0.0;
+			dot.owner_=attackernode;
+			unsigned int id=attackernode->GetID();
+			dots_[id]=dot;
+		}
+		else taken += i.value_;
 	}
 	currentlife_ -= taken;
 	vm[Damage]=taken;
@@ -200,6 +223,8 @@ void EnemyVitals::Update(float dt)
 void EnemyVitals::UpdateDoTs(float dt)
 {
 	static StringHash DoTExpiring("DoTExpiring"), DoTApplied("DoTApplied"), Attacker("Attacker");
+	static StringHash LifeLow("LifeLow"), LifeDepleted("LifeDepleted"), DamageTaken("DamageTaken"), Damage("Damage");
+	static StringHash BurnsPresent("BurnsPresent"), Count("Count");
 	VariantMap vm;
 
 	auto i=dots_.begin();
@@ -223,13 +248,24 @@ void EnemyVitals::UpdateDoTs(float dt)
 			}
 		}
 
-		DamageValue val(DBurn, dot.dps_*mytime);
-		DamageValueList dmg=BuildDamageList(dot.ownerstats_.collection_, val);
-		ApplyDamageList(dmg);
+		//Log::Write(LOG_INFO, String("dot: ") + String(dot.dps_) + " " + String(dot.ttl_) + " " + String(dot.counter_) + " " + String(mytime) + " " + String(dt));
+
+		double taken=dot.dps_*mytime;
+		currentlife_ -= taken;
+		//Log::Write(LOG_INFO, String("Burn damage taken: ") + String(taken));
+		vm[Damage]=taken;
+		node_->SendEvent(DamageTaken, vm);
+		if(currentlife_ <= 0.0) node_->SendEvent(LifeDepleted, vm);
+		else if(currentlife_ < maximumlife_ * 0.1) node_->SendEvent(LifeLow, vm);
 		node_->SendEvent(DoTApplied, vm);
+
 		if(erase) i=dots_.erase(i);
 		else ++i;
 	}
+
+	unsigned int numdots=dots_.size();
+	vm[Count]=numdots;
+	node_->SendEvent(BurnsPresent, vm);
 }
 
 void EnemyVitals::UpdateHoTs(float dt)
@@ -277,7 +313,7 @@ void EnemyVitals::UpdateHoTs(float dt)
 	}
 }
 
-void EnemyVitals::ApplyDamageList(const DamageValueList &dmg)
+void EnemyVitals::ApplyDamageList(Node *attackernode, const StatSetCollection &attackerstats, const DamageValueList &dmg)
 {
 	static StringHash LifeLow("LifeLow"), LifeDepleted("LifeDepleted"), DamageTaken("DamageTaken"), Damage("Damage");
 	VariantMap vm;
@@ -288,7 +324,22 @@ void EnemyVitals::ApplyDamageList(const DamageValueList &dmg)
 
 	for(auto i : actual)
 	{
-		taken += i.value_;
+		if(i.type_==DBurn)
+		{
+			// Apply burn as a dot
+			//Log::Write(LOG_INFO, "Applying burn");
+			BurnDoT dot;
+			dot.dps_=i.value_ / 4.0;
+			double incdur=GetStatValue(attackerstats, "IncreasedBurnDuration");
+			double reddur=GetStatValue(basestatscollection_, "ReducedBurnDuration");
+			double dur=4.0 * (1.0 + incdur - reddur);
+			dot.ttl_=dur;
+			dot.counter_=0.0;
+			dot.owner_=attackernode;
+			unsigned int id=attackernode->GetID();
+			dots_[id]=dot;
+		}
+		else taken += i.value_;
 	}
 	currentlife_ -= taken;
 	vm[Damage]=taken;

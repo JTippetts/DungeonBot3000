@@ -32,7 +32,7 @@
 		<attribute name="Max Speed" value="30" />
 		<attribute name="Radius" value="1" />
 		<attribute name="Height" value="2" />
-		<attribute name="Navigation Pushiness" value="High" />
+		<attribute name="Navigation Pushiness" value="Medium" />
 	</component>
 	<component type="PlayerController" >
 		<attribute name="Object Path" value="Objects/DungeonBot3000" />

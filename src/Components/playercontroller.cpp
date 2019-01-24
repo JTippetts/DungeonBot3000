@@ -53,7 +53,6 @@ void PlayerController::HandleAnimationTrigger(StringHash eventType, VariantMap &
 {
 	static StringHash Name("Name"), Data("Data");
 
-	//Log::Write(LOG_INFO, String("Triggered") + eventData[Name].GetString());
 	if(eventData[Name].GetString()=="Spin")
 	{
 		PODVector<Node *> dudes;
@@ -66,9 +65,6 @@ void PlayerController::HandleAnimationTrigger(StringHash eventType, VariantMap &
 			Vector3 delta=mypos-pos;
 			if(delta.Length() < 8)
 			{
-				/*DamageValueList dmg;
-				DamageValue d1(DPhysical, 10.0);
-				dmg.push_back(d1);*/
 				auto myvitals = node_->GetComponent<PlayerVitals>();
 				auto vtls = (*i)->GetComponent<EnemyVitals>();
 				if(vtls && myvitals)
@@ -76,13 +72,7 @@ void PlayerController::HandleAnimationTrigger(StringHash eventType, VariantMap &
 					auto pd=GetSubsystem<PlayerData>();
 					StatSetCollection ssc=pd->GetStatSetCollection(EqNumEquipmentSlots, "SpinAttack");
 					DamageValueList dmg=BuildDamageList(ssc);
-
-					for(auto d : dmg)
-					{
-						Log::Write(LOG_INFO, String(DamageNames[d.type_].c_str()) + ": " + String(d.value_));
-					}
-
-					vtls->ApplyDamageList(dmg);
+					vtls->ApplyDamageList(node_,ssc,dmg);
 				}
 			}
 		}
@@ -94,17 +84,6 @@ void PlayerController::Update(float dt)
 {
 	// Testing
 	auto input=GetSubsystem<Input>();
-	if(input->GetKeyPress(KEY_A))
-	{
-		auto vitals=node_->GetComponent<PlayerVitals>();
-		if(vitals)
-		{
-			DamageValueList dmg;
-			DamageValue d1(DPhysical, 10.0);
-			dmg.push_back(d1);
-			vitals->ApplyDamageList(dmg);
-		}
-	}
 
 	auto ca=node_->GetComponent<CrowdAgent>();
 	if(ca)
@@ -116,8 +95,10 @@ void PlayerController::Update(float dt)
 		Vector2 ground=cam->GetScreenGround(mousepos.x_,mousepos.y_);
 		if(input->GetMouseButtonDown(MOUSEB_LEFT) /*&& cam->PickGround(ground,mousepos.x_,mousepos.y_)*/)
 		{
+			ca->SetMaxSpeed(30.0f);
 			ca->SetTargetPosition(Vector3(ground.x_, 0, ground.y_));
 		}
+
 		if(input->GetMouseButtonDown(MOUSEB_RIGHT))
 		{
 			auto animCtrl=node_->GetComponent<AnimationController>();
@@ -126,6 +107,9 @@ void PlayerController::Update(float dt)
 				animCtrl->Play(animpath_ + "/Models/Spin.ani", 0, true, 0.1f);
 				animCtrl->SetSpeed(animpath_ + "/Models/Spin.ani", 3.0);
 			}
+			ca->SetNavigationPushiness(NAVIGATIONPUSHINESS_HIGH);
+			ca->SetMaxSpeed(15.0f);
+			//ca->SetTargetPosition(Vector3(ground.x_, 0, ground.y_));
 		}
 		else
 		{
@@ -134,6 +118,8 @@ void PlayerController::Update(float dt)
 			{
 				animCtrl->Stop(animpath_ + "/Models/Spin.ani");
 			}
+			ca->SetNavigationPushiness(NAVIGATIONPUSHINESS_MEDIUM);
+			ca->SetMaxSpeed(30.0f);
 		}
 	}
 }
@@ -162,7 +148,7 @@ void PlayerController::HandleCrowdAgentReposition(StringHash eventType, VariantM
             // Face the direction of its velocity but moderate the turning speed based on the speed ratio and timeStep
             node->SetRotation(node->GetRotation().Slerp(Quaternion(Vector3::FORWARD, velocity), 10.0f * timeStep * speedRatio*1.0));
             // Throttle the animation speed based on agent speed ratio (ratio = 1 is full throttle)
-            //animCtrl->SetSpeed(animpath_ + "/Models/Walk.ani", speedRatio * 0.25f);
+            animCtrl->SetSpeed(animpath_ + "/Models/Walk.ani", speedRatio * 0.25f);
         }
         else
 		{
@@ -170,10 +156,10 @@ void PlayerController::HandleCrowdAgentReposition(StringHash eventType, VariantM
 		}
 
         // If speed is too low then stop the animation
-       /* if (speed < agent->GetRadius())
+        if (speed < agent->GetRadius())
         {
 			animCtrl->Stop(animpath_ + "/Models/Walk.ani", 0.5f);
 			animCtrl->Play(animpath_ + "/Models/Idle.ani", 0, true, 0.5f);
-		}*/
+		}
     }
 }
