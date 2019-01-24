@@ -14,10 +14,13 @@ void CombatController::RegisterObject(Context *context)
 
 CombatController::CombatController(Context *context) : LogicComponent(context)
 {
-	static StringHash CrowdAgentReposition("CrowdAgentReposition");
 	SetUpdateEventMask(USE_UPDATE);
+}
 
-	SubscribeToEvent(CrowdAgentReposition, URHO3D_HANDLER(CombatController, HandleCrowdAgentReposition));
+void CombatController::DelayedStart()
+{
+	static StringHash CrowdAgentReposition("CrowdAgentNodeReposition");
+	SubscribeToEvent(node_, CrowdAgentReposition, URHO3D_HANDLER(CombatController, HandleCrowdAgentReposition));
 }
 
 void CombatController::SetObjectPath(String op)
@@ -84,7 +87,7 @@ void CombatController::HandleCrowdAgentReposition(StringHash eventType, VariantM
         {
             float speedRatio = speed / agent->GetMaxSpeed();
             // Face the direction of its velocity but moderate the turning speed based on the speed ratio and timeStep
-            node->SetRotation(node->GetRotation().Slerp(Quaternion(Vector3::FORWARD, velocity), 10.0f * timeStep * speedRatio*0.00625));
+            node->SetRotation(node->GetRotation().Slerp(Quaternion(Vector3::FORWARD, velocity), 10.0f * timeStep * speedRatio*1.0));
             // Throttle the animation speed based on agent speed ratio (ratio = 1 is full throttle)
             animCtrl->SetSpeed(animpath_ + "/Models/Walk.ani", speedRatio * 0.25f);
         }

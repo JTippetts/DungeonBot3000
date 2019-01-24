@@ -29,6 +29,7 @@ class CombatController : public LogicComponent
 
 	protected:
 	virtual void Update(float dt) override;
+	virtual void DelayedStart() override;
 	void HandleCrowdAgentReposition(StringHash eventType, VariantMap &eventData);
 
 	String objectpath_, animpath_;

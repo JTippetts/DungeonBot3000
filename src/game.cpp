@@ -272,7 +272,12 @@ void Game::Start()
 			//Vector3 pos(x,0,z);
 		//} while(!nav->
 
-		Vector3 pos=nav->GetRandomPoint(); //nav->MoveAlongSurface(Vector3(0,0,0), Vector3(x,0,z));
+		Vector3 pos;
+		do
+		{
+			pos=nav->GetRandomPoint(); //nav->MoveAlongSurface(Vector3(0,0,0), Vector3(x,0,z));
+		} while(pos.y_ > 0.6);
+		//Log::Write(LOG_INFO, String(pos.y_));
 		pos.y_=0;
 		XMLFile *xfile=cache->GetResource<XMLFile>("Objects/Mobs/User/object.xml");
 		Node *n=scene_->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));

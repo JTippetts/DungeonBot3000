@@ -20,14 +20,13 @@ void PlayerController::RegisterObject(Context *context)
 
 PlayerController::PlayerController(Context *context) : LogicComponent(context)
 {
-	static StringHash CrowdAgentReposition("CrowdAgentReposition");
 	SetUpdateEventMask(USE_UPDATE);
-	SubscribeToEvent(CrowdAgentReposition, URHO3D_HANDLER(PlayerController, HandleCrowdAgentReposition));
 }
 
 void PlayerController::DelayedStart()
 {
 	SubscribeToEvent(node_, StringHash("AnimationTrigger"), URHO3D_HANDLER(PlayerController, HandleAnimationTrigger));
+	SubscribeToEvent(node_, StringHash("CrowdAgentNodeReposition"), URHO3D_HANDLER(PlayerController, HandleCrowdAgentReposition));
 }
 
 void PlayerController::SetObjectPath(String op)
@@ -107,41 +106,6 @@ void PlayerController::Update(float dt)
 		}
 	}
 
-	if(input->GetKeyPress(KEY_S))
-	{
-		// Test dealing damage to mobs
-		PODVector<Node *> dudes;
-		node_->GetScene()->GetChildrenWithComponent<EnemyVitals>(dudes, false);
-		Vector3 mypos=node_->GetWorldPosition();
-
-		for(auto i=dudes.Begin(); i!=dudes.End(); ++i)
-		{
-			Vector3 pos=(*i)->GetWorldPosition();
-			Vector3 delta=mypos-pos;
-			if(delta.Length() < 8)
-			{
-				/*DamageValueList dmg;
-				DamageValue d1(DPhysical, 10.0);
-				dmg.push_back(d1);*/
-				auto myvitals = node_->GetComponent<PlayerVitals>();
-				auto vtls = (*i)->GetComponent<EnemyVitals>();
-				if(vtls && myvitals)
-				{
-					auto pd=GetSubsystem<PlayerData>();
-					StatSetCollection ssc=pd->GetStatSetCollection(EqNumEquipmentSlots, "SpinAttack");
-					DamageValueList dmg=BuildDamageList(ssc);
-
-					for(auto d : dmg)
-					{
-						Log::Write(LOG_INFO, String(DamageNames[d.type_].c_str()) + ": " + String(d.value_));
-					}
-
-					vtls->ApplyDamageList(dmg);
-				}
-			}
-		}
-	}
-
 	auto ca=node_->GetComponent<CrowdAgent>();
 	if(ca)
 	{
@@ -160,7 +124,7 @@ void PlayerController::Update(float dt)
 			if(!animCtrl->IsPlaying(animpath_ + "/Models/Spin.ani"))
 			{
 				animCtrl->Play(animpath_ + "/Models/Spin.ani", 0, true, 0.1f);
-				animCtrl->SetSpeed(animpath_ + "/Models/Spin.ani", 4.0);
+				animCtrl->SetSpeed(animpath_ + "/Models/Spin.ani", 3.0);
 			}
 		}
 		else
@@ -196,7 +160,7 @@ void PlayerController::HandleCrowdAgentReposition(StringHash eventType, VariantM
         {
             float speedRatio = speed / agent->GetMaxSpeed();
             // Face the direction of its velocity but moderate the turning speed based on the speed ratio and timeStep
-            //node->SetRotation(node->GetRotation().Slerp(Quaternion(Vector3::FORWARD, velocity), 10.0f * timeStep * speedRatio*0.00625));
+            node->SetRotation(node->GetRotation().Slerp(Quaternion(Vector3::FORWARD, velocity), 10.0f * timeStep * speedRatio*1.0));
             // Throttle the animation speed based on agent speed ratio (ratio = 1 is full throttle)
             //animCtrl->SetSpeed(animpath_ + "/Models/Walk.ani", speedRatio * 0.25f);
         }
