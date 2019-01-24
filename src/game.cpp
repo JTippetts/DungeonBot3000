@@ -272,6 +272,12 @@ void Game::Start()
 		Node *n=scene_->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
 		auto ca=n->GetComponent<CrowdAgent>();
 		ca->SetMaxSpeed(rollf(20.0f, 30.0f));
+
+		auto vtls=n->GetComponent<EnemyVitals>();
+		if(vtls)
+		{
+			vtls->SetLevel(10);
+		}
 	}
 
 }

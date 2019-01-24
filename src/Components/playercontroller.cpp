@@ -34,6 +34,28 @@ void PlayerController::Update(float dt)
 		}
 	}
 
+	if(input->GetKeyPress(KEY_S))
+	{
+		// Test dealing damage to mobs
+		PODVector<Node *> dudes;
+		node_->GetScene()->GetChildrenWithComponent<EnemyVitals>(dudes, false);
+		Vector3 mypos=node_->GetWorldPosition();
+
+		for(auto i=dudes.Begin(); i!=dudes.End(); ++i)
+		{
+			Vector3 pos=(*i)->GetWorldPosition();
+			Vector3 delta=mypos-pos;
+			if(delta.Length() < 8)
+			{
+				DamageValueList dmg;
+				DamageValue d1(DPhysical, 10.0);
+				dmg.push_back(d1);
+				auto vtls = (*i)->GetComponent<EnemyVitals>();
+				if(vtls) vtls->ApplyDamageList(dmg);
+			}
+		}
+	}
+
 	auto ca=node_->GetComponent<CrowdAgent>();
 	if(ca)
 	{

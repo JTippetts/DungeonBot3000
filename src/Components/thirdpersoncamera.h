@@ -59,6 +59,7 @@ class ThirdPersonCamera : public LogicComponent
 	Vector2 GetScreenGround(int mx, int my);
 	float CameraPick(Ray &ray, float followdist);
 
+	Vector2 WorldToScreen(const Vector3 &pt);
 
 	protected:
 	void HandleSetCameraPosition(StringHash eventType, VariantMap &eventData);

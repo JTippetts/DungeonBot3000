@@ -1,0 +1,4 @@
+{
+	"MaximumLife": [["Flat", "15+Level*5"]],
+	"LifeRegen": [["Flat", "0.05"]],
+}

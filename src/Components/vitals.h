@@ -65,3 +65,38 @@ class PlayerVitals : public LogicComponent
 	void UpdateHoTs(float dt);
 };
 
+
+// Enemy vitals work differently, in that they own the StatSets for the enemy.
+// Base stat set, buffs/debuffs, and skill stat sets.
+// Skill stat sets are derived from elsewhere, a thing for later.
+
+class EnemyVitals : public LogicComponent
+{
+	URHO3D_OBJECT(EnemyVitals, LogicComponent);
+	public:
+	static void RegisterObject(Context *context);
+	EnemyVitals(Context *context);
+
+	double GetCurrentLife();
+	double GetMaximumLife();
+	void ApplyDamageList(const DamageValueList &dmg);
+	void ApplyHealing(double h);
+
+	void SetBaseStatsFilename(const String &filename);
+	const String GetBaseStatsFilename() const;
+
+	void SetLevel(unsigned int level);
+
+	protected:
+	StatSet basestats_;
+	StatSetCollection basestatscollection_;
+	double currentlife_, maximumlife_;
+	String basestatsfilename_;
+
+	std::unordered_map<unsigned int, BurnDoT> dots_;
+	std::list<HealHoT> hots_;
+
+	virtual void Update(float dt) override;
+	void UpdateDoTs(float dt);
+	void UpdateHoTs(float dt);
+};

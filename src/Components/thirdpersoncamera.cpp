@@ -37,6 +37,12 @@ void ThirdPersonCamera::RegisterObject(Context *context)
 	URHO3D_ACCESSOR_ATTRIBUTE("Max Zoom Distance", GetMaxFollow, SetMaxFollow, float, 45.0f, AM_DEFAULT);
 }
 
+Vector2 ThirdPersonCamera::WorldToScreen(const Vector3 &pt)
+{
+	if(camera_) return camera_->WorldToScreenPoint(pt);
+	return Vector2(0,0);
+}
+
 void ThirdPersonCamera::Update(float dt)
 {
 	shaketime_+=dt*shakespeed_;

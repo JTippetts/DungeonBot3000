@@ -33,4 +33,10 @@
 	</component>
 	<component type="StupidChaseController" >
 	</component>
+	<component type="EnemyVitals" >
+		<attribute name="Base Stats Filename" value="Objects/Mobs/User/basestats.json" />
+	</component>
+	<component type="EnemyLifeBar" >
+		<attribute name="Offset" value="10.0" />
+	</component>
 </node>
