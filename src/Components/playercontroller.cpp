@@ -11,7 +11,7 @@
 #include "vitals.h"
 #include "../playerdata.h"
 #include "combatcontroller.h"
-#include "../combatactionstates.h"
+#include "../playeractionstates.h"
 
 
 void PlayerController::RegisterObject(Context *context)

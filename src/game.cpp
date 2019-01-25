@@ -48,6 +48,8 @@
 #include "Components/vitals.h"
 
 #include "playerdata.h"
+#include "playeractionstates.h"
+#include "enemyactionstates.h"
 
 #include "maze.h"
 #include "combat.h"
@@ -288,13 +290,18 @@ void Game::Start()
 		pos.y_=0;
 		XMLFile *xfile=cache->GetResource<XMLFile>("Objects/Mobs/User/object.xml");
 		Node *n=scene_->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
-		auto ca=n->GetComponent<CrowdAgent>();
-		ca->SetMaxSpeed(rollf(10.0f, 20.0f));
+
 
 		auto vtls=n->GetComponent<EnemyVitals>();
 		if(vtls)
 		{
 			vtls->SetLevel(10);
+		}
+		auto cc=n->GetComponent<CombatController>();
+		if(cc)
+		{
+			//Log::Write(LOG_INFO, "Setting combat action state.");
+			cc->SetCombatActionState(&g_enemyuseridle);
 		}
 	}
 

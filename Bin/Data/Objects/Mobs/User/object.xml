@@ -31,8 +31,6 @@
 		<attribute name="Object Path" value="Objects/Mobs/User" />
 		<attribute name="Animation Path" value="Objects/Mobs/Common" />
 	</component>
-	<component type="StupidChaseController" >
-	</component>
 	<component type="EnemyVitals" >
 		<attribute name="Base Stats Filename" value="Objects/Mobs/User/basestats.json" />
 	</component>
