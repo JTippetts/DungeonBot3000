@@ -10,6 +10,7 @@
 #include <Urho3D/Navigation/CrowdAgent.h>
 
 #include "enemyai.h"
+#include "../playerdata.h"
 
 using namespace Urho3D;
 
@@ -33,7 +34,21 @@ class StupidChaseController : public EnemyAI
 
 	virtual CombatActionState *Callback(CombatActionState *state) override
 	{
-		if(state==&g_enemyuseridle) return &g_enemyuserchase;
+		if(state==&g_enemyidle)
+		{
+			return &g_enemychase;
+		}
+
+		if(state==&g_enemychase)
+		{
+			auto pd = GetSubsystem<PlayerData>();
+			auto playerpos = pd->GetPlayerNode()->GetWorldPosition();
+			Vector3 delta = playerpos - node_->GetWorldPosition();
+			if(delta.Length() < 4)
+			{
+				return &g_enemykick;
+			}
+		}
 		return nullptr;
 	}
 };

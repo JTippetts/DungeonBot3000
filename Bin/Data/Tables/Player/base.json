@@ -1,7 +1,7 @@
 {
-	"MaximumLife": [["Flat", "15+Level*5"]],
+	"MaximumLife": [["Flat", "150+Level*5"]],
 	"Energy": [["Flat", "100"]],
-	"LifeRegen": [["Flat", "0.01"]],
+	"LifeRegen": [["Flat", "0.05"]],
 	"EnergyGen": [["Flat", "1"]],
 	"IncreasedHealingTaken": [["Flat", "0.25"]],
 	"PhysicalAsElectrical": [["Flat", "0.5"]],

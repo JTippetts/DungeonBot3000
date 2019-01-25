@@ -3,25 +3,36 @@
 // Enemy action states
 #include "combatactionstates.h"
 
-class CASEnemyUserIdle : public CombatActionState
+class CASEnemyIdle : public CombatActionState
 {
 	public:
-	CASEnemyUserIdle();
+	CASEnemyIdle();
 	virtual void End(CombatController *actor) override;
 	virtual void Start(CombatController *actor) override;
 	virtual CombatActionState *Update(CombatController *actor, float dt) override;
 	virtual void HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt) override;
 };
 
-class CASEnemyUserChase : public CombatActionState
+class CASEnemyChase : public CombatActionState
 {
 	public:
-	CASEnemyUserChase();
+	CASEnemyChase();
 	virtual void End(CombatController *actor) override;
 	virtual void Start(CombatController *actor) override;
 	virtual CombatActionState *Update(CombatController *actor, float dt) override;
 	virtual void HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt) override;
 };
 
-extern CASEnemyUserIdle g_enemyuseridle;
-extern CASEnemyUserChase g_enemyuserchase;
+class CASEnemyKick : public CombatActionState
+{
+	public:
+	CASEnemyKick();
+	virtual void Start(CombatController *actor) override;
+	virtual void End(CombatController *actor) override;
+	virtual CombatActionState *Update(CombatController *actor, float dt) override;
+	virtual void HandleTrigger(CombatController *actor, String animname, unsigned int value) override;
+};
+
+extern CASEnemyIdle g_enemyidle;
+extern CASEnemyChase g_enemychase;
+extern CASEnemyKick g_enemykick;

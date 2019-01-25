@@ -11,17 +11,20 @@
 #include "enemyactionstates.h"
 #include "Components/enemyai.h"
 
-CASEnemyUserIdle g_enemyuseridle;
-CASEnemyUserChase g_enemyuserchase;
+#include "playerdata.h"
+
+CASEnemyIdle g_enemyidle;
+CASEnemyChase g_enemychase;
+CASEnemyKick g_enemykick;
 
 float rollf(float, float);
 
 /////// Idle
-CASEnemyUserIdle::CASEnemyUserIdle() : CombatActionState()
+CASEnemyIdle::CASEnemyIdle() : CombatActionState()
 {
 }
 
-void CASEnemyUserIdle::Start(CombatController *actor)
+void CASEnemyIdle::Start(CombatController *actor)
 {
 
 	auto node=actor->GetNode();
@@ -42,7 +45,7 @@ void CASEnemyUserIdle::Start(CombatController *actor)
 	}
 }
 
-void CASEnemyUserIdle::End(CombatController *actor)
+void CASEnemyIdle::End(CombatController *actor)
 {
 	auto node=actor->GetNode();
 	if(node)
@@ -61,7 +64,7 @@ void CASEnemyUserIdle::End(CombatController *actor)
 	}
 }
 
-CombatActionState *CASEnemyUserIdle::Update(CombatController *actor, float dt)
+CombatActionState *CASEnemyIdle::Update(CombatController *actor, float dt)
 {
 	auto node=actor->GetNode();
 
@@ -72,7 +75,7 @@ CombatActionState *CASEnemyUserIdle::Update(CombatController *actor, float dt)
 
 	if(delta.Length() < 50)
 	{
-		//return &g_enemyuserchase;
+		//return &g_enemychase;
 		auto ai=node->GetDerivedComponent<EnemyAI>();
 		if(ai)
 		{
@@ -87,7 +90,7 @@ CombatActionState *CASEnemyUserIdle::Update(CombatController *actor, float dt)
 	return nullptr;
 }
 
-void CASEnemyUserIdle::HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt)
+void CASEnemyIdle::HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt)
 {
 	auto node=actor->GetNode();
 	auto ca=node->GetComponent<CrowdAgent>();
@@ -98,11 +101,11 @@ void CASEnemyUserIdle::HandleAgentReposition(CombatController *actor, Vector3 ve
 }
 
 ///////////////////
-CASEnemyUserChase::CASEnemyUserChase() : CombatActionState()
+CASEnemyChase::CASEnemyChase() : CombatActionState()
 {
 }
 
-void CASEnemyUserChase::End(CombatController *actor)
+void CASEnemyChase::End(CombatController *actor)
 {
 	auto node=actor->GetNode();
 	if(node)
@@ -121,7 +124,7 @@ void CASEnemyUserChase::End(CombatController *actor)
 	}
 }
 
-void CASEnemyUserChase::Start(CombatController *actor)
+void CASEnemyChase::Start(CombatController *actor)
 {
 	auto node=actor->GetNode();
 	if(node)
@@ -143,7 +146,7 @@ void CASEnemyUserChase::Start(CombatController *actor)
 	}
 }
 
-CombatActionState *CASEnemyUserChase::Update(CombatController *actor, float dt)
+CombatActionState *CASEnemyChase::Update(CombatController *actor, float dt)
 {
 	auto node=actor->GetNode();
 
@@ -154,7 +157,7 @@ CombatActionState *CASEnemyUserChase::Update(CombatController *actor, float dt)
 
 	if(delta.Length() > 50)
 	{
-		return &g_enemyuseridle;
+		return &g_enemyidle;
 	}
 
 	auto ca=node->GetComponent<CrowdAgent>();
@@ -174,6 +177,93 @@ CombatActionState *CASEnemyUserChase::Update(CombatController *actor, float dt)
 	return nullptr;
 }
 
-void CASEnemyUserChase::HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt)
+void CASEnemyChase::HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt)
 {
+}
+
+
+/////////////////////////
+CASEnemyKick::CASEnemyKick()
+{
+}
+
+void CASEnemyKick::Start(CombatController *actor)
+{
+	auto node=actor->GetNode();
+	if(node)
+	{
+		auto ac=node->GetComponent<AnimationController>();
+		if(ac)
+		{
+			ac->Play(actor->GetAnimPath() + "/Models/Kick.ani", 0, false, 0.1f);
+			auto vitals=node->GetComponent<EnemyVitals>();
+			if(vitals)
+			{
+				auto ssc=vitals->GetStats();
+				float attackspeed=std::max(0.01, GetStatValue(ssc, "AttackSpeed"));
+				ac->SetSpeed(actor->GetAnimPath() + "/Models/Kick.ani", 1.0f / attackspeed);
+			}
+		}
+
+		auto ca=node->GetComponent<CrowdAgent>();
+		if(ca)
+		{
+			ca->SetNavigationPushiness(NAVIGATIONPUSHINESS_HIGH);
+		}
+	}
+}
+
+void CASEnemyKick::End(CombatController *actor)
+{
+	auto node=actor->GetNode();
+	if(node)
+	{
+		auto ac=node->GetComponent<AnimationController>();
+		if(ac)
+		{
+			ac->Stop(actor->GetAnimPath() + "/Models/Kick.ani", 0.1f);
+		}
+
+		auto ca=node->GetComponent<CrowdAgent>();
+		if(ca)
+		{
+			ca->SetNavigationPushiness(NAVIGATIONPUSHINESS_MEDIUM);
+			ca->SetTargetPosition(node->GetWorldPosition());
+		}
+	}
+}
+
+CombatActionState *CASEnemyKick::Update(CombatController *actor, float dt)
+{
+	auto node=actor->GetNode();
+	auto ac=node->GetComponent<AnimationController>();
+	if(ac)
+	{
+		if(ac->IsAtEnd(actor->GetAnimPath() + "/Models/Kick.ani"))
+		{
+			return &g_enemyidle;
+		}
+	}
+
+	return nullptr;
+}
+
+void CASEnemyKick::HandleTrigger(CombatController *actor, String animname, unsigned int value)
+{
+	if(animname=="Kick")
+	{
+		auto node=actor->GetNode();
+		auto vitals=node->GetComponent<EnemyVitals>();
+		if(vitals)
+		{
+			auto pd=node->GetSubsystem<PlayerData>();
+			auto pv=pd->GetPlayerNode()->GetComponent<PlayerVitals>();
+			auto mystats=vitals->GetStats();
+			DamageValueList dmg=BuildDamageList(mystats);
+			if(pv)
+			{
+				pv->ApplyDamageList(node,mystats,dmg);
+			}
+		}
+	}
 }
