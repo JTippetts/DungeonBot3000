@@ -77,10 +77,17 @@ void CombatController::Update(float dt)
 	// State switch if necessary
 	if(nextstate_)
 	{
-		if(currentstate_) currentstate_->End(this);
-		currentstate_=nextstate_;
-		nextstate_=nullptr;
-		currentstate_->Start(this);
+		if(nextstate_==currentstate_)
+		{
+			nextstate_=nullptr;
+		}
+		else
+		{
+			if(currentstate_) currentstate_->End(this);
+			currentstate_=nextstate_;
+			nextstate_=nullptr;
+			currentstate_->Start(this);
+		}
 	}
 
 	if(currentstate_)

@@ -9,6 +9,7 @@
 #include "Components/vitals.h"
 
 #include "enemyactionstates.h"
+#include "Components/enemyai.h"
 
 CASEnemyUserIdle g_enemyuseridle;
 CASEnemyUserChase g_enemyuserchase;
@@ -71,7 +72,16 @@ CombatActionState *CASEnemyUserIdle::Update(CombatController *actor, float dt)
 
 	if(delta.Length() < 50)
 	{
-		return &g_enemyuserchase;
+		//return &g_enemyuserchase;
+		auto ai=node->GetDerivedComponent<EnemyAI>();
+		if(ai)
+		{
+			return ai->Callback(this);
+		}
+		else
+		{
+			Log::Write(LOG_ERROR, "No enemy AI in unit.");
+		}
 	}
 
 	return nullptr;
@@ -121,6 +131,15 @@ void CASEnemyUserChase::Start(CombatController *actor)
 		{
 			ac->Play(actor->GetAnimPath() + "/Models/Walk.ani", 0, true, 0.1f);
 		}
+
+		auto ev=node->GetComponent<EnemyVitals>();
+		auto ca=node->GetComponent<CrowdAgent>();
+		if(ev && ca)
+		{
+			StatSetCollection ssc=ev->GetStats();
+			double movespeed=GetStatValue(ssc, "MovementSpeed");
+			ca->SetMaxSpeed(movespeed*rollf(0.7,1.0));
+		}
 	}
 }
 
@@ -138,18 +157,18 @@ CombatActionState *CASEnemyUserChase::Update(CombatController *actor, float dt)
 		return &g_enemyuseridle;
 	}
 
-	auto ev=node->GetComponent<EnemyVitals>();
 	auto ca=node->GetComponent<CrowdAgent>();
-	if(ev && ca)
-	{
-		StatSetCollection ssc=ev->GetStats();
-		double movespeed=GetStatValue(ssc, "MovementSpeed");
-		ca->SetMaxSpeed(movespeed);
-	}
 
 	if(ca)
 	{
 		ca->SetTargetPosition(dudepos+Vector3(rollf(-8.0f,8.0f),0,rollf(-8.0f,8.0f)));
+	}
+
+	auto ai=node->GetDerivedComponent<EnemyAI>();
+	if(ai)
+	{
+		auto ns = ai->Callback(this);
+		if(ns) return ns;
 	}
 
 	return nullptr;

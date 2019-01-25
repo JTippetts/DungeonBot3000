@@ -9,13 +9,17 @@
 #include <Urho3D/Scene/Node.h>
 #include <Urho3D/Navigation/CrowdAgent.h>
 
+#include "enemyai.h"
+
 using namespace Urho3D;
 
 float rollf(float,float);
 
-class StupidChaseController : public LogicComponent
+class CombatActionState;
+
+class StupidChaseController : public EnemyAI
 {
-	URHO3D_OBJECT(StupidChaseController, LogicComponent);
+	URHO3D_OBJECT(StupidChaseController, EnemyAI);
 
 	public:
 	static void RegisterObject(Context *context)
@@ -23,31 +27,13 @@ class StupidChaseController : public LogicComponent
 		context->RegisterFactory<StupidChaseController>("Logic");
 	}
 
-	StupidChaseController(Context *context) : LogicComponent(context)
+	StupidChaseController(Context *context) : EnemyAI(context)
 	{
-		SetUpdateEventMask(USE_UPDATE);
 	}
 
-	protected:
-	void Update(float dt) override
+	virtual CombatActionState *Callback(CombatActionState *state) override
 	{
-		auto ca=node_->GetComponent<CrowdAgent>();
-		auto pl=node_->GetScene()->GetChild("Dude");
-		Vector3 pos=node_->GetWorldPosition();
-		Vector3 dudepos=pl->GetWorldPosition();
-		Vector3 delta=dudepos-pos;
-
-		if(delta.Length() < 50)
-		{
-			if(!ca->IsEnabled())
-			{
-				ca->SetEnabled(true);
-			}
-			ca->SetTargetPosition(node_->GetScene()->GetChild("Dude")->GetPosition()+Vector3(rollf(-8.0f,8.0f),0,rollf(-8.0f,8.0f)));
-		}
-		else
-		{
-			ca->SetEnabled(false);
-		}
+		if(state==&g_enemyuseridle) return &g_enemyuserchase;
+		return nullptr;
 	}
 };

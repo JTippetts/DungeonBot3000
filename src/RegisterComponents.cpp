@@ -12,6 +12,7 @@
 #include "Components/burnindicator.h"
 #include "Components/enemyondeath.h"
 #include "Components/timeddeath.h"
+#include "Components/enemyai.h"
 
 void RegisterCustomComponents(Context *context)
 {
@@ -20,6 +21,7 @@ void RegisterCustomComponents(Context *context)
 	RotationSmoothing::RegisterObject(context);
 	CombatController::RegisterObject(context);
 	PlayerController::RegisterObject(context);
+	EnemyAI::RegisterObject(context);
 	StupidChaseController::RegisterObject(context);
 	PlayerVitals::RegisterObject(context);
 	EnemyVitals::RegisterObject(context);

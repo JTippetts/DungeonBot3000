@@ -154,9 +154,18 @@ CombatActionState *CASPlayerMove::Update(CombatController *actor, float dt)
 	}
 	else
 	{
-		// Not walking anymore, return idle state
-		return &g_playeridle;
+		auto ca=node->GetComponent<CrowdAgent>();
+		if(ca)
+		{
+			Vector3 vel=ca->GetActualVelocity();
+			if(vel.Length() < ca->GetRadius())
+			{
+				return &g_playeridle;
+			}
+		}
 	}
+
+	return nullptr;
 }
 
 void CASPlayerMove::HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt)
