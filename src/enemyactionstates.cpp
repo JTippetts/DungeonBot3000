@@ -9,8 +9,6 @@
 #include "Components/vitals.h"
 
 #include "enemyactionstates.h"
-#include "Components/enemyai.h"
-
 #include "playerdata.h"
 
 float rollf(float, float);
