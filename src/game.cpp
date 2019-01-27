@@ -301,7 +301,9 @@ void Game::Start()
 		if(cc)
 		{
 			//Log::Write(LOG_INFO, "Setting combat action state.");
-			cc->SetCombatActionState(cc->GetState<CASEnemyIdle>());
+			//cc->SetCombatActionState(cc->GetState<CASEnemyIdle>());
+			cc->GetState<CASUserEnemyAI>();
+			cc->SetCombatActionState(cc->GetState<CASEnemyInactive>());
 		}
 	}
 

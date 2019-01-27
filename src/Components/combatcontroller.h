@@ -35,6 +35,7 @@ class CombatController : public LogicComponent
 	bool SetCombatActionState(CombatActionState *state);
 	CombatActionState *GetState(StringHash type);
 	template <class T> T *GetState();
+	template <class T> T *GetDerivedState();
 
 	protected:
 	virtual void Update(float dt) override;
@@ -49,3 +50,15 @@ class CombatController : public LogicComponent
 };
 
 template <class T> T *CombatController::GetState(){return static_cast<T*>(GetState(T::GetTypeStatic()));}
+template <class T> T* CombatController::GetDerivedState()
+{
+    for (Vector<SharedPtr<CombatActionState> >::ConstIterator i = states_.Begin(); i != states_.End(); ++i)
+    {
+        auto* state = dynamic_cast<T*>(i->Get());
+        if (state)
+            return state;
+    }
+	Log::Write(LOG_ERROR, String("Error: controller does not have state derived from ") + T::GetTypeNameStatic());
+	return nullptr;
+}
+

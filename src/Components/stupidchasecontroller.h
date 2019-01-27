@@ -18,6 +18,7 @@ using namespace Urho3D;
 float rollf(float,float);
 
 class CombatActionState;
+/*
 
 class StupidChaseController : public EnemyAI
 {
@@ -62,3 +63,4 @@ class StupidChaseController : public EnemyAI
 		return nullptr;
 	}
 };
+*/

@@ -15,6 +15,46 @@
 
 float rollf(float, float);
 
+////////// Inactive
+CASEnemyInactive::CASEnemyInactive(Context *context) : CombatActionState(context)
+{
+}
+
+void CASEnemyInactive::Start(CombatController *actor)
+{
+	auto node=actor->GetNode();
+	auto ac=node->GetComponent<AnimationController>();
+	auto ca=node->GetComponent<CrowdAgent>();
+
+	ac->StopAll(0.1f);
+
+	ca->SetTargetPosition(node->GetWorldPosition());
+	ca->SetEnabled(false);
+}
+
+void CASEnemyInactive::End(CombatController *actor)
+{
+	auto node=actor->GetNode();
+	auto ca=node->GetComponent<CrowdAgent>();
+
+	ca->SetEnabled(true);
+}
+
+CombatActionState *CASEnemyInactive::Update(CombatController *actor, float dt)
+{
+	auto node=actor->GetNode();
+	auto pl=node->GetScene()->GetChild("Dude");
+	Vector3 pos=node->GetWorldPosition();
+	Vector3 dudepos=pl->GetWorldPosition();
+	Vector3 delta=dudepos-pos;
+
+	if(delta.Length() < 60)
+	{
+		return actor->GetDerivedState<CASEnemyAI>();
+	}
+	return nullptr;
+}
+
 /////// Idle
 CASEnemyIdle::CASEnemyIdle(Context *context) : CombatActionState(context)
 {
@@ -69,12 +109,14 @@ CombatActionState *CASEnemyIdle::Update(CombatController *actor, float dt)
 	Vector3 dudepos=pl->GetWorldPosition();
 	Vector3 delta=dudepos-pos;
 
-	if(delta.Length() < 50)
+	if(delta.Length() < 60)
 	{
-		auto ai=node->GetDerivedComponent<EnemyAI>();
+		//auto ai=node->GetDerivedComponent<EnemyAI>();
+		auto ai=actor->GetDerivedState<CASEnemyAI>();
 		if(ai)
 		{
-			return ai->Callback(this);
+			//return ai->Callback(this);
+			return ai;
 		}
 		else
 		{
@@ -95,12 +137,12 @@ void CASEnemyIdle::HandleAgentReposition(CombatController *actor, Vector3 veloci
 	}
 }
 
-///////////////////
-CASEnemyChase::CASEnemyChase(Context *context) : CombatActionState(context)
+/////////////////// CASEnemyApproachTarget
+CASEnemyApproachTarget::CASEnemyApproachTarget(Context *context) : CombatActionState(context), distance_(0), target_(nullptr), tostate_(nullptr), timeout_(0)
 {
 }
 
-void CASEnemyChase::End(CombatController *actor)
+void CASEnemyApproachTarget::End(CombatController *actor)
 {
 	auto node=actor->GetNode();
 	if(node)
@@ -119,7 +161,7 @@ void CASEnemyChase::End(CombatController *actor)
 	}
 }
 
-void CASEnemyChase::Start(CombatController *actor)
+void CASEnemyApproachTarget::Start(CombatController *actor)
 {
 	auto node=actor->GetNode();
 	if(node)
@@ -139,9 +181,10 @@ void CASEnemyChase::Start(CombatController *actor)
 			ca->SetMaxSpeed(movespeed*rollf(0.7,1.0));
 		}
 	}
+	time_=0.0;
 }
 
-CombatActionState *CASEnemyChase::Update(CombatController *actor, float dt)
+CombatActionState *CASEnemyApproachTarget::Update(CombatController *actor, float dt)
 {
 	auto node=actor->GetNode();
 
@@ -150,9 +193,24 @@ CombatActionState *CASEnemyChase::Update(CombatController *actor, float dt)
 	Vector3 dudepos=pl->GetWorldPosition();
 	Vector3 delta=dudepos-pos;
 
-	if(delta.Length() > 50)
+	if(delta.Length() > 60)
 	{
-		return actor->GetState<CASEnemyIdle>();
+		//return actor->GetState<CASEnemyIdle>();
+		return actor->GetState<CASEnemyInactive>();
+	}
+
+	if(delta.Length() <= distance_)
+	{
+		return tostate_;
+	}
+
+	if(timeout_>0.0)
+	{
+		time_+=dt;
+		if(time_ > timeout_)
+		{
+			return actor->GetDerivedState<CASEnemyAI>();
+		}
 	}
 
 	auto ca=node->GetComponent<CrowdAgent>();
@@ -162,18 +220,27 @@ CombatActionState *CASEnemyChase::Update(CombatController *actor, float dt)
 		ca->SetTargetPosition(dudepos+Vector3(rollf(-8.0f,8.0f),0,rollf(-8.0f,8.0f)));
 	}
 
-	auto ai=node->GetDerivedComponent<EnemyAI>();
-	if(ai)
-	{
-		auto ns = ai->Callback(this);
-		if(ns) return ns;
-	}
-
 	return nullptr;
 }
 
-void CASEnemyChase::HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt)
+
+void CASEnemyApproachTarget::SetApproachDistance(float dist)
 {
+	distance_=dist;
+}
+
+void CASEnemyApproachTarget::SetApproachState(CombatActionState *state)
+{
+	tostate_=state;
+}
+
+void CASEnemyApproachTarget::SetApproachTarget(Node *target)
+{
+	target_=target;
+}
+void CASEnemyApproachTarget::SetTimeout(float timeout)
+{
+	timeout_=timeout;
 }
 
 
@@ -236,7 +303,8 @@ CombatActionState *CASEnemyKick::Update(CombatController *actor, float dt)
 	{
 		if(ac->IsAtEnd(actor->GetAnimPath() + "/Models/Kick.ani"))
 		{
-			return actor->GetState<CASEnemyIdle>();
+			//return actor->GetState<CASEnemyIdle>();
+			return actor->GetDerivedState<CASEnemyAI>();
 		}
 	}
 
@@ -270,3 +338,29 @@ void CASEnemyKick::HandleTrigger(CombatController *actor, String animname, unsig
 		}
 	}
 }
+
+
+/// User AI
+CASUserEnemyAI::CASUserEnemyAI(Context *context) : CASEnemyAI(context)
+{
+}
+
+ void CASUserEnemyAI::Start(CombatController *actor)
+ {
+ }
+
+ void CASUserEnemyAI::End(CombatController *actor)
+ {
+ }
+
+ CombatActionState *CASUserEnemyAI::Update(CombatController *actor, float dt)
+ {
+	auto node = actor->GetNode();
+	CASEnemyApproachTarget *chase = actor->GetState<CASEnemyApproachTarget>();
+	chase->SetApproachTarget(node->GetScene()->GetChild("Dude"));
+	chase->SetApproachDistance(5.0);
+	chase->SetTimeout(0.0);
+	chase->SetApproachState(actor->GetState<CASEnemyKick>());
+
+	return chase;
+ }

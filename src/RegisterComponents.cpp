@@ -22,7 +22,7 @@ void RegisterCustomComponents(Context *context)
 	CombatController::RegisterObject(context);
 	//PlayerController::RegisterObject(context);
 	EnemyAI::RegisterObject(context);
-	StupidChaseController::RegisterObject(context);
+	//StupidChaseController::RegisterObject(context);
 	PlayerVitals::RegisterObject(context);
 	EnemyVitals::RegisterObject(context);
 	LifeBubbleUI::RegisterObject(context);
@@ -35,7 +35,11 @@ void RegisterCustomComponents(Context *context)
 	context->RegisterFactory<CASPlayerIdle>();
 	context->RegisterFactory<CASPlayerMove>();
 	context->RegisterFactory<CASPlayerSpinAttack>();
+
+	context->RegisterFactory<CASEnemyInactive>();
 	context->RegisterFactory<CASEnemyIdle>();
-	context->RegisterFactory<CASEnemyChase>();
+	context->RegisterFactory<CASEnemyApproachTarget>();
 	context->RegisterFactory<CASEnemyKick>();
+
+	context->RegisterFactory<CASUserEnemyAI>();
 }
