@@ -13,7 +13,7 @@
 #include "combatcontroller.h"
 #include "../playeractionstates.h"
 
-
+/*
 void PlayerController::RegisterObject(Context *context)
 {
 	context->RegisterFactory<PlayerController>("Logic");
@@ -97,81 +97,10 @@ void PlayerController::Update(float dt)
 
 
 	//StatSetCollection ssc=pd->GetStatSetCollection(EqNumEquipmentSlots, "SpinAttack");
-
-	/*auto ca=node_->GetComponent<CrowdAgent>();
-	if(ca)
-	{
-		auto cam=node_->GetScene()->GetChild("Camera")->GetComponent<ThirdPersonCamera>();
-		IntVector2 mousepos;
-		if(input->IsMouseVisible()) mousepos=input->GetMousePosition();
-		else mousepos=context_->GetSubsystem<UI>()->GetCursorPosition();
-		Vector2 ground=cam->GetScreenGround(mousepos.x_,mousepos.y_);
-		auto animCtrl=node_->GetComponent<AnimationController>();
-
-		if(input->GetMouseButtonDown(MOUSEB_LEFT) )
-		{
-			auto nav=node_->GetScene()->GetComponent<DynamicNavigationMesh>();
-
-			ca->SetMaxSpeed(30.0f);
-			Vector3 gp=nav->FindNearestPoint(Vector3(ground.x_,0,ground.y_), Vector3(10,10,10));
-			ca->SetTargetPosition(gp);
-
-			if(!animCtrl->IsPlaying(animpath_ + "/Models/Walk.ani"))
-			{
-				animCtrl->Play(animpath_ + "/Models/Walk.ani", 0, true, 0.1f);
-			}
-			if(animCtrl->IsPlaying(animpath_ + "/Models/Idle.ani"))
-			{
-				animCtrl->Stop(animpath_ + "/Models/Idle.ani", 0.1f);
-			}
-		}
-		else
-		{
-			if(animCtrl->IsPlaying(animpath_ + "/Models/Walk.ani"))
-			{
-				animCtrl->Stop(animpath_ + "/Models/Walk.ani", 0.1f);
-			}
-			if(!animCtrl->IsPlaying(animpath_ + "/Models/Idle.ani"))
-			{
-				animCtrl->Play(animpath_ + "/Models/Idle.ani", 0, true, 0.1f);
-			}
-		}
-
-
-
-		if(input->GetMouseButtonDown(MOUSEB_RIGHT) && input->GetMouseButtonDown(MOUSEB_LEFT))
-		{
-			auto ssc=pd->GetStatSetCollection(EqNumEquipmentSlots, "SpinAttack");
-			double movespeed=GetStatValue(ssc, "MovementSpeed");
-			double attackspeed=GetStatValue(ssc, "AttackSpeed");
-			auto animCtrl=node_->GetComponent<AnimationController>();
-			if(!animCtrl->IsPlaying(animpath_ + "/Models/Spin.ani"))
-			{
-
-				animCtrl->Play(animpath_ + "/Models/Spin.ani", 0, true, 0.1f);
-			}
-			animCtrl->SetSpeed(animpath_ + "/Models/Spin.ani", attackspeed);
-
-			ca->SetNavigationPushiness(NAVIGATIONPUSHINESS_HIGH);
-			ca->SetMaxSpeed(movespeed);
-			//ca->SetTargetPosition(Vector3(ground.x_, 0, ground.y_));
-		}
-		else
-		{
-			auto ssc=pd->GetStatSetCollection(EqNumEquipmentSlots, "");
-			double movespeed=GetStatValue(ssc, "MovementSpeed");
-			auto animCtrl=node_->GetComponent<AnimationController>();
-			if(animCtrl->IsPlaying(animpath_ + "/Models/Spin.ani"))
-			{
-				animCtrl->Stop(animpath_ + "/Models/Spin.ani");
-			}
-			ca->SetNavigationPushiness(NAVIGATIONPUSHINESS_MEDIUM);
-			ca->SetMaxSpeed(movespeed);
-		}
-	}*/
 }
 
 void PlayerController::HandleCrowdAgentReposition(StringHash eventType, VariantMap &eventData)
 {
 
 }
+*/

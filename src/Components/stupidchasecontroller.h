@@ -11,6 +11,7 @@
 
 #include "enemyai.h"
 #include "../playerdata.h"
+#include "combatcontroller.h"
 
 using namespace Urho3D;
 
@@ -34,19 +35,28 @@ class StupidChaseController : public EnemyAI
 
 	virtual CombatActionState *Callback(CombatActionState *state) override
 	{
-		if(state==&g_enemyidle)
+		Log::Write(LOG_INFO, "0");
+		auto actor=node_->GetComponent<CombatController>();
+		if(!actor)
 		{
-			return &g_enemychase;
+			Log::Write(LOG_INFO, "1");
+			return nullptr;
+		}
+		if(state==actor->GetState<CASEnemyIdle>())
+		{
+			Log::Write(LOG_INFO, "2");
+			return actor->GetState<CASEnemyChase>();
 		}
 
-		if(state==&g_enemychase)
+		if(state==actor->GetState<CASEnemyChase>())
 		{
+			Log::Write(LOG_INFO, "3");
 			auto pd = GetSubsystem<PlayerData>();
 			auto playerpos = pd->GetPlayerNode()->GetWorldPosition();
 			Vector3 delta = playerpos - node_->GetWorldPosition();
-			if(delta.Length() < 4)
+			if(delta.Length() < 5)
 			{
-				return &g_enemykick;
+				return actor->GetState<CASEnemyKick>();
 			}
 		}
 		return nullptr;

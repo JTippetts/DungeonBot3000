@@ -13,9 +13,11 @@
 using namespace Urho3D;
 
 class CombatController;
-class CombatActionState
+class CombatActionState : public Object
 {
+	URHO3D_OBJECT(CombatActionState, Object);
 	public:
+	CombatActionState(Context *context) : Object(context){}
 	virtual void Start(CombatController *actor)=0;
 	virtual void End(CombatController *actor){};
 	virtual CombatActionState *Update(CombatController *actor, float dt){return nullptr;};

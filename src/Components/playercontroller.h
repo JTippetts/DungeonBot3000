@@ -11,6 +11,8 @@
 
 using namespace Urho3D;
 
+/*
+
 class PlayerController : public LogicComponent
 {
 	URHO3D_OBJECT(PlayerController, LogicComponent);
@@ -33,3 +35,4 @@ class PlayerController : public LogicComponent
 	String objectpath_, animpath_;
 	virtual void DelayedStart() override;
 };
+*/

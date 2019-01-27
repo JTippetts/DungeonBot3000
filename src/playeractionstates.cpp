@@ -11,12 +11,8 @@
 
 #include "playeractionstates.h"
 
-CASPlayerIdle g_playeridle;
-CASPlayerMove g_playermove;
-CASPlayerSpinAttack g_playerspinattack;
-
 /////// Idle
-CASPlayerIdle::CASPlayerIdle() : CombatActionState()
+CASPlayerIdle::CASPlayerIdle(Context *context) : CombatActionState(context)
 {
 }
 
@@ -35,7 +31,7 @@ void CASPlayerIdle::Start(CombatController *actor)
 		auto ca=node->GetComponent<CrowdAgent>();
 		if(ca)
 		{
-			//ca->SetTargetPosition(node->GetWorldPosition());
+			ca->SetNavigationPushiness(NAVIGATIONPUSHINESS_HIGH);
 		}
 	}
 }
@@ -50,6 +46,12 @@ void CASPlayerIdle::End(CombatController *actor)
 		{
 			ac->Stop(actor->GetAnimPath() + "/Models/Idle.ani", 0.1f);
 		}
+
+		auto ca=node->GetComponent<CrowdAgent>();
+		if(ca)
+		{
+			ca->SetNavigationPushiness(NAVIGATIONPUSHINESS_MEDIUM);
+		}
 	}
 }
 
@@ -62,14 +64,14 @@ CombatActionState *CASPlayerIdle::Update(CombatController *actor, float dt)
 	{
 		// Do right button
 		//return nullptr;
-		return &g_playerspinattack;
+		return actor->GetState<CASPlayerSpinAttack>();
 	}
 	else
 	{
 		if(input->GetMouseButtonPress(MOUSEB_LEFT))
 		{
 			// Do walk
-			return &g_playermove;
+			return actor->GetState<CASPlayerMove>();
 		}
 	}
 
@@ -87,7 +89,7 @@ void CASPlayerIdle::HandleAgentReposition(CombatController *actor, Vector3 veloc
 }
 
 ////// PlayerMove
-CASPlayerMove::CASPlayerMove() : CombatActionState()
+CASPlayerMove::CASPlayerMove(Context *context) : CombatActionState(context)
 {
 }
 
@@ -130,7 +132,7 @@ CombatActionState *CASPlayerMove::Update(CombatController *actor, float dt)
 
 	if(input->GetMouseButtonPress(MOUSEB_RIGHT))
 	{
-		return &g_playerspinattack;
+		return actor->GetState<CASPlayerSpinAttack>();
 	}
 	else if(input->GetMouseButtonDown(MOUSEB_LEFT))
 	{
@@ -160,7 +162,7 @@ CombatActionState *CASPlayerMove::Update(CombatController *actor, float dt)
 			Vector3 vel=ca->GetActualVelocity();
 			if(vel.Length() < ca->GetRadius())
 			{
-				return &g_playeridle;
+				return actor->GetState<CASPlayerIdle>();
 			}
 		}
 	}
@@ -175,7 +177,7 @@ void CASPlayerMove::HandleAgentReposition(CombatController *actor, Vector3 veloc
 
 
 ////////////// SpinAttack
-CASPlayerSpinAttack::CASPlayerSpinAttack() : CombatActionState()
+CASPlayerSpinAttack::CASPlayerSpinAttack(Context *context) : CombatActionState(context)
 {
 }
 
@@ -257,10 +259,10 @@ CombatActionState *CASPlayerSpinAttack::Update(CombatController *actor, float dt
 		// Not walking anymore, return moving or idle state
 		if(input->GetMouseButtonDown(MOUSEB_LEFT))
 		{
-			return &g_playermove;
+			return actor->GetState<CASPlayerMove>();
 		}
 
-		return &g_playeridle;
+		return actor->GetState<CASPlayerIdle>();
 	}
 }
 

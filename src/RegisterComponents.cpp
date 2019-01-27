@@ -20,7 +20,7 @@ void RegisterCustomComponents(Context *context)
 	context->RegisterFactory<CombatCameraController>("Custom");
 	RotationSmoothing::RegisterObject(context);
 	CombatController::RegisterObject(context);
-	PlayerController::RegisterObject(context);
+	//PlayerController::RegisterObject(context);
 	EnemyAI::RegisterObject(context);
 	StupidChaseController::RegisterObject(context);
 	PlayerVitals::RegisterObject(context);
@@ -30,4 +30,12 @@ void RegisterCustomComponents(Context *context)
 	BurnIndicator::RegisterObject(context);
 	EnemyOnDeath::RegisterObject(context);
 	TimedDeath::RegisterObject(context);
+
+	//context->RegisterFactory<CombatActionState>();
+	context->RegisterFactory<CASPlayerIdle>();
+	context->RegisterFactory<CASPlayerMove>();
+	context->RegisterFactory<CASPlayerSpinAttack>();
+	context->RegisterFactory<CASEnemyIdle>();
+	context->RegisterFactory<CASEnemyChase>();
+	context->RegisterFactory<CASEnemyKick>();
 }

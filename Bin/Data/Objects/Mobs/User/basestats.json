@@ -2,7 +2,7 @@
 	"MaximumLife": [["Flat", "15+Level*5"]],
 	"LifeRegen": [["Flat", "0.05"]],
 	"MovementSpeed": [["Flat", "20.0"]],
-	"AttackSpeed": [["Flat", "1.0"], ["Mult", "IncreasedAttackSpeed"]],
+	"AttackSpeed": [["Flat", "2.0"], ["Mult", "IncreasedAttackSpeed"]],
 	"PhysicalLow": [["Flat", "1+Level*1"]],
 	"PhysicalHigh": [["Flat", "2+Level*2"]],
 }

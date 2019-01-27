@@ -3,6 +3,7 @@
 #include <Urho3D/Navigation/CrowdAgent.h>
 #include <Urho3D/Navigation/NavigationEvents.h>
 #include <Urho3D/Graphics/AnimationController.h>
+#include <Urho3D/IO/Log.h>
 
 void CombatController::RegisterObject(Context *context)
 {
@@ -118,34 +119,6 @@ void CombatController::HandleAnimationTrigger(StringHash eventType, VariantMap &
 	{
 		currentstate_->HandleTrigger(this, animname, data);
 	}
-	/*
-	static StringHash Name("Name"), Data("Data");
-
-	if(eventData[Name].GetString()=="Spin")
-	{
-		PODVector<Node *> dudes;
-		node_->GetScene()->GetChildrenWithComponent<EnemyVitals>(dudes, false);
-		Vector3 mypos=node_->GetWorldPosition();
-
-		for(auto i=dudes.Begin(); i!=dudes.End(); ++i)
-		{
-			Vector3 pos=(*i)->GetWorldPosition();
-			Vector3 delta=mypos-pos;
-			if(delta.Length() < 8)
-			{
-				auto myvitals = node_->GetComponent<PlayerVitals>();
-				auto vtls = (*i)->GetComponent<EnemyVitals>();
-				if(vtls && myvitals)
-				{
-					auto pd=GetSubsystem<PlayerData>();
-					StatSetCollection ssc=pd->GetStatSetCollection(EqNumEquipmentSlots, "SpinAttack");
-					DamageValueList dmg=BuildDamageList(ssc);
-					vtls->ApplyDamageList(node_,ssc,dmg);
-				}
-			}
-		}
-	}
-*/
 }
 
 void CombatController::HandleCrowdAgentReposition(StringHash eventType, VariantMap &eventData)
@@ -165,32 +138,25 @@ void CombatController::HandleCrowdAgentReposition(StringHash eventType, VariantM
 		node->SetRotation(node->GetRotation().Slerp(Quaternion(Vector3::FORWARD, velocity), 10.0f * timeStep * speedRatio*1.0));
 	}
 
-	auto* animCtrl = node->GetComponent<AnimationController>();
-    if (animCtrl)
-    {
-
-       /* if (animCtrl->IsPlaying(animpath_ + "/Models/Walk.ani"))
-        {
-			float speed = velocity.Length();
-            float speedRatio = speed / agent->GetMaxSpeed();
-            node->SetRotation(node->GetRotation().Slerp(Quaternion(Vector3::FORWARD, velocity), 10.0f * timeStep * speedRatio*1.0));
-            animCtrl->SetSpeed(animpath_ + "/Models/Walk.ani", speedRatio * 0.25f);
-        }
-		else if (animCtrl->IsPlaying(animpath_ + "/Models/Idle.ani"))
-        {
-			float speed = velocity.Length();
-            float speedRatio = speed / agent->GetMaxSpeed();
-            node->SetRotation(node->GetRotation().Slerp(Quaternion(Vector3::FORWARD, velocity), 10.0f * timeStep * speedRatio*1.0));
-            animCtrl->SetSpeed(animpath_ + "/Models/Idle.ani", speedRatio * 0.25f);
-        }
-		else
-		{
-			node->SetRotation(node->GetRotation().Slerp(Quaternion(Vector3::FORWARD, velocity), 10.0f * timeStep));
-		}*/
-    }
-
 	if(currentstate_)
 	{
 		currentstate_->HandleAgentReposition(this, velocity, timeStep);
 	}
+}
+
+CombatActionState *CombatController::GetState(StringHash type)
+{
+	for (Vector<SharedPtr<CombatActionState> >::ConstIterator i = states_.Begin(); i != states_.End(); ++i)
+    {
+		Log::Write(LOG_INFO, (*i)->GetTypeName());
+        if ((*i)->GetTypeStatic() == type)
+		{
+			Log::Write(LOG_INFO, "Found it");
+			return *i;
+		}
+    }
+
+	SharedPtr<CombatActionState> newComponent = DynamicCast<CombatActionState>(context_->CreateObject(type));
+	if(newComponent) states_.Push(newComponent);
+	return newComponent;
 }

@@ -13,14 +13,10 @@
 
 #include "playerdata.h"
 
-CASEnemyIdle g_enemyidle;
-CASEnemyChase g_enemychase;
-CASEnemyKick g_enemykick;
-
 float rollf(float, float);
 
 /////// Idle
-CASEnemyIdle::CASEnemyIdle() : CombatActionState()
+CASEnemyIdle::CASEnemyIdle(Context *context) : CombatActionState(context)
 {
 }
 
@@ -75,7 +71,6 @@ CombatActionState *CASEnemyIdle::Update(CombatController *actor, float dt)
 
 	if(delta.Length() < 50)
 	{
-		//return &g_enemychase;
 		auto ai=node->GetDerivedComponent<EnemyAI>();
 		if(ai)
 		{
@@ -101,7 +96,7 @@ void CASEnemyIdle::HandleAgentReposition(CombatController *actor, Vector3 veloci
 }
 
 ///////////////////
-CASEnemyChase::CASEnemyChase() : CombatActionState()
+CASEnemyChase::CASEnemyChase(Context *context) : CombatActionState(context)
 {
 }
 
@@ -157,7 +152,7 @@ CombatActionState *CASEnemyChase::Update(CombatController *actor, float dt)
 
 	if(delta.Length() > 50)
 	{
-		return &g_enemyidle;
+		return actor->GetState<CASEnemyIdle>();
 	}
 
 	auto ca=node->GetComponent<CrowdAgent>();
@@ -183,7 +178,7 @@ void CASEnemyChase::HandleAgentReposition(CombatController *actor, Vector3 veloc
 
 
 /////////////////////////
-CASEnemyKick::CASEnemyKick()
+CASEnemyKick::CASEnemyKick(Context *context) : CombatActionState(context)
 {
 }
 
@@ -201,7 +196,7 @@ void CASEnemyKick::Start(CombatController *actor)
 			{
 				auto ssc=vitals->GetStats();
 				float attackspeed=std::max(0.01, GetStatValue(ssc, "AttackSpeed"));
-				ac->SetSpeed(actor->GetAnimPath() + "/Models/Kick.ani", 1.0f / attackspeed);
+				ac->SetSpeed(actor->GetAnimPath() + "/Models/Kick.ani", attackspeed);
 			}
 		}
 
@@ -241,9 +236,17 @@ CombatActionState *CASEnemyKick::Update(CombatController *actor, float dt)
 	{
 		if(ac->IsAtEnd(actor->GetAnimPath() + "/Models/Kick.ani"))
 		{
-			return &g_enemyidle;
+			return actor->GetState<CASEnemyIdle>();
 		}
 	}
+
+	auto ca = node->GetComponent<CrowdAgent>();
+
+	auto pd = node->GetSubsystem<PlayerData>();
+	auto playerpos = pd->GetPlayerNode()->GetWorldPosition();
+	auto delta = playerpos - node->GetWorldPosition();
+
+	node->SetRotation(node->GetRotation().Slerp(Quaternion(Vector3::FORWARD, delta), 10.0f * dt));
 
 	return nullptr;
 }

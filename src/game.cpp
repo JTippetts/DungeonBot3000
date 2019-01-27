@@ -267,7 +267,7 @@ void Game::Start()
 	if(cc)
 	{
 		Log::Write(LOG_INFO, "Setting combat action state.");
-		cc->SetCombatActionState(&g_playeridle);
+		cc->SetCombatActionState(cc->GetState<CASPlayerIdle>());
 	}
 	pd->SetPlayerNode(n_);
 
@@ -301,7 +301,7 @@ void Game::Start()
 		if(cc)
 		{
 			//Log::Write(LOG_INFO, "Setting combat action state.");
-			cc->SetCombatActionState(&g_enemyidle);
+			cc->SetCombatActionState(cc->GetState<CASEnemyIdle>());
 		}
 	}
 

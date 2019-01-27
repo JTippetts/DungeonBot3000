@@ -5,8 +5,9 @@
 // Player action states
 class CASPlayerIdle : public CombatActionState
 {
+	URHO3D_OBJECT(CASPlayerIdle, CombatActionState);
 	public:
-	CASPlayerIdle();
+	CASPlayerIdle(Context *context);
 	virtual void End(CombatController *actor) override;
 	virtual void Start(CombatController *actor) override;
 	virtual CombatActionState *Update(CombatController *actor, float dt) override;
@@ -15,8 +16,9 @@ class CASPlayerIdle : public CombatActionState
 
 class CASPlayerMove : public CombatActionState
 {
+	URHO3D_OBJECT(CASPlayerMove, CombatActionState);
 	public:
-	CASPlayerMove();
+	CASPlayerMove(Context *context);
 
 	virtual void Start(CombatController *actor) override;
 	virtual void End(CombatController *actor) override;
@@ -26,16 +28,12 @@ class CASPlayerMove : public CombatActionState
 
 class CASPlayerSpinAttack : public CombatActionState
 {
+	URHO3D_OBJECT(CASPlayerSpinAttack, CombatActionState);
 	public:
-	CASPlayerSpinAttack();
+	CASPlayerSpinAttack(Context *context);
 
 	virtual void Start(CombatController *actor) override;
 	virtual void End(CombatController *actor) override;
 	virtual CombatActionState *Update(CombatController *actor, float dt) override;
 	virtual void HandleTrigger(CombatController *actor, String animname, unsigned int value) override;
 };
-
-/// Instance some states to avoid lots of allocations
-extern CASPlayerIdle g_playeridle;
-extern CASPlayerMove g_playermove;
-extern CASPlayerSpinAttack g_playerspinattack;

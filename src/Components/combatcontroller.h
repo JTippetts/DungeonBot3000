@@ -8,8 +8,11 @@
 #include <Urho3D/Scene/Node.h>
 #include <Urho3D/IO/Log.h>
 #include <Urho3D/Navigation/CrowdAgent.h>
+#include <Urho3D/Container/Vector.h>
 
 #include "../combatactionstates.h"
+#include "../playeractionstates.h"
+#include "../enemyactionstates.h"
 
 using namespace Urho3D;
 
@@ -30,6 +33,8 @@ class CombatController : public LogicComponent
 	void SetPushiness(NavigationPushiness pushy);
 
 	bool SetCombatActionState(CombatActionState *state);
+	CombatActionState *GetState(StringHash type);
+	template <class T> T *GetState();
 
 	protected:
 	virtual void Update(float dt) override;
@@ -38,6 +43,9 @@ class CombatController : public LogicComponent
 	void HandleAnimationTrigger(StringHash eventType, VariantMap &eventData);
 
 	CombatActionState *currentstate_, *nextstate_;
+	Vector<SharedPtr<CombatActionState>> states_;
 
 	String objectpath_, animpath_;
 };
+
+template <class T> T *CombatController::GetState(){return static_cast<T*>(GetState(T::GetTypeStatic()));}
