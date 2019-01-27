@@ -44,4 +44,16 @@
 	</component>
 	<component type="BurnIndicator" >
 	</component>
+	<node >
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="0 8 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="Light">
+			<attribute name="Light Type" value="Point" />
+			<attribute name="Range" value="30"/>
+		</component>
+	</node>
 </node>

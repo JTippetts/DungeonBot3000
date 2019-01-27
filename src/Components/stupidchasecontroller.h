@@ -35,22 +35,22 @@ class StupidChaseController : public EnemyAI
 
 	virtual CombatActionState *Callback(CombatActionState *state) override
 	{
-		Log::Write(LOG_INFO, "0");
+		//Log::Write(LOG_INFO, "0");
 		auto actor=node_->GetComponent<CombatController>();
 		if(!actor)
 		{
-			Log::Write(LOG_INFO, "1");
+			//Log::Write(LOG_INFO, "1");
 			return nullptr;
 		}
 		if(state==actor->GetState<CASEnemyIdle>())
 		{
-			Log::Write(LOG_INFO, "2");
+			//Log::Write(LOG_INFO, "2");
 			return actor->GetState<CASEnemyChase>();
 		}
 
 		if(state==actor->GetState<CASEnemyChase>())
 		{
-			Log::Write(LOG_INFO, "3");
+			//Log::Write(LOG_INFO, "3");
 			auto pd = GetSubsystem<PlayerData>();
 			auto playerpos = pd->GetPlayerNode()->GetWorldPosition();
 			Vector3 delta = playerpos - node_->GetWorldPosition();

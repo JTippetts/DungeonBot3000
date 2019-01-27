@@ -148,10 +148,8 @@ CombatActionState *CombatController::GetState(StringHash type)
 {
 	for (Vector<SharedPtr<CombatActionState> >::ConstIterator i = states_.Begin(); i != states_.End(); ++i)
     {
-		Log::Write(LOG_INFO, (*i)->GetTypeName());
-        if ((*i)->GetTypeStatic() == type)
+		if ((*i)->GetType() == type)
 		{
-			Log::Write(LOG_INFO, "Found it");
 			return *i;
 		}
     }
