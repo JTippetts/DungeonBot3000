@@ -80,7 +80,7 @@ void LifeBubbleUI::DelayedStart()
 		sprite->SetFullImageRect();
 	}
 	ui->GetRoot()->AddChild(element_);
-	element_->SetPosition(IntVector2(0, graphics->GetHeight()-256));
+	element_->SetPosition(IntVector2(-38, graphics->GetHeight()-256+38));
 }
 
 void LifeBubbleUI::Update(float dt)

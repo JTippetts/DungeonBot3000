@@ -333,7 +333,7 @@ void Game::CreateConsoleAndDebugHud()
     Console* console = engine_->CreateConsole();
     console->SetDefaultStyle(xmlFile);
     console->GetBackground()->SetOpacity(0.8f);
-	console->Toggle();
+	//console->Toggle();
 
     // Create debug HUD.
     DebugHud* debugHud = engine_->CreateDebugHud();
