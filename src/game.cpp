@@ -152,29 +152,6 @@ void Game::Start()
 	cursor->SetVisible(true);
 	cursor->SetPosition(ui->GetRoot()->GetWidth()/2, ui->GetRoot()->GetHeight()/2);
 
-
-	// Testing
-	StatSet stats;
-	StringHasherType hasher;
-
-	stats.LoadJSON(cache->GetResource<JSONFile>("Objects/teststat.json")->GetRoot());
-	StatSetCollection sc;
-	sc.push_back(&stats);
-
-	StatSet physatt;
-	physatt.AddMod("PhysicalLow", StatModifier::FLAT, "20");
-	physatt.AddMod("PhysicalHigh", StatModifier::FLAT, "400");
-
-	sc.push_back(&physatt);
-
-	DamageValueList dmg=BuildDamageList(sc);
-
-	for(auto i : dmg)
-	{
-		Log::Write(LOG_INFO, String("Damage ") + String(DamageNames[i.type_].c_str()) + ": " + String(i.value_));
-	}
-
-
 	MazeGenerator maze;
 
 	maze.init(8,8);
@@ -257,11 +234,6 @@ void Game::Start()
 		smd->SetModel(cache->GetResource<Model>("Objects/DungeonBot3000/Models/Blade.mdl"));
 		smd->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
 	}
-	auto vtls = n_->GetComponent<PlayerVitals>();
-	if(vtls)
-	{
-		vtls->SetStats(&pd->GetVitalsStats());
-	}
 
 	auto cc=n_->GetComponent<CombatController>();
 	if(cc)
@@ -271,7 +243,7 @@ void Game::Start()
 	}
 	pd->SetPlayerNode(n_);
 
-	for(unsigned int i=0; i<1000; ++i)
+	for(unsigned int i=0; i<100; ++i)
 	{
 		//BoundingBox bb=nav->GetBoundingBox();
 		//do

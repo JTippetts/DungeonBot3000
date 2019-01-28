@@ -35,25 +35,20 @@ struct HealHoT
 	StatSetCollectionSnapshot ownerstats_;
 };
 
-class PlayerVitals : public LogicComponent
+class BaseVitals : public LogicComponent
 {
-	URHO3D_OBJECT(PlayerVitals, LogicComponent);
+	URHO3D_OBJECT(BaseVitals, LogicComponent);
 	public:
 	static void RegisterObject(Context *context);
-	PlayerVitals(Context *context);
+	BaseVitals(Context *context);
 
-	void SetStats(StatSetCollection *vitalsstats);
-
+	virtual const StatSetCollection &GetVitalStats() const=0;
 	double GetCurrentLife();
 	double GetMaximumLife();
-	double GetEnergy();
-
 	void ApplyDamageList(Node *attackernode, const StatSetCollection &attackerstats, const DamageValueList &dmg);
 	void ApplyHealing(double h);
 
-
 	protected:
-	StatSetCollection *vitalsstats_;
 	double currentlife_, maximumlife_;
 	double energy_;
 
@@ -61,8 +56,23 @@ class PlayerVitals : public LogicComponent
 	std::list<HealHoT> hots_;
 
 	virtual void Update(float dt) override;
+	virtual void DelayedStart() override;
 	void UpdateDoTs(float dt);
 	void UpdateHoTs(float dt);
+};
+
+class PlayerVitals : public BaseVitals
+{
+	URHO3D_OBJECT(PlayerVitals, BaseVitals);
+	public:
+	static void RegisterObject(Context *context);
+	PlayerVitals(Context *context);
+
+	double GetEnergy();
+	virtual const StatSetCollection &GetVitalStats() const override;
+
+	protected:
+	double energy_;
 };
 
 
@@ -70,35 +80,21 @@ class PlayerVitals : public LogicComponent
 // Base stat set, buffs/debuffs, and skill stat sets.
 // Skill stat sets are derived from elsewhere, a thing for later.
 
-class EnemyVitals : public LogicComponent
+class EnemyVitals : public BaseVitals
 {
-	URHO3D_OBJECT(EnemyVitals, LogicComponent);
+	URHO3D_OBJECT(EnemyVitals, BaseVitals);
 	public:
 	static void RegisterObject(Context *context);
 	EnemyVitals(Context *context);
 
-	double GetCurrentLife();
-	double GetMaximumLife();
-	void ApplyDamageList(Node *attackernode, const StatSetCollection &attackerstats, const DamageValueList &dmg);
-	void ApplyHealing(double h);
-
 	void SetBaseStatsFilename(const String &filename);
 	const String GetBaseStatsFilename() const;
-
 	void SetLevel(unsigned int level);
 
-	const StatSetCollection &GetStats(){return basestatscollection_;}
+	virtual const StatSetCollection &GetVitalStats() const override {return basestatscollection_;}
 
 	protected:
 	StatSet basestats_;
 	StatSetCollection basestatscollection_;
-	double currentlife_, maximumlife_;
 	String basestatsfilename_;
-
-	std::unordered_map<unsigned int, BurnDoT> dots_;
-	std::list<HealHoT> hots_;
-
-	virtual void Update(float dt) override;
-	void UpdateDoTs(float dt);
-	void UpdateHoTs(float dt);
 };

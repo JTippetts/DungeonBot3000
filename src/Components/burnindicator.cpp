@@ -1,6 +1,6 @@
 #include "burnindicator.h"
 #include <Urho3D/Resource/ResourceCache.h>
-#include <Urho3D/Resource/XMLFile.h>
+#include <Urho3D/IO/Log.h>
 
 
 void BurnIndicator::RegisterObject(Context *context)
@@ -35,6 +35,7 @@ void BurnIndicator::HandleBurnPresent(StringHash eventType, VariantMap &eventDat
 
 	if(count >0)
 	{
+		Log::Write(LOG_INFO, "Burns present");
 		emitter_->SetEmitting(true);
 	}
 	else emitter_->SetEmitting(false);

@@ -174,7 +174,7 @@ void CASEnemyApproachTarget::Start(CombatController *actor)
 		auto ca=node->GetComponent<CrowdAgent>();
 		if(ev && ca)
 		{
-			StatSetCollection ssc=ev->GetStats();
+			StatSetCollection ssc=ev->GetVitalStats();
 			double movespeed=GetStatValue(ssc, "MovementSpeed");
 			ca->SetMaxSpeed(movespeed*rollf(0.7,1.0));
 		}
@@ -259,7 +259,7 @@ void CASEnemyKick::Start(CombatController *actor)
 			auto vitals=node->GetComponent<EnemyVitals>();
 			if(vitals)
 			{
-				auto ssc=vitals->GetStats();
+				auto ssc=vitals->GetVitalStats();
 				float attackspeed=std::max(0.01, GetStatValue(ssc, "AttackSpeed"));
 				ac->SetSpeed(actor->GetAnimPath() + "/Models/Kick.ani", attackspeed);
 			}
@@ -327,7 +327,7 @@ void CASEnemyKick::HandleTrigger(CombatController *actor, String animname, unsig
 		{
 			auto pd=node->GetSubsystem<PlayerData>();
 			auto pv=pd->GetPlayerNode()->GetComponent<PlayerVitals>();
-			auto mystats=vitals->GetStats();
+			auto mystats=vitals->GetVitalStats();
 			DamageValueList dmg=BuildDamageList(mystats);
 			if(pv)
 			{
