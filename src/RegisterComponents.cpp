@@ -28,6 +28,7 @@ void RegisterCustomComponents(Context *context)
 	context->RegisterFactory<CASPlayerIdle>();
 	context->RegisterFactory<CASPlayerMove>();
 	context->RegisterFactory<CASPlayerSpinAttack>();
+	context->RegisterFactory<CASPlayerLaserBeam>();
 
 	context->RegisterFactory<CASEnemyInactive>();
 	context->RegisterFactory<CASEnemyIdle>();

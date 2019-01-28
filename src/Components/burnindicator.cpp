@@ -35,7 +35,7 @@ void BurnIndicator::HandleBurnPresent(StringHash eventType, VariantMap &eventDat
 
 	if(count >0)
 	{
-		Log::Write(LOG_INFO, "Burns present");
+		//Log::Write(LOG_INFO, "Burns present");
 		emitter_->SetEmitting(true);
 	}
 	else emitter_->SetEmitting(false);

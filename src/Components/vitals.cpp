@@ -159,11 +159,9 @@ void BaseVitals::ApplyDamageList(Node *attackernode, const StatSetCollection &at
 			dot.owner_=attackernode;
 			unsigned int id=attackernode->GetID();
 			dots_[id]=dot;
-			Log::Write(LOG_INFO, "Burn dot applied");
 		}
 		else taken += i.value_;
 	}
-	Log::Write(LOG_INFO, String("Burn count:") + String(dots_.size()));
 	currentlife_ -= taken;
 	vm[Damage]=taken;
 	node_->SendEvent(DamageTaken, vm);

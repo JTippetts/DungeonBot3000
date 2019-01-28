@@ -2,6 +2,17 @@
 #include <Urho3D/UI/UI.h>
 #include <Urho3D/UI/Cursor.h>
 #include <Urho3D/IO/Log.h>
+#include <Urho3D/Graphics/Octree.h>
+#include <Urho3D/Graphics/OctreeQuery.h>
+#include <Urho3D/Graphics/ParticleEmitter.h>
+#include <Urho3D/Graphics/ParticleEffect.h>
+#include <Urho3D/Resource/ResourceCache.h>
+#include <Urho3D/Resource/XMLFile.h>
+#include <Urho3D/Graphics/StaticModel.h>
+#include <Urho3D/Graphics/Model.h>
+#include <Urho3D/Graphics/Material.h>
+#include <Urho3D/Graphics/AnimatedModel.h>
+#include <Urho3D/Graphics/Light.h>
 
 #include "combatactionstates.h"
 #include "Components/thirdpersoncamera.h"
@@ -10,6 +21,19 @@
 #include "Components/vitals.h"
 
 #include "playeractionstates.h"
+
+Node *TopLevelNode(Drawable *d, Scene *s)
+{
+	Node *n=d->GetNode();
+	if(!n) return 0;
+	while(n->GetParent() != s)
+	{
+		if(n->GetParent()==0) return 0;
+		n=n->GetParent();
+	}
+	return n;
+}
+
 
 /////// Idle
 CASPlayerIdle::CASPlayerIdle(Context *context) : CombatActionState(context)
@@ -66,13 +90,14 @@ CombatActionState *CASPlayerIdle::Update(CombatController *actor, float dt)
 		//return nullptr;
 		return actor->GetState<CASPlayerSpinAttack>();
 	}
-	else
+	else if(input->GetMouseButtonPress(MOUSEB_LEFT))
 	{
-		if(input->GetMouseButtonPress(MOUSEB_LEFT))
-		{
-			// Do walk
-			return actor->GetState<CASPlayerMove>();
-		}
+		// Do walk
+		return actor->GetState<CASPlayerMove>();
+	}
+	else if(input->GetKeyDown(KEY_Q))
+	{
+		return actor->GetState<CASPlayerLaserBeam>();
 	}
 
 	return nullptr;
@@ -292,5 +317,133 @@ void CASPlayerSpinAttack::HandleTrigger(CombatController *actor, String animname
 				}
 			}
 		}
+	}
+}
+
+//////// Friggin laser beams
+CASPlayerLaserBeam::CASPlayerLaserBeam(Context *context) : CombatActionState(context)
+{
+}
+
+void CASPlayerLaserBeam::Start(CombatController *actor)
+{
+	auto node = actor->GetNode();
+	auto ac = node->GetComponent<AnimationController>();
+	auto scene = node->GetScene();
+	if(ac)
+	{
+		ac->StopAll(0.1f);
+		ac->Play(actor->GetAnimPath() + "/Models/Idle.ani", 0, true, 0.1f);
+	}
+
+	startburst_ = scene->CreateChild();
+	endburst_ = scene->CreateChild();
+	beam_ = scene->CreateChild();
+
+	auto cache = GetSubsystem<ResourceCache>();
+	auto emitter = startburst_->CreateComponent<ParticleEmitter>();
+	auto pe = cache->GetResource<ParticleEffect>("Effects/inferno_blaze_particle.xml");
+	if(pe)
+	{
+		emitter->SetEffect(pe);
+	}
+	emitter = endburst_->CreateComponent<ParticleEmitter>();
+	if(pe)
+	{
+		emitter->SetEffect(pe);
+	}
+
+	auto lnode = endburst_->CreateChild();
+	lnode->SetPosition(Vector3(0,8,0));
+	auto ll = lnode->CreateComponent<Light>();
+	ll->SetLightType(LIGHT_POINT);
+	ll->SetRange(16);
+	ll->SetEnabled(true);
+	ll->SetColor(Color(1.5,1.2,1));
+
+	auto beambb = beam_->CreateComponent<StaticModel>();
+	if(beambb)
+	{
+		beambb->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
+		beambb->SetModel(cache->GetResource<Model>("Effects/Beam.mdl"));
+	}
+}
+
+void CASPlayerLaserBeam::End(CombatController *actor)
+{
+	auto node = actor->GetNode();
+	auto ac = node->GetComponent<AnimationController>();
+	if(ac)
+	{
+		ac->Stop(actor->GetAnimPath() + "/Models/Idle.ani", 0.1f);
+	}
+
+	startburst_->Remove();
+	endburst_->Remove();
+	beam_->Remove();
+}
+
+CombatActionState *CASPlayerLaserBeam::Update(CombatController *actor, float dt)
+{
+	auto node = actor->GetNode();
+	auto input = node->GetSubsystem<Input>();
+	auto scene = node->GetScene();
+	auto octree = scene->GetComponent<Octree>();
+
+	if(input->GetKeyDown(KEY_Q))
+	{
+		auto cam=node->GetScene()->GetChild("Camera")->GetComponent<ThirdPersonCamera>();
+		IntVector2 mousepos;
+		if(input->IsMouseVisible()) mousepos=input->GetMousePosition();
+		else mousepos=node->GetSubsystem<UI>()->GetCursorPosition();
+		Vector2 ground=cam->GetScreenGround(mousepos.x_,mousepos.y_);
+
+		Vector3 groundpos(ground.x_, 0.0, ground.y_);
+		auto turretnode = node->GetComponent<AnimatedModel>()->GetSkeleton().GetBone("Turret")->node_;
+		auto turretpos = turretnode->GetWorldPosition();
+
+		// Do a raycast from turret pos to ground pos to find actual endpoint
+		Ray ray(turretpos, groundpos-turretpos);
+		PODVector<RayQueryResult> result;
+		result.Clear();
+		RayOctreeQuery query(result, ray, RAY_TRIANGLE, 100.0f, DRAWABLE_GEOMETRY);
+		octree->Raycast(query);
+		if(result.Size()==0) return actor->GetState<CASPlayerIdle>();
+
+
+
+		Vector3 endpos = groundpos;
+		for(unsigned int i=0; i<result.Size(); ++i)
+		{
+			if(result[i].distance_>=0 && TopLevelNode(result[i].drawable_, scene)->GetVar("world").GetBool())
+			{
+				endpos=ray.origin_+ray.direction_*result[i].distance_;
+				break;
+			}
+		}
+
+		if(startburst_) startburst_->SetWorldPosition(turretpos);
+		if(endburst_) endburst_->SetWorldPosition(endpos);
+		if(beam_)
+		{
+			beam_->SetWorldPosition(turretpos);
+			//beam_->SetDirection(endpos-turretpos);
+			auto zaxis = endpos - turretpos;
+			zaxis.Normalize();
+
+			Vector3 yaxis(0,1,0);
+			Vector3 xaxis = yaxis.CrossProduct(zaxis);
+
+			yaxis = zaxis.CrossProduct(xaxis);
+
+			beam_->SetRotation(Quaternion(xaxis, yaxis, zaxis));
+			beam_->SetScale(Vector3(1,1,(endpos-turretpos).Length()*0.5));
+		}
+
+		return nullptr;
+	}
+	else
+	{
+		return actor->GetState<CASPlayerIdle>();
 	}
 }

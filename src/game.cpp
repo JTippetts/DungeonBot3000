@@ -208,6 +208,8 @@ void Game::Start()
 			md->SetCastShadows(true);
 
 			nd->SetPosition(Vector3(y*100, 0, x*100));
+
+			nd->SetVar("world", true);
 			//nd->SetScale(Vector3(0.1,0.1,0.1));
 		}
 	}

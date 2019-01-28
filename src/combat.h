@@ -44,6 +44,7 @@ bool MakeHitRoll(StatSetCollection &attacker, StatSetCollection &defender);
 DamageValueList BuildDamageList(StatSetCollection &attacker);
 DamageValueList BuildDamageList(StatSetCollection &attacker, DamageRangeList &damage);
 DamageValueList BuildDamageList(StatSetCollection &attacker, DamageValue &damage);
+DamageValueList BuildDamageList(StatSetCollection &attacker, DamageTypes type);
 
 DamageValueList ProcessIncomingDamage(StatSetCollection &defender, const DamageValueList &damages);
 

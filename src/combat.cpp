@@ -151,6 +151,25 @@ DamageValueList BuildDamageList(StatSetCollection &attacker)
 	return finalvalues;
 }
 
+DamageValueList BuildDamageList(StatSetCollection &attacker, DamageTypes type)
+{
+	std::string &dname=DamageNames[type];
+	double low=GetStatValue(attacker, dname + "Low");
+	double high=GetStatValue(attacker, dname + "High");
+
+	DamageValueList values;
+	double val=rolld(low, high);
+	values.push_back(DamageValue(type, val));
+	// Add extra damage
+	DamageValueList finalvalues;
+	for(auto i : values)
+	{
+		ConvertDamage(attacker, finalvalues, i, 2);
+	}
+
+	return finalvalues;
+}
+
 DamageValueList BuildDamageList(StatSetCollection &attacker, DamageRangeList &damage)
 {
 	DamageValueList values;

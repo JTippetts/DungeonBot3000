@@ -65,10 +65,6 @@ void CombatController::SetPushiness(NavigationPushiness pushy)
 
 bool CombatController::SetCombatActionState(CombatActionState *state)
 {
-	if(currentstate_)
-	{
-		if(currentstate_->IsLocking()) return false;   // Can't change state right now
-	}
 	nextstate_=state;
 	return true;
 }
@@ -80,6 +76,7 @@ void CombatController::Update(float dt)
 	{
 		if(nextstate_==currentstate_)
 		{
+			Log::Write(LOG_INFO, "No switch");
 			nextstate_=nullptr;
 		}
 		else
@@ -88,22 +85,14 @@ void CombatController::Update(float dt)
 			currentstate_=nextstate_;
 			nextstate_=nullptr;
 			currentstate_->Start(this);
+			Log::Write(LOG_INFO, String("Switched to ") + currentstate_->GetTypeName());
 		}
 	}
 
 	if(currentstate_)
 	{
-		CombatActionState *ns = currentstate_->Update(this,dt);
-		if(ns)
-		{
-			if(SetCombatActionState(ns))
-			{
-			}
-			else
-			{
-				Log::Write(LOG_ERROR, "Could not switch action state.");
-			}
-		}
+		nextstate_ = currentstate_->Update(this,dt);
+		if(nextstate_) Log::Write(LOG_INFO, String("Next state is: ") + nextstate_->GetTypeName());
 	}
 
 

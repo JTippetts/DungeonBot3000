@@ -37,3 +37,16 @@ class CASPlayerSpinAttack : public CombatActionState
 	virtual CombatActionState *Update(CombatController *actor, float dt) override;
 	virtual void HandleTrigger(CombatController *actor, String animname, unsigned int value) override;
 };
+
+class CASPlayerLaserBeam : public CombatActionState
+{
+	URHO3D_OBJECT(CASPlayerLaserBeam, CombatActionState);
+	public:
+	CASPlayerLaserBeam(Context *context);
+	virtual void Start(CombatController *actor) override;
+	virtual void End(CombatController *actor) override;
+	virtual CombatActionState *Update(CombatController *actor, float dt) override;
+
+	protected:
+	Node *startburst_, *endburst_, *beam_;
+};
