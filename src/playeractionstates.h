@@ -48,5 +48,5 @@ class CASPlayerLaserBeam : public CombatActionState
 	virtual CombatActionState *Update(CombatController *actor, float dt) override;
 
 	protected:
-	Node *startburst_, *endburst_, *beam_;
+	Node *endburst_, *beam_;
 };

@@ -1,0 +1,3 @@
+<technique vs="laserbeam" ps="laserbeam" vsdefines="VERTEXCOLOR" psdefines="DIFFMAP VERTEXCOLOR ADDITIVE">
+    <pass name="alpha" depthwrite="false" blend="add" />
+</technique>

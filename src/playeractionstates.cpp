@@ -159,6 +159,10 @@ CombatActionState *CASPlayerMove::Update(CombatController *actor, float dt)
 	{
 		return actor->GetState<CASPlayerSpinAttack>();
 	}
+	else if(input->GetKeyDown(KEY_Q))
+	{
+		return actor->GetState<CASPlayerLaserBeam>();
+	}
 	else if(input->GetMouseButtonDown(MOUSEB_LEFT))
 	{
 		auto cam=node->GetScene()->GetChild("Camera")->GetComponent<ThirdPersonCamera>();
@@ -336,18 +340,12 @@ void CASPlayerLaserBeam::Start(CombatController *actor)
 		ac->Play(actor->GetAnimPath() + "/Models/Idle.ani", 0, true, 0.1f);
 	}
 
-	startburst_ = scene->CreateChild();
 	endburst_ = scene->CreateChild();
 	beam_ = scene->CreateChild();
 
 	auto cache = GetSubsystem<ResourceCache>();
-	auto emitter = startburst_->CreateComponent<ParticleEmitter>();
-	auto pe = cache->GetResource<ParticleEffect>("Effects/inferno_blaze_particle.xml");
-	if(pe)
-	{
-		emitter->SetEffect(pe);
-	}
-	emitter = endburst_->CreateComponent<ParticleEmitter>();
+	auto emitter = endburst_->CreateComponent<ParticleEmitter>();
+	auto pe = cache->GetResource<ParticleEffect>("Effects/laserbeamparticle.xml");
 	if(pe)
 	{
 		emitter->SetEffect(pe);
@@ -364,8 +362,8 @@ void CASPlayerLaserBeam::Start(CombatController *actor)
 	auto beambb = beam_->CreateComponent<StaticModel>();
 	if(beambb)
 	{
-		beambb->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
 		beambb->SetModel(cache->GetResource<Model>("Effects/Beam.mdl"));
+		beambb->SetMaterial(cache->GetResource<Material>("Effects/flame2.xml"));
 	}
 }
 
@@ -378,7 +376,6 @@ void CASPlayerLaserBeam::End(CombatController *actor)
 		ac->Stop(actor->GetAnimPath() + "/Models/Idle.ani", 0.1f);
 	}
 
-	startburst_->Remove();
 	endburst_->Remove();
 	beam_->Remove();
 }
@@ -422,7 +419,6 @@ CombatActionState *CASPlayerLaserBeam::Update(CombatController *actor, float dt)
 			}
 		}
 
-		if(startburst_) startburst_->SetWorldPosition(turretpos);
 		if(endburst_) endburst_->SetWorldPosition(endpos);
 		if(beam_)
 		{

@@ -54,6 +54,8 @@
 		<component type="Light">
 			<attribute name="Light Type" value="Point" />
 			<attribute name="Range" value="30"/>
+			<attribute name="Color" value="1.1 1 0.9 1" />
+			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
 </node>
