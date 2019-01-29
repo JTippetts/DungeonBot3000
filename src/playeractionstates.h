@@ -49,4 +49,9 @@ class CASPlayerLaserBeam : public CombatActionState
 
 	protected:
 	Node *endburst_, *beam_;
+
+	Vector3 lastendpos_, endpos_;
+	float interval_, timetopulse_, phase_;
+
+	Vector3 GetEndPoint(Node *node);
 };

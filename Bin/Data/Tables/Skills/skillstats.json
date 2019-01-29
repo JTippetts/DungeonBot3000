@@ -7,4 +7,14 @@
 		"MovementSpeed": [["Mult", "-0.4"]],
 		"AttackSpeed": [["Flat", "2.5"]],
 	},
+
+	"LaserBeam": {
+		"FireLow": [["Flat", "4+LaserBeamLevel*5"]],
+		"FireHigh": [["Flat", "8+LaserBeamLevel*8"]],
+		"FireAsExtraBurn": [["Flat", "2.0"]],
+		"MaxLaserBeamPhases": [["Flat", "8"]],
+		"AllDamage": [["Scale", "LaserBeamPhase*0.2"]],
+		"LaserBeamInterval": [["Flat", "0.25*(1.0-IncreasedAttackSpeed)"]],
+		"LaserBeamTrackSpeed": [["Flat", "30.0*(1.0+IncreasedAttackSpeed"]],
+	},
 }

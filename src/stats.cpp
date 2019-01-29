@@ -404,3 +404,35 @@ StatSetCollectionSnapshot::StatSetCollectionSnapshot(const StatSetCollection &co
 		statsets_[i++]=*ss;
 	}
 }
+
+DamageBoostValues GetDamageBoosts(const StatSetCollection &stats, std::string stat)
+{
+	static StringHasherType hasher;
+	StringHashType h=hasher(stat);
+	return GetDamageBoosts(stats,h);
+}
+
+DamageBoostValues GetDamageBoosts(const StatSetCollection &stats, StringHashType stat)
+{
+	Stat s;
+
+	for(auto &i : stats)
+	{
+		i->ConcatenateStat(s, stat);
+	}
+
+	double mult=0.0, scale=1.0;
+
+	for(auto &j : s)
+	{
+		double val=EvaluateStatMod(stats, j);
+		switch(j.type_)
+		{
+			case StatModifier::MULT: mult+=val; break;
+			case StatModifier::SCALE: scale*=(1.0+val); break;
+			default: break;
+		}
+	}
+
+	return DamageBoostValues(mult, scale);
+}

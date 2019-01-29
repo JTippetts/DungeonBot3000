@@ -84,13 +84,13 @@ CombatActionState *CASPlayerIdle::Update(CombatController *actor, float dt)
 	auto node=actor->GetNode();
 	auto input=node->GetSubsystem<Input>();
 
-	if(input->GetMouseButtonPress(MOUSEB_RIGHT))
+	if(input->GetMouseButtonDown(MOUSEB_RIGHT))
 	{
 		// Do right button
 		//return nullptr;
 		return actor->GetState<CASPlayerSpinAttack>();
 	}
-	else if(input->GetMouseButtonPress(MOUSEB_LEFT))
+	else if(input->GetMouseButtonDown(MOUSEB_LEFT))
 	{
 		// Do walk
 		return actor->GetState<CASPlayerMove>();
@@ -365,6 +365,10 @@ void CASPlayerLaserBeam::Start(CombatController *actor)
 		beambb->SetModel(cache->GetResource<Model>("Effects/Beam.mdl"));
 		beambb->SetMaterial(cache->GetResource<Material>("Effects/flame2.xml"));
 	}
+
+	lastendpos_ = endpos_ = GetEndPoint(node);
+	timetopulse_=0;
+	phase_=0;
 }
 
 void CASPlayerLaserBeam::End(CombatController *actor)
@@ -380,6 +384,41 @@ void CASPlayerLaserBeam::End(CombatController *actor)
 	beam_->Remove();
 }
 
+Vector3 CASPlayerLaserBeam::GetEndPoint(Node *node)
+{
+	auto input = node->GetSubsystem<Input>();
+	auto scene = node->GetScene();
+	auto octree = scene->GetComponent<Octree>();
+
+	auto cam=node->GetScene()->GetChild("Camera")->GetComponent<ThirdPersonCamera>();
+	IntVector2 mousepos;
+	if(input->IsMouseVisible()) mousepos=input->GetMousePosition();
+	else mousepos=node->GetSubsystem<UI>()->GetCursorPosition();
+	Vector2 ground=cam->GetScreenGround(mousepos.x_,mousepos.y_);
+
+	Vector3 groundpos(ground.x_, 0.0, ground.y_);
+	auto turretnode = node->GetComponent<AnimatedModel>()->GetSkeleton().GetBone("Turret")->node_;
+	auto turretpos = turretnode->GetWorldPosition();
+
+	// Do a raycast from turret pos to ground pos to find actual endpoint
+	Ray ray(turretpos, groundpos-turretpos);
+	PODVector<RayQueryResult> result;
+	result.Clear();
+	RayOctreeQuery query(result, ray, RAY_TRIANGLE, 100.0f, DRAWABLE_GEOMETRY);
+	octree->Raycast(query);
+
+	Vector3 endpos = groundpos;
+	for(unsigned int i=0; i<result.Size(); ++i)
+	{
+		if(result[i].distance_>=0 && TopLevelNode(result[i].drawable_, scene)->GetVar("world").GetBool())
+		{
+			endpos=ray.origin_+ray.direction_*result[i].distance_;
+			break;
+		}
+	}
+	return endpos;
+}
+
 CombatActionState *CASPlayerLaserBeam::Update(CombatController *actor, float dt)
 {
 	auto node = actor->GetNode();
@@ -387,41 +426,36 @@ CombatActionState *CASPlayerLaserBeam::Update(CombatController *actor, float dt)
 	auto scene = node->GetScene();
 	auto octree = scene->GetComponent<Octree>();
 
+	auto pd=node->GetSubsystem<PlayerData>();
+	StatSetCollection ssc=pd->GetStatSetCollection(EqNumEquipmentSlots, "LaserBeam");
+	StatSet phases;
+	float interval=GetStatValue(ssc, "LaserBeamInterval");
+
+	float p=(float)((int)(phase_ / interval));
+	phases.AddMod("LaserBeamPhase", StatModifier::FLAT, std::to_string(p));
+	ssc.push_back(&phases);
+	phase_ += dt;
+
+	//Log::Write(LOG_INFO, String("Phase: ") + String(p) + " Interval: " + String(interval));
+
 	if(input->GetKeyDown(KEY_Q))
 	{
-		auto cam=node->GetScene()->GetChild("Camera")->GetComponent<ThirdPersonCamera>();
-		IntVector2 mousepos;
-		if(input->IsMouseVisible()) mousepos=input->GetMousePosition();
-		else mousepos=node->GetSubsystem<UI>()->GetCursorPosition();
-		Vector2 ground=cam->GetScreenGround(mousepos.x_,mousepos.y_);
+		Vector3 endpos = GetEndPoint(node);
 
-		Vector3 groundpos(ground.x_, 0.0, ground.y_);
-		auto turretnode = node->GetComponent<AnimatedModel>()->GetSkeleton().GetBone("Turret")->node_;
-		auto turretpos = turretnode->GetWorldPosition();
+		Vector3 delta = endpos - lastendpos_;
+		Vector3 normdelta = delta.Normalized();
+		float length=delta.Length();
+		float trackspeed=GetStatValue(ssc, "LaserBeamTrackSpeed")*dt;
+		length=std::min(trackspeed, length);
 
-		// Do a raycast from turret pos to ground pos to find actual endpoint
-		Ray ray(turretpos, groundpos-turretpos);
-		PODVector<RayQueryResult> result;
-		result.Clear();
-		RayOctreeQuery query(result, ray, RAY_TRIANGLE, 100.0f, DRAWABLE_GEOMETRY);
-		octree->Raycast(query);
-		if(result.Size()==0) return actor->GetState<CASPlayerIdle>();
-
-
-
-		Vector3 endpos = groundpos;
-		for(unsigned int i=0; i<result.Size(); ++i)
-		{
-			if(result[i].distance_>=0 && TopLevelNode(result[i].drawable_, scene)->GetVar("world").GetBool())
-			{
-				endpos=ray.origin_+ray.direction_*result[i].distance_;
-				break;
-			}
-		}
+		endpos = lastendpos_ + normdelta*length;
+		lastendpos_=endpos;
 
 		if(endburst_) endburst_->SetWorldPosition(endpos);
 		if(beam_)
 		{
+			auto turretnode = node->GetComponent<AnimatedModel>()->GetSkeleton().GetBone("Turret")->node_;
+			auto turretpos = turretnode->GetWorldPosition();
 			beam_->SetWorldPosition(turretpos);
 			//beam_->SetDirection(endpos-turretpos);
 			auto zaxis = endpos - turretpos;
@@ -434,6 +468,39 @@ CombatActionState *CASPlayerLaserBeam::Update(CombatController *actor, float dt)
 
 			beam_->SetRotation(Quaternion(xaxis, yaxis, zaxis));
 			beam_->SetScale(Vector3(1,1,(endpos-turretpos).Length()*0.5));
+		}
+
+		if(timetopulse_ <= 0.0)
+		{
+			PODVector<Node *> dudes;
+			node->GetScene()->GetChildrenWithComponent<EnemyVitals>(dudes, false);
+
+			for(auto i=dudes.Begin(); i!=dudes.End(); ++i)
+			{
+				Vector3 pos=(*i)->GetWorldPosition();
+				Vector3 delta=endpos-pos;
+				if(delta.Length() < 12.0)
+				{
+					auto myvitals = node->GetComponent<PlayerVitals>();
+					auto vtls = (*i)->GetComponent<EnemyVitals>();
+					if(vtls && myvitals)
+					{
+						DamageValueList dmg=BuildDamageList(ssc);
+						for(auto &d : dmg)
+						{
+							//d.value_*=dt;
+							//Log::Write(LOG_INFO, String(d.value_));
+						}
+						vtls->ApplyDamageList(node,ssc,dmg);
+					}
+				}
+			}
+
+			timetopulse_=interval;
+		}
+		else
+		{
+			timetopulse_ -= dt;
 		}
 
 		return nullptr;

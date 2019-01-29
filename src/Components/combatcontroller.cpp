@@ -76,7 +76,7 @@ void CombatController::Update(float dt)
 	{
 		if(nextstate_==currentstate_)
 		{
-			Log::Write(LOG_INFO, "No switch");
+			//Log::Write(LOG_INFO, "No switch");
 			nextstate_=nullptr;
 		}
 		else
@@ -85,14 +85,14 @@ void CombatController::Update(float dt)
 			currentstate_=nextstate_;
 			nextstate_=nullptr;
 			currentstate_->Start(this);
-			Log::Write(LOG_INFO, String("Switched to ") + currentstate_->GetTypeName());
+			//Log::Write(LOG_INFO, String("Switched to ") + currentstate_->GetTypeName());
 		}
 	}
 
 	if(currentstate_)
 	{
 		nextstate_ = currentstate_->Update(this,dt);
-		if(nextstate_) Log::Write(LOG_INFO, String("Next state is: ") + nextstate_->GetTypeName());
+		//if(nextstate_) Log::Write(LOG_INFO, String("Next state is: ") + nextstate_->GetTypeName());
 	}
 
 

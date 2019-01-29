@@ -84,3 +84,12 @@ double GetStatValue(const StatSetCollection &stats, std::string stat);
 double GetStatValue(const StatSetCollection &stats, StringHashType stat);
 double EvaluateStatMod(const StatSetCollection &stats, const StatModifier &mod);
 
+struct DamageBoostValues
+{
+	double increased_, scale_;
+
+	DamageBoostValues(double i, double s) : increased_(i), scale_(s){}
+};
+
+DamageBoostValues GetDamageBoosts(const StatSetCollection &stats, std::string type);
+DamageBoostValues GetDamageBoosts(const StatSetCollection &stats, StringHashType type);

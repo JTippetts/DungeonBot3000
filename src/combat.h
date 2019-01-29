@@ -8,6 +8,7 @@
 enum DamageTypes
 {
 	DPhysical,
+	DFire,
 	DBurn,
 	DElectrical,
 	DNumTypes
@@ -16,6 +17,7 @@ enum DamageTypes
 static std::vector<std::string> DamageNames
 {
 	"Physical",
+	"Fire",
 	"Burn",
 	"Electrical"
 };

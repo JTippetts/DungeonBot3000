@@ -1,12 +1,15 @@
 #include "combat.h"
 
+#include <Urho3D/IO/Log.h>
+using namespace Urho3D;
+
 double rolld(double low, double high);
 
 
 void BoostDamage(StatSetCollection &attacker, DamageValue &damage)
 {
 	// Collect mults and scales
-	double increased=1.0+GetStatValue(attacker, "IncreasedDamage");
+	/*double increased=1.0+GetStatValue(attacker, "IncreasedDamage");
 	increased += GetStatValue(attacker, "Increased" + DamageNames[damage.type_] + "Damage");
 	if(damage.type_==DBurn || damage.type_==DElectrical) increased += GetStatValue(attacker, "IncreasedElementalDamage");
 
@@ -14,12 +17,31 @@ void BoostDamage(StatSetCollection &attacker, DamageValue &damage)
 	more *= 1.0 + GetStatValue(attacker, "More" + DamageNames[damage.type_] + "Damage");
 	if(damage.type_==DBurn || damage.type_==DElectrical) more *= 1.0 + GetStatValue(attacker, "MoreElementalDamage");
 
-	damage.value_ = std::max(0.0,damage.value_ * increased * more);
+	damage.value_ = std::max(0.0,damage.value_ * increased * more);*/
+
+	double mult,scale;
+	DamageBoostValues boost = GetDamageBoosts(attacker, "AllDamage");
+	mult=boost.increased_;
+	scale=boost.scale_;
+
+	boost = GetDamageBoosts(attacker, DamageNames[damage.type_] + "Damage");
+	mult += boost.increased_;
+	scale *= boost.scale_;
+
+	if(damage.type_==DBurn || damage.type_==DFire || damage.type_==DElectrical)
+	{
+		boost = GetDamageBoosts(attacker, "ElementalDamage");
+		mult += boost.increased_;
+		scale *= boost.scale_;
+	}
+
+	//Log::Write(LOG_INFO, String("Boosts: ") + String(mult) + " " + String(scale));
+	damage.value_ = std::max(0.0, damage.value_ * (1.0+mult) * scale);
 }
 
 void BoostIncomingDamage(StatSetCollection &defender, DamageValue &damage)
 {
-	double increased=1.0+GetStatValue(defender, "IncreasedDamageTaken");
+	/*double increased=1.0+GetStatValue(defender, "IncreasedDamageTaken");
 	increased += GetStatValue(defender, "Increased" + DamageNames[damage.type_] + "DamageTaken");
 	if(damage.type_==DBurn || damage.type_==DElectrical) increased += GetStatValue(defender, "IncreasedElementalDamageTaken");
 
@@ -35,7 +57,24 @@ void BoostIncomingDamage(StatSetCollection &defender, DamageValue &damage)
 	more *= 1.0 - GetStatValue(defender, "Less" + DamageNames[damage.type_] + "DamageTaken");
 	if(damage.type_==DBurn || damage.type_==DElectrical) more *= 1.0 - GetStatValue(defender, "LessElementalDamageTaken");
 
-	damage.value_ = std::max(0.0,damage.value_ * increased * more);
+	damage.value_ = std::max(0.0,damage.value_ * increased * more);*/
+	double mult,scale;
+	DamageBoostValues boost = GetDamageBoosts(defender, "AllDamageTaken");
+	mult = boost.increased_;
+	scale = boost.scale_;
+
+	boost = GetDamageBoosts(defender, DamageNames[damage.type_] + "DamageTaken");
+	mult += boost.increased_;
+	scale *= boost.scale_;
+
+	if(damage.type_==DBurn || damage.type_==DFire || damage.type_==DElectrical)
+	{
+		boost = GetDamageBoosts(defender, "ElementalDamageTaken");
+		mult += boost.increased_;
+		scale *= boost.scale_;
+	}
+
+	damage.value_ = std::max(0.0, damage.value_ * (1.0 + mult) * scale);
 }
 
 void ConvertDamage(StatSetCollection &attacker, DamageValueList &out, DamageValue &damage, int level)
