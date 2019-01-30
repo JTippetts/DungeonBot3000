@@ -10,6 +10,7 @@
 #include "Components/burnindicator.h"
 #include "Components/enemyondeath.h"
 #include "Components/timeddeath.h"
+#include "Enemies/jbadams.h"
 
 void RegisterCustomComponents(Context *context)
 {
@@ -34,6 +35,8 @@ void RegisterCustomComponents(Context *context)
 	context->RegisterFactory<CASEnemyIdle>();
 	context->RegisterFactory<CASEnemyApproachTarget>();
 	context->RegisterFactory<CASEnemyKick>();
+	context->RegisterFactory<CASEnemyAttack>();
 
 	context->RegisterFactory<CASUserEnemyAI>();
+	context->RegisterFactory<CASjbadamsEnemyAI>();
 }

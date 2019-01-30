@@ -28,6 +28,10 @@ class CombatController : public LogicComponent
 	const String GetObjectPath() const;
 	void SetAnimPath(String ap);
 	const String GetAnimPath() const;
+	void SetAIState(String s);
+	const String GetAIState() const;
+	void SetStartState(String s);
+	const String GetStartState() const;
 
 	void MoveTo(Vector3 target);
 	void SetPushiness(NavigationPushiness pushy);
@@ -47,6 +51,7 @@ class CombatController : public LogicComponent
 	Vector<SharedPtr<CombatActionState>> states_;
 
 	String objectpath_, animpath_;
+	String aistate_, startstate_;
 };
 
 template <class T> T *CombatController::GetState(){return static_cast<T*>(GetState(T::GetTypeStatic()));}

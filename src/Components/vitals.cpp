@@ -134,15 +134,18 @@ void BaseVitals::UpdateHoTs(float dt)
 	}
 }
 
-void BaseVitals::ApplyDamageList(Node *attackernode, const StatSetCollection &attackerstats, const DamageValueList &dmg)
+void BaseVitals::ApplyDamageList(BaseVitals *attackervitals, const StatSetCollection &attackerstats, const DamageValueList &dmg, bool reflectable)
 {
 	static StringHash LifeLow("LifeLow"), LifeDepleted("LifeDepleted"), DamageTaken("DamageTaken"), Damage("Damage");
 	auto vitalstats=GetVitalStats();
 	VariantMap vm;
+	auto attackernode=attackervitals->GetNode();
 
 	DamageValueList actual=ProcessIncomingDamage(vitalstats, dmg);
 
 	double taken=0.0;
+
+	DamageValueList reflected;
 
 	for(auto i : actual)
 	{
@@ -160,11 +163,35 @@ void BaseVitals::ApplyDamageList(Node *attackernode, const StatSetCollection &at
 			unsigned int id=attackernode->GetID();
 			dots_[id]=dot;
 		}
-		else taken += i.value_;
+		else
+		{
+			taken += i.value_;
+
+			// Calculate reflected damage
+			double reflect=GetStatValue(vitalstats, "Reflect" + DamageNames[i.type_]);
+			if(i.type_==DFire || i.type_==DBurn || i.type_==DElectrical) reflect += GetStatValue(vitalstats, "ReflectElemental");
+			reflect += GetStatValue(vitalstats, "ReflectAll");
+			reflect = std::min(1.0, reflect); // Can't reflect more than 100%
+
+			if(reflect>0.0 && reflectable)
+			{
+				DamageValue ref(i.type_, i.value_ * reflect);
+				reflected.push_back(ref);
+				Log::Write(LOG_INFO, String("Reflecting: ") + String(ref.value_) + " " + String(DamageNames[i.type_].c_str()));
+			}
+		}
+
 	}
 	currentlife_ -= taken;
 	vm[Damage]=taken;
 	node_->SendEvent(DamageTaken, vm);
+
+	// Send back reflected
+	if(reflected.size()>0 && reflectable)
+	{
+		attackervitals->ApplyDamageList(this, vitalstats, reflected, false);
+	}
+
 	if(currentlife_ <= 0.0)
 	{
 		node_->SendEvent(LifeDepleted, vm);

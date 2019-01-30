@@ -1,7 +1,7 @@
 {
 	"SpinAttack": {
-		"PhysicalLow": [["Flat", "5+SpinAttackLevel*5 + PhysicalDamageToSpinAttackLow"]],
-		"PhysicalHigh": [["Flat", "10+SpinAttackLevel*8 + PhysicalDamageToSpinAttackHigh"]],
+		"PhysicalLow": [["Flat", "10+SpinAttackLevel*5 + PhysicalDamageToSpinAttackLow"]],
+		"PhysicalHigh": [["Flat", "14+SpinAttackLevel*8 + PhysicalDamageToSpinAttackHigh"]],
 		"BurnLow": [["Flat", "40"]],
 		"BurnHigh": [["Flat", "80"]],
 		"MovementSpeed": [["Mult", "-0.4"]],
@@ -9,12 +9,12 @@
 	},
 
 	"LaserBeam": {
-		"FireLow": [["Flat", "4+LaserBeamLevel*5"]],
-		"FireHigh": [["Flat", "8+LaserBeamLevel*8"]],
-		"FireAsExtraBurn": [["Flat", "2.0"]],
+		"FireLow": [["Flat", "24+LaserBeamLevel*5"]],
+		"FireHigh": [["Flat", "38+LaserBeamLevel*8"]],
+		"FireAsExtraBurn": [["Flat", "4.0"]],
 		"MaxLaserBeamPhases": [["Flat", "8"]],
 		"AllDamage": [["Scale", "LaserBeamPhase*0.2"]],
-		"LaserBeamInterval": [["Flat", "0.25*(1.0-IncreasedAttackSpeed)"]],
-		"LaserBeamTrackSpeed": [["Flat", "30.0*(1.0+IncreasedAttackSpeed"]],
+		"LaserBeamInterval": [["Flat", "0.125*(1.0-IncreasedAttackSpeed)"]],
+		"LaserBeamTrackSpeed": [["Flat", "30.0*(1.0+IncreasedAttackSpeed)"]],
 	},
 }

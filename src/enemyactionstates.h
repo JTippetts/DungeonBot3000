@@ -2,6 +2,11 @@
 
 // Enemy action states
 #include "combatactionstates.h"
+#include "stats.h"
+
+#include <Urho3D/Resource/ResourceCache.h>
+#include <Urho3D/Resource/JSONFile.h>
+#include <Urho3D/Resource/JSONValue.h>
 
 // Create a base class for enemy AI routine action states
 class CASEnemyAI : public CombatActionState
@@ -67,6 +72,25 @@ class CASEnemyKick : public CombatActionState
 	virtual CombatActionState *Update(CombatController *actor, float dt) override;
 	virtual void HandleTrigger(CombatController *actor, String animname, unsigned int value) override;
 };
+
+class CASEnemyAttack : public CombatActionState
+{
+	URHO3D_OBJECT(CASEnemyAttack, CombatActionState);
+	public:
+	CASEnemyAttack(Context *context);
+	virtual void Start(CombatController *actor) override;
+	virtual void End(CombatController *actor) override;
+	virtual CombatActionState *Update(CombatController *actor, float dt) override;
+	virtual void HandleTrigger(CombatController *actor, String animname, unsigned int value) override;
+
+	void SetAnimation(const String anim);
+	void SetAttackStats(CombatController *actor, const String path);
+
+	protected:
+	String animation_;
+	StatSet attackstats_;
+};
+
 
 class CASUserEnemyAI : public CASEnemyAI
 {

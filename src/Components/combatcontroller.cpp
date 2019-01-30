@@ -11,6 +11,8 @@ void CombatController::RegisterObject(Context *context)
 
 	URHO3D_ACCESSOR_ATTRIBUTE("Object Path", GetObjectPath, SetObjectPath, String, String(""), AM_DEFAULT);
 	URHO3D_ACCESSOR_ATTRIBUTE("Animation Path", GetAnimPath, SetAnimPath, String, String(""), AM_DEFAULT);
+	URHO3D_ACCESSOR_ATTRIBUTE("AI State", GetAIState, SetAIState, String, String(""), AM_DEFAULT);
+	URHO3D_ACCESSOR_ATTRIBUTE("Start State", GetStartState, SetStartState, String, String(""), AM_DEFAULT);
 }
 
 CombatController::CombatController(Context *context) : LogicComponent(context), currentstate_(nullptr), nextstate_(nullptr)
@@ -43,6 +45,30 @@ void CombatController::SetAnimPath(String op)
 const String CombatController::GetAnimPath() const
 {
 	return animpath_;
+}
+
+void CombatController::SetAIState(String s)
+{
+	if(s=="") return;
+	aistate_=s;
+	GetState(StringHash(s));
+}
+
+const String CombatController::GetAIState() const
+{
+	return aistate_;
+}
+
+void CombatController::SetStartState(String s)
+{
+	if(s=="") return;
+	startstate_=s;
+	SetCombatActionState(GetState(s));
+}
+
+const String CombatController::GetStartState() const
+{
+	return startstate_;
 }
 
 void CombatController::MoveTo(Vector3 target)
@@ -145,5 +171,6 @@ CombatActionState *CombatController::GetState(StringHash type)
 
 	SharedPtr<CombatActionState> newComponent = DynamicCast<CombatActionState>(context_->CreateObject(type));
 	if(newComponent) states_.Push(newComponent);
+	else Log::Write(LOG_INFO, "Unable to create state.");
 	return newComponent;
 }

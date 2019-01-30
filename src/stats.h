@@ -65,6 +65,7 @@ class StatSet
 
 	void ConcatenateStat(Stat &stat, std::string name) const;
 	void ConcatenateStat(Stat &stat, StringHashType name) const;
+	void Clear(){stats_.clear();}
 
 	protected:
 	std::unordered_map<StringHashType, Stat> stats_;

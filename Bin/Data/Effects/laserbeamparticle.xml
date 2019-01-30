@@ -3,7 +3,7 @@
 	<material name="Effects/flame.xml" />
 	<numparticles value="30" />
 	<updateinvisible enable="false" />
-	<relative enable="false" />
+	<relative enable="true" />
 	<scaled enable="false" />
 	<sorted enable="false" />
 	<fixedscreensize enable="false" />

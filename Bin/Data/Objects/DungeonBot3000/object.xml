@@ -37,6 +37,7 @@
 	<component type="CombatController" >
 		<attribute name="Object Path" value="Objects/DungeonBot3000" />
 		<attribute name="Animation Path" value="Objects/DungeonBot3000" />
+		<attribute name="Start State" value="CASPlayerIdle" />
 	</component>
 	<component type="PlayerVitals" >
 	</component>

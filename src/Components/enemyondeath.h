@@ -20,10 +20,14 @@ class EnemyOnDeath : public LogicComponent
 	static void RegisterObject(Context *context);
 	EnemyOnDeath(Context *context);
 
+	void SetDeathFlash(String s);
+	const String GetDeathFlash() const;
+
 	protected:
 	void HandleEndFrame(StringHash eventType, VariantMap &eventData);
 	void HandleLifeDepleted(StringHash eventType, VariantMap &eventData);
 	virtual void DelayedStart() override;
 
 	bool removing_;
+	String deathflashpath_;
 };

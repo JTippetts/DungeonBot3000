@@ -46,7 +46,7 @@ CombatActionState *CASEnemyInactive::Update(CombatController *actor, float dt)
 	Vector3 dudepos=pl->GetWorldPosition();
 	Vector3 delta=dudepos-pos;
 
-	if(delta.Length() < 60)
+	if(delta.Length() < 80)
 	{
 		return actor->GetDerivedState<CASEnemyAI>();
 	}
@@ -241,7 +241,6 @@ void CASEnemyApproachTarget::SetTimeout(float timeout)
 	timeout_=timeout;
 }
 
-
 /////////////////////////
 CASEnemyKick::CASEnemyKick(Context *context) : CombatActionState(context)
 {
@@ -255,10 +254,12 @@ void CASEnemyKick::Start(CombatController *actor)
 		auto ac=node->GetComponent<AnimationController>();
 		if(ac)
 		{
+			//Log::Write(LOG_INFO, "1");
 			ac->Play(actor->GetAnimPath() + "/Models/Kick.ani", 0, false, 0.1f);
 			auto vitals=node->GetComponent<EnemyVitals>();
 			if(vitals)
 			{
+				//Log::Write(LOG_INFO, "2");
 				auto ssc=vitals->GetVitalStats();
 				float attackspeed=std::max(0.01, GetStatValue(ssc, "AttackSpeed"));
 				ac->SetSpeed(actor->GetAnimPath() + "/Models/Kick.ani", attackspeed);
@@ -331,7 +332,122 @@ void CASEnemyKick::HandleTrigger(CombatController *actor, String animname, unsig
 			DamageValueList dmg=BuildDamageList(mystats);
 			if(pv)
 			{
-				pv->ApplyDamageList(node,mystats,dmg);
+				pv->ApplyDamageList(vitals,mystats,dmg);
+			}
+		}
+	}
+}
+
+/////////////////////////
+CASEnemyAttack::CASEnemyAttack(Context *context) : CombatActionState(context)
+{
+}
+
+void CASEnemyAttack::SetAnimation(const String a)
+{
+	animation_=a;
+}
+
+void CASEnemyAttack::SetAttackStats(CombatController *actor, const String a)
+{
+	attackstats_.Clear();
+	auto cache=actor->GetSubsystem<ResourceCache>();
+	auto file=cache->GetResource<JSONFile>(a);
+	if(file)
+	{
+		attackstats_.LoadJSON(file->GetRoot());
+	}
+}
+
+void CASEnemyAttack::Start(CombatController *actor)
+{
+	auto node=actor->GetNode();
+	if(node)
+	{
+		auto ac=node->GetComponent<AnimationController>();
+		if(ac)
+		{
+			ac->Play(actor->GetAnimPath() + animation_, 0, false, 0.1f);
+			auto vitals=node->GetComponent<EnemyVitals>();
+			if(vitals)
+			{
+				StatSetCollection ssc=vitals->GetVitalStats();
+				ssc.push_back(&attackstats_);
+				float attackspeed=std::max(0.01, GetStatValue(ssc, "AttackSpeed"));
+				Log::Write(LOG_INFO, String("Attack speed: ") + String(attackspeed));
+				ac->SetSpeed(actor->GetAnimPath() + animation_, attackspeed);
+			}
+		}
+
+		auto ca=node->GetComponent<CrowdAgent>();
+		if(ca)
+		{
+			ca->SetNavigationPushiness(NAVIGATIONPUSHINESS_HIGH);
+		}
+	}
+}
+
+void CASEnemyAttack::End(CombatController *actor)
+{
+	auto node=actor->GetNode();
+	if(node)
+	{
+		auto ac=node->GetComponent<AnimationController>();
+		if(ac)
+		{
+			ac->Stop(actor->GetAnimPath() + animation_, 0.1f);
+		}
+
+		auto ca=node->GetComponent<CrowdAgent>();
+		if(ca)
+		{
+			ca->SetNavigationPushiness(NAVIGATIONPUSHINESS_MEDIUM);
+			ca->SetTargetPosition(node->GetWorldPosition());
+		}
+	}
+}
+
+CombatActionState *CASEnemyAttack::Update(CombatController *actor, float dt)
+{
+	auto node=actor->GetNode();
+	auto ac=node->GetComponent<AnimationController>();
+	if(ac)
+	{
+		if(ac->IsAtEnd(actor->GetAnimPath() + animation_))
+		{
+			//return actor->GetState<CASEnemyIdle>();
+			return actor->GetDerivedState<CASEnemyAI>();
+		}
+	}
+
+	auto ca = node->GetComponent<CrowdAgent>();
+
+	auto pd = node->GetSubsystem<PlayerData>();
+	auto playerpos = pd->GetPlayerNode()->GetWorldPosition();
+	auto delta = playerpos - node->GetWorldPosition();
+
+	node->SetRotation(node->GetRotation().Slerp(Quaternion(Vector3::FORWARD, delta), 10.0f * dt));
+
+	return nullptr;
+}
+
+void CASEnemyAttack::HandleTrigger(CombatController *actor, String animname, unsigned int value)
+{
+	//if(animname=="Kick")
+	{
+		auto node=actor->GetNode();
+		auto vitals=node->GetComponent<EnemyVitals>();
+		if(vitals)
+		{
+			auto pd=node->GetSubsystem<PlayerData>();
+			auto pv=pd->GetPlayerNode()->GetComponent<PlayerVitals>();
+			StatSetCollection mystats=vitals->GetVitalStats();
+			mystats.push_back(&attackstats_);
+
+			DamageValueList dmg=BuildDamageList(mystats);
+			if(pv)
+			{
+				pv->ApplyDamageList(vitals,mystats,dmg);
 			}
 		}
 	}

@@ -45,7 +45,8 @@ class BaseVitals : public LogicComponent
 	virtual const StatSetCollection &GetVitalStats() const=0;
 	double GetCurrentLife();
 	double GetMaximumLife();
-	void ApplyDamageList(Node *attackernode, const StatSetCollection &attackerstats, const DamageValueList &dmg);
+	//void ApplyDamageList(Node *attackernode, const StatSetCollection &attackerstats, const DamageValueList &dmg);
+	void ApplyDamageList(BaseVitals *attackervitals, const StatSetCollection &attackerstats, const DamageValueList &dmg, bool reflectable=true);
 	void ApplyHealing(double h);
 
 	protected:

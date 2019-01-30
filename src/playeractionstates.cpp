@@ -88,7 +88,8 @@ CombatActionState *CASPlayerIdle::Update(CombatController *actor, float dt)
 	{
 		// Do right button
 		//return nullptr;
-		return actor->GetState<CASPlayerSpinAttack>();
+		//return actor->GetState<CASPlayerSpinAttack>();
+		return actor->GetState<CASPlayerLaserBeam>();
 	}
 	else if(input->GetMouseButtonDown(MOUSEB_LEFT))
 	{
@@ -97,7 +98,8 @@ CombatActionState *CASPlayerIdle::Update(CombatController *actor, float dt)
 	}
 	else if(input->GetKeyDown(KEY_Q))
 	{
-		return actor->GetState<CASPlayerLaserBeam>();
+		//return actor->GetState<CASPlayerLaserBeam>();
+		return actor->GetState<CASPlayerSpinAttack>();
 	}
 
 	return nullptr;
@@ -157,11 +159,13 @@ CombatActionState *CASPlayerMove::Update(CombatController *actor, float dt)
 
 	if(input->GetMouseButtonPress(MOUSEB_RIGHT))
 	{
-		return actor->GetState<CASPlayerSpinAttack>();
+		//return actor->GetState<CASPlayerSpinAttack>();
+		return actor->GetState<CASPlayerLaserBeam>();
 	}
 	else if(input->GetKeyDown(KEY_Q))
 	{
-		return actor->GetState<CASPlayerLaserBeam>();
+		//return actor->GetState<CASPlayerLaserBeam>();
+		return actor->GetState<CASPlayerSpinAttack>();
 	}
 	else if(input->GetMouseButtonDown(MOUSEB_LEFT))
 	{
@@ -256,7 +260,8 @@ CombatActionState *CASPlayerSpinAttack::Update(CombatController *actor, float dt
 	auto node=actor->GetNode();
 	auto input=actor->GetSubsystem<Input>();
 
-	if(input->GetMouseButtonDown(MOUSEB_RIGHT))
+	//if(input->GetMouseButtonDown(MOUSEB_RIGHT))
+	if(input->GetKeyDown(KEY_Q))
 	{
 		auto cam=node->GetScene()->GetChild("Camera")->GetComponent<ThirdPersonCamera>();
 		IntVector2 mousepos;
@@ -317,7 +322,7 @@ void CASPlayerSpinAttack::HandleTrigger(CombatController *actor, String animname
 					auto pd=node->GetSubsystem<PlayerData>();
 					StatSetCollection ssc=pd->GetStatSetCollection(EqNumEquipmentSlots, "SpinAttack");
 					DamageValueList dmg=BuildDamageList(ssc);
-					vtls->ApplyDamageList(node,ssc,dmg);
+					vtls->ApplyDamageList(myvitals,ssc,dmg);
 				}
 			}
 		}
@@ -438,7 +443,8 @@ CombatActionState *CASPlayerLaserBeam::Update(CombatController *actor, float dt)
 
 	//Log::Write(LOG_INFO, String("Phase: ") + String(p) + " Interval: " + String(interval));
 
-	if(input->GetKeyDown(KEY_Q))
+	//if(input->GetKeyDown(KEY_Q))
+	if(input->GetMouseButtonDown(MOUSEB_RIGHT))
 	{
 		Vector3 endpos = GetEndPoint(node);
 
@@ -491,7 +497,7 @@ CombatActionState *CASPlayerLaserBeam::Update(CombatController *actor, float dt)
 							//d.value_*=dt;
 							//Log::Write(LOG_INFO, String(d.value_));
 						}
-						vtls->ApplyDamageList(node,ssc,dmg);
+						vtls->ApplyDamageList(myvitals,ssc,dmg);
 					}
 				}
 			}

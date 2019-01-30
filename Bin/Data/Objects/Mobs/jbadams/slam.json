@@ -1,0 +1,6 @@
+{
+	"PhysicalLow": [["Flat", "50*pow(Level,1.5)"]],
+	"PhysicalHigh": [["Flat", "70*pow(Level,1.5)"]],
+	"PhysicalAsExtraBurn": [["Flat", "0.5"]],
+	"AttackSpeed": [["Flat", "1.0"]],
+}

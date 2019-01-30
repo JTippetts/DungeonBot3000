@@ -237,23 +237,10 @@ void Game::Start()
 		smd->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
 	}
 
-	auto cc=n_->GetComponent<CombatController>();
-	if(cc)
-	{
-		Log::Write(LOG_INFO, "Setting combat action state.");
-		cc->SetCombatActionState(cc->GetState<CASPlayerIdle>());
-	}
 	pd->SetPlayerNode(n_);
 
-	for(unsigned int i=0; i<100; ++i)
+	for(unsigned int i=0; i<300; ++i)
 	{
-		//BoundingBox bb=nav->GetBoundingBox();
-		//do
-		//{
-			//float x=rollf(bbox.min_.x_, bbox.max_.x_);
-			//float z=rollf(bbox.min_.z_, bbox.max_.z_);
-			//Vector3 pos(x,0,z);
-		//} while(!nav->
 
 		Vector3 pos;
 		do
@@ -262,7 +249,11 @@ void Game::Start()
 		} while(pos.y_ > 0.5);
 		//Log::Write(LOG_INFO, String(pos.y_));
 		pos.y_=0;
-		XMLFile *xfile=cache->GetResource<XMLFile>("Objects/Mobs/User/object.xml");
+		XMLFile *xfile;
+		auto rl=rollf(0,100);
+		if(rl < 30) xfile=cache->GetResource<XMLFile>("Objects/Mobs/jbadams/object.xml");
+		else if(rl < 60) xfile=cache->GetResource<XMLFile>("Objects/Mobs/Moderator/object.xml");
+		else xfile=cache->GetResource<XMLFile>("Objects/Mobs/User/object.xml");
 		Node *n=scene_->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
 
 
@@ -270,14 +261,6 @@ void Game::Start()
 		if(vtls)
 		{
 			vtls->SetLevel(10);
-		}
-		auto cc=n->GetComponent<CombatController>();
-		if(cc)
-		{
-			//Log::Write(LOG_INFO, "Setting combat action state.");
-			//cc->SetCombatActionState(cc->GetState<CASEnemyIdle>());
-			cc->GetState<CASUserEnemyAI>();
-			cc->SetCombatActionState(cc->GetState<CASEnemyInactive>());
 		}
 	}
 
