@@ -124,7 +124,7 @@ class CASEnemyAttackPosition : public CombatActionState
 	float radius_;
 	Node *target_;
 
-	SharedPtr<Node> targetcircle_;
+	Node* targetcircle_;
 };
 
 

@@ -457,7 +457,7 @@ void CASEnemyAttack::HandleTrigger(CombatController *actor, String animname, uns
 }
 
 /////////////////////////
-CASEnemyAttackPosition::CASEnemyAttackPosition(Context *context) : CombatActionState(context)
+CASEnemyAttackPosition::CASEnemyAttackPosition(Context *context) : CombatActionState(context), targetcircle_(nullptr)
 {
 }
 
@@ -510,13 +510,13 @@ void CASEnemyAttackPosition::Start(CombatController *actor)
 	{
 		auto cache=node->GetSubsystem<ResourceCache>();
 
-		targetcircle_ = node->GetScene()->CreateChild();
+		targetcircle_ = node->CreateChild();
 		auto md=targetcircle_->CreateComponent<StaticModel>();
 		md->SetModel(cache->GetResource<Model>("Effects/Ring.mdl"));
 		md->SetMaterial(cache->GetResource<Material>("Effects/targetring.xml"));
 	}
 
-	targetcircle_->SetPosition(position_ + Vector3(0,0.3,0));
+	targetcircle_->SetWorldPosition(position_ + Vector3(0,0.3,0));
 	targetcircle_->SetScale(Vector3(radius_, 1.0, radius_));
 	targetcircle_->SetEnabled(true);
 }
