@@ -7,6 +7,9 @@
 #include <Urho3D/Resource/ResourceCache.h>
 #include <Urho3D/Resource/JSONFile.h>
 #include <Urho3D/Resource/JSONValue.h>
+#include <Urho3D/Graphics/Material.h>
+#include <Urho3D/Graphics/StaticModel.h>
+#include <Urho3D/Graphics/Model.h>
 
 // Create a base class for enemy AI routine action states
 class CASEnemyAI : public CombatActionState
@@ -37,7 +40,7 @@ class CASEnemyIdle : public CombatActionState
 	virtual void End(CombatController *actor) override;
 	virtual void Start(CombatController *actor) override;
 	virtual CombatActionState *Update(CombatController *actor, float dt) override;
-	virtual void HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt) override;
+	virtual bool HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt) override;
 };
 
 class CASEnemyApproachTarget : public CombatActionState
@@ -105,6 +108,7 @@ class CASEnemyAttackPosition : public CombatActionState
 	virtual void End(CombatController *actor) override;
 	virtual CombatActionState *Update(CombatController *actor, float dt) override;
 	virtual void HandleTrigger(CombatController *actor, String animname, unsigned int value) override;
+	virtual bool HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt) override;
 
 	void SetAnimation(const String anim);
 	void SetAttackStats(CombatController *actor, const String path);
@@ -119,6 +123,8 @@ class CASEnemyAttackPosition : public CombatActionState
 	Vector3 position_;
 	float radius_;
 	Node *target_;
+
+	SharedPtr<Node> targetcircle_;
 };
 
 

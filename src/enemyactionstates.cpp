@@ -125,7 +125,7 @@ CombatActionState *CASEnemyIdle::Update(CombatController *actor, float dt)
 	return nullptr;
 }
 
-void CASEnemyIdle::HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt)
+bool CASEnemyIdle::HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt)
 {
 	auto node=actor->GetNode();
 	auto ca=node->GetComponent<CrowdAgent>();
@@ -133,6 +133,7 @@ void CASEnemyIdle::HandleAgentReposition(CombatController *actor, Vector3 veloci
 	{
 		ca->SetTargetPosition(node->GetWorldPosition());
 	}
+	return true;
 }
 
 /////////////////// CASEnemyApproachTarget
@@ -504,6 +505,20 @@ void CASEnemyAttackPosition::Start(CombatController *actor)
 	}
 
 	if(target_) position_=target_->GetWorldPosition();
+
+	if(!targetcircle_)
+	{
+		auto cache=node->GetSubsystem<ResourceCache>();
+
+		targetcircle_ = node->GetScene()->CreateChild();
+		auto md=targetcircle_->CreateComponent<StaticModel>();
+		md->SetModel(cache->GetResource<Model>("Effects/Ring.mdl"));
+		md->SetMaterial(cache->GetResource<Material>("Effects/targetring.xml"));
+	}
+
+	targetcircle_->SetPosition(position_ + Vector3(0,0.3,0));
+	targetcircle_->SetScale(Vector3(radius_, 1.0, radius_));
+	targetcircle_->SetEnabled(true);
 }
 
 void CASEnemyAttackPosition::End(CombatController *actor)
@@ -526,6 +541,7 @@ void CASEnemyAttackPosition::End(CombatController *actor)
 	}
 
 	target_=nullptr;
+	targetcircle_->SetEnabled(false);
 }
 
 CombatActionState *CASEnemyAttackPosition::Update(CombatController *actor, float dt)
@@ -541,13 +557,9 @@ CombatActionState *CASEnemyAttackPosition::Update(CombatController *actor, float
 		}
 	}
 
-	auto ca = node->GetComponent<CrowdAgent>();
+	Vector3 dir=position_ - node->GetWorldPosition();
 
-	auto pd = node->GetSubsystem<PlayerData>();
-	auto playerpos = pd->GetPlayerNode()->GetWorldPosition();
-	auto delta = playerpos - node->GetWorldPosition();
-
-	node->SetRotation(node->GetRotation().Slerp(Quaternion(Vector3::FORWARD, delta), 10.0f * dt));
+	node->SetRotation(node->GetRotation().Slerp(Quaternion(Vector3::FORWARD, dir), 10.0f * dt));
 
 	return nullptr;
 }
@@ -579,6 +591,10 @@ void CASEnemyAttackPosition::HandleTrigger(CombatController *actor, String animn
 	}
 }
 
+bool CASEnemyAttackPosition::HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt)
+{
+	return true;
+}
 
 /// User AI
 CASUserEnemyAI::CASUserEnemyAI(Context *context) : CASEnemyAI(context)

@@ -139,23 +139,27 @@ void CombatController::HandleAnimationTrigger(StringHash eventType, VariantMap &
 void CombatController::HandleCrowdAgentReposition(StringHash eventType, VariantMap &eventData)
 {
 	using namespace CrowdAgentReposition;
-
-	auto* node = static_cast<Node*>(eventData[P_NODE].GetPtr());
-    auto* agent = static_cast<CrowdAgent*>(eventData[P_CROWD_AGENT].GetPtr());
-    Vector3 velocity = eventData[P_VELOCITY].GetVector3();
     float timeStep = eventData[P_TIMESTEP].GetFloat();
+	auto agent=node_->GetComponent<CrowdAgent>();
+	Vector3 velocity = agent->GetActualVelocity();
+
+	if(currentstate_)
+	{
+		if(!currentstate_->HandleAgentReposition(this, velocity, timeStep)) FaceNodeMotion(timeStep);
+	}
+}
+
+void CombatController::FaceNodeMotion(float timeStep)
+{
+    auto agent=node_->GetComponent<CrowdAgent>();
+	Vector3 velocity = agent->GetActualVelocity();
 
 	float speed = velocity.Length();
 
 	if(speed>agent->GetRadius())
 	{
 		float speedRatio = speed / agent->GetMaxSpeed();
-		node->SetRotation(node->GetRotation().Slerp(Quaternion(Vector3::FORWARD, velocity), 10.0f * timeStep * speedRatio*1.0));
-	}
-
-	if(currentstate_)
-	{
-		currentstate_->HandleAgentReposition(this, velocity, timeStep);
+		node_->SetRotation(node_->GetRotation().Slerp(Quaternion(Vector3::FORWARD, velocity), 10.0f * timeStep * speedRatio*1.0));
 	}
 }
 

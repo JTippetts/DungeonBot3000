@@ -22,7 +22,7 @@
 	<component type="CrowdAgent">
 		<attribute name="Max Accel" value="400" />
 		<attribute name="Max Speed" value="30" />
-		<attribute name="Radius" value="4" />
+		<attribute name="Radius" value="2" />
 		<attribute name="Height" value="2" />
 		<attribute name="Navigation Pushiness" value="Low" />
 		<attribute name="Navigation Quality" value="High" />

@@ -41,6 +41,8 @@ class CombatController : public LogicComponent
 	template <class T> T *GetState();
 	template <class T> T *GetDerivedState();
 
+	void FaceNodeMotion(float timeStep);
+
 	protected:
 	virtual void Update(float dt) override;
 	virtual void DelayedStart() override;
