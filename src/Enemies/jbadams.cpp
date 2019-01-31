@@ -28,13 +28,16 @@ CombatActionState *CASjbadamsEnemyAI::Update(CombatController *actor, float dt)
 		attack->SetAttackStats(actor, "Objects/Mobs/jbadams/strike.json");
 		attack->SetAnimation("/Models/Strike.ani");
 		chase->SetApproachState(attack);
+		attack->SetTargetNode(node->GetScene()->GetChild("Dude"));
 	}
 	else
 	{
-		auto attack=actor->GetState<CASEnemyAttack>();
+		auto attack=actor->GetState<CASEnemyAttackPosition>();
 		attack->SetAttackStats(actor, "Objects/Mobs/jbadams/slam.json");
 		attack->SetAnimation("/Models/Slam.ani");
 		chase->SetApproachState(attack);
+		attack->SetTargetNode(node->GetScene()->GetChild("Dude"));
+		attack->SetTargetRadius(10.0f);
 	}
 
 	return chase;

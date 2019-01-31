@@ -256,6 +256,18 @@ void Game::Start()
 		else xfile=cache->GetResource<XMLFile>("Objects/Mobs/User/object.xml");
 		Node *n=scene_->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
 
+		if(rl<30)
+		{
+			auto rb=n->GetComponent<AnimatedModel>()->GetSkeleton().GetBone("weapon_r");
+			if(rb)
+			{
+				Node *bl=rb->node_->CreateChild();
+				auto smd=bl->CreateComponent<StaticModel>();
+				smd->SetModel(cache->GetResource<Model>("Objects/Mobs/jbadams/Models/Hammer.mdl"));
+				smd->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
+			}
+		}
+
 
 		auto vtls=n->GetComponent<EnemyVitals>();
 		if(vtls)

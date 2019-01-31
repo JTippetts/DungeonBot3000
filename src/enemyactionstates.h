@@ -86,9 +86,39 @@ class CASEnemyAttack : public CombatActionState
 	void SetAnimation(const String anim);
 	void SetAttackStats(CombatController *actor, const String path);
 
+	void SetTargetNode(Node *n) {target_=n;}
+
 	protected:
 	String animation_;
 	StatSet attackstats_;
+	Node *target_;
+};
+
+/// Assign an attack upon a set location, rather than a target node. For telegraphed slam attacks, etc... that should be dodged.
+// Captures the position of target node in Start. Must specify an area as well.
+class CASEnemyAttackPosition : public CombatActionState
+{
+	URHO3D_OBJECT(CASEnemyAttackPosition, CombatActionState);
+	public:
+	CASEnemyAttackPosition(Context *context);
+	virtual void Start(CombatController *actor) override;
+	virtual void End(CombatController *actor) override;
+	virtual CombatActionState *Update(CombatController *actor, float dt) override;
+	virtual void HandleTrigger(CombatController *actor, String animname, unsigned int value) override;
+
+	void SetAnimation(const String anim);
+	void SetAttackStats(CombatController *actor, const String path);
+
+	void SetTargetNode(Node *n) {target_=n;}
+	void SetTargetRadius(float r) { radius_=r;}
+
+	protected:
+	String animation_;
+	StatSet attackstats_;
+
+	Vector3 position_;
+	float radius_;
+	Node *target_;
 };
 
 

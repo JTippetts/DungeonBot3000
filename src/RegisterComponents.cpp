@@ -36,6 +36,7 @@ void RegisterCustomComponents(Context *context)
 	context->RegisterFactory<CASEnemyApproachTarget>();
 	context->RegisterFactory<CASEnemyKick>();
 	context->RegisterFactory<CASEnemyAttack>();
+	context->RegisterFactory<CASEnemyAttackPosition>();
 
 	context->RegisterFactory<CASUserEnemyAI>();
 	context->RegisterFactory<CASjbadamsEnemyAI>();

@@ -338,8 +338,7 @@ void CASEnemyKick::HandleTrigger(CombatController *actor, String animname, unsig
 	}
 }
 
-/////////////////////////
-CASEnemyAttack::CASEnemyAttack(Context *context) : CombatActionState(context)
+CASEnemyAttack::CASEnemyAttack(Context *context) : CombatActionState(context), target_(0)
 {
 }
 
@@ -405,6 +404,8 @@ void CASEnemyAttack::End(CombatController *actor)
 			ca->SetTargetPosition(node->GetWorldPosition());
 		}
 	}
+
+	target_=nullptr;
 }
 
 CombatActionState *CASEnemyAttack::Update(CombatController *actor, float dt)
@@ -437,10 +438,11 @@ void CASEnemyAttack::HandleTrigger(CombatController *actor, String animname, uns
 	{
 		auto node=actor->GetNode();
 		auto vitals=node->GetComponent<EnemyVitals>();
-		if(vitals)
+		if(vitals && target_)
 		{
-			auto pd=node->GetSubsystem<PlayerData>();
-			auto pv=pd->GetPlayerNode()->GetComponent<PlayerVitals>();
+			//auto pd=node->GetSubsystem<PlayerData>();
+			//auto pv=pd->GetPlayerNode()->GetComponent<PlayerVitals>();
+			auto pv=target_->GetDerivedComponent<BaseVitals>();
 			StatSetCollection mystats=vitals->GetVitalStats();
 			mystats.push_back(&attackstats_);
 
@@ -448,6 +450,130 @@ void CASEnemyAttack::HandleTrigger(CombatController *actor, String animname, uns
 			if(pv)
 			{
 				pv->ApplyDamageList(vitals,mystats,dmg);
+			}
+		}
+	}
+}
+
+/////////////////////////
+CASEnemyAttackPosition::CASEnemyAttackPosition(Context *context) : CombatActionState(context)
+{
+}
+
+void CASEnemyAttackPosition::SetAnimation(const String a)
+{
+	animation_=a;
+}
+
+void CASEnemyAttackPosition::SetAttackStats(CombatController *actor, const String a)
+{
+	attackstats_.Clear();
+	auto cache=actor->GetSubsystem<ResourceCache>();
+	auto file=cache->GetResource<JSONFile>(a);
+	if(file)
+	{
+		attackstats_.LoadJSON(file->GetRoot());
+	}
+}
+
+void CASEnemyAttackPosition::Start(CombatController *actor)
+{
+	auto node=actor->GetNode();
+	if(node)
+	{
+		auto ac=node->GetComponent<AnimationController>();
+		if(ac)
+		{
+			ac->Play(actor->GetAnimPath() + animation_, 0, false, 0.1f);
+			auto vitals=node->GetComponent<EnemyVitals>();
+			if(vitals)
+			{
+				StatSetCollection ssc=vitals->GetVitalStats();
+				ssc.push_back(&attackstats_);
+				float attackspeed=std::max(0.01, GetStatValue(ssc, "AttackSpeed"));
+				Log::Write(LOG_INFO, String("Attack speed: ") + String(attackspeed));
+				ac->SetSpeed(actor->GetAnimPath() + animation_, attackspeed);
+			}
+		}
+
+		auto ca=node->GetComponent<CrowdAgent>();
+		if(ca)
+		{
+			ca->SetNavigationPushiness(NAVIGATIONPUSHINESS_HIGH);
+		}
+	}
+
+	if(target_) position_=target_->GetWorldPosition();
+}
+
+void CASEnemyAttackPosition::End(CombatController *actor)
+{
+	auto node=actor->GetNode();
+	if(node)
+	{
+		auto ac=node->GetComponent<AnimationController>();
+		if(ac)
+		{
+			ac->Stop(actor->GetAnimPath() + animation_, 0.1f);
+		}
+
+		auto ca=node->GetComponent<CrowdAgent>();
+		if(ca)
+		{
+			ca->SetNavigationPushiness(NAVIGATIONPUSHINESS_MEDIUM);
+			ca->SetTargetPosition(node->GetWorldPosition());
+		}
+	}
+
+	target_=nullptr;
+}
+
+CombatActionState *CASEnemyAttackPosition::Update(CombatController *actor, float dt)
+{
+	auto node=actor->GetNode();
+	auto ac=node->GetComponent<AnimationController>();
+	if(ac)
+	{
+		if(ac->IsAtEnd(actor->GetAnimPath() + animation_))
+		{
+			//return actor->GetState<CASEnemyIdle>();
+			return actor->GetDerivedState<CASEnemyAI>();
+		}
+	}
+
+	auto ca = node->GetComponent<CrowdAgent>();
+
+	auto pd = node->GetSubsystem<PlayerData>();
+	auto playerpos = pd->GetPlayerNode()->GetWorldPosition();
+	auto delta = playerpos - node->GetWorldPosition();
+
+	node->SetRotation(node->GetRotation().Slerp(Quaternion(Vector3::FORWARD, delta), 10.0f * dt));
+
+	return nullptr;
+}
+
+void CASEnemyAttackPosition::HandleTrigger(CombatController *actor, String animname, unsigned int value)
+{
+	//if(animname=="Kick")
+	{
+		auto node=actor->GetNode();
+		auto vitals=node->GetComponent<EnemyVitals>();
+		if(vitals && target_)
+		{
+			auto delta=target_->GetWorldPosition() - position_;
+			if(delta.Length()<=radius_)
+			{
+				//auto pd=node->GetSubsystem<PlayerData>();
+				//auto pv=pd->GetPlayerNode()->GetComponent<PlayerVitals>();
+				auto pv=target_->GetDerivedComponent<BaseVitals>();
+				StatSetCollection mystats=vitals->GetVitalStats();
+				mystats.push_back(&attackstats_);
+
+				DamageValueList dmg=BuildDamageList(mystats);
+				if(pv)
+				{
+					pv->ApplyDamageList(vitals,mystats,dmg);
+				}
 			}
 		}
 	}
