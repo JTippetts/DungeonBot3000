@@ -46,7 +46,7 @@ CombatActionState *CASEnemyInactive::Update(CombatController *actor, float dt)
 	Vector3 dudepos=pl->GetWorldPosition();
 	Vector3 delta=dudepos-pos;
 
-	if(delta.Length() < 80)
+	if(delta.Length() < 90)
 	{
 		return actor->GetDerivedState<CASEnemyAI>();
 	}

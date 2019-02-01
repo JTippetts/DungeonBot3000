@@ -14,6 +14,37 @@
 #include "../playeractionstates.h"
 #include "../enemyactionstates.h"
 
+#include <Urho3D/Container/HashMap.h>
+
+class Cooldowns
+{
+	public:
+	Cooldowns(){}
+
+	void SetCooldown(StringHash which, float value)
+	{
+		cooldowns_[which]=value;
+	}
+
+	float GetCooldown(StringHash which)
+	{
+		//return cooldowns_[which];
+		if(cooldowns_.Find(which)==cooldowns_.End()) cooldowns_[which]=0.0f;
+		return cooldowns_[which];
+	}
+
+	void Tick(float dt)
+	{
+		for(auto i=cooldowns_.Begin(); i!=cooldowns_.End(); ++i)
+		{
+			i->second_ -= dt;
+		}
+	}
+
+	protected:
+	HashMap<StringHash, float> cooldowns_;
+};
+
 using namespace Urho3D;
 
 class CombatController : public LogicComponent
@@ -42,6 +73,15 @@ class CombatController : public LogicComponent
 	template <class T> T *GetDerivedState();
 
 	void FaceNodeMotion(float timeStep);
+	void SetCooldown(StringHash which, float value)
+	{
+		cooldowns_.SetCooldown(which,value);
+	}
+
+	float GetCooldown(StringHash which)
+	{
+		return cooldowns_.GetCooldown(which);
+	}
 
 	protected:
 	virtual void Update(float dt) override;
@@ -54,6 +94,8 @@ class CombatController : public LogicComponent
 
 	String objectpath_, animpath_;
 	String aistate_, startstate_;
+
+	Cooldowns cooldowns_;
 };
 
 template <class T> T *CombatController::GetState(){return static_cast<T*>(GetState(T::GetTypeStatic()));}

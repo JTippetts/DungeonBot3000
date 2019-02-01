@@ -121,7 +121,7 @@ void CombatController::Update(float dt)
 		//if(nextstate_) Log::Write(LOG_INFO, String("Next state is: ") + nextstate_->GetTypeName());
 	}
 
-
+	cooldowns_.Tick(dt);
 }
 
 void CombatController::HandleAnimationTrigger(StringHash eventType, VariantMap &eventData)

@@ -40,4 +40,5 @@ void RegisterCustomComponents(Context *context)
 
 	context->RegisterFactory<CASUserEnemyAI>();
 	context->RegisterFactory<CASjbadamsEnemyAI>();
+	context->RegisterFactory<CASjbadamsLeap>();
 }
