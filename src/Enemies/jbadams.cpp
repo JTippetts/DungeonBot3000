@@ -7,11 +7,16 @@ CASjbadamsEnemyAI::CASjbadamsEnemyAI(Context *context) : CASEnemyAI(context)
 
 void CASjbadamsEnemyAI::Start(CombatController *actor)
 {
-
+	auto node=actor->GetNode();
+	auto ac=node->GetComponent<AnimationController>();
+	ac->Play(actor->GetAnimPath() + "/Models/Idle.ani", 0, true, 0.1f);
 }
 
 void CASjbadamsEnemyAI::End(CombatController *actor)
 {
+	auto node=actor->GetNode();
+	auto ac=node->GetComponent<AnimationController>();
+	ac->Stop(actor->GetAnimPath() + "/Models/Idle.ani", 0.1f);
 }
 
 CombatActionState *CASjbadamsEnemyAI::Update(CombatController *actor, float dt)
@@ -31,7 +36,6 @@ CombatActionState *CASjbadamsEnemyAI::Update(CombatController *actor, float dt)
 		leap->SetLeapTarget(pn->GetWorldPosition());
 		return leap;
 	}
-
 
 	CASEnemyApproachTarget *chase = actor->GetState<CASEnemyApproachTarget>();
 	chase->SetApproachTarget(node->GetScene()->GetChild("Dude"));
