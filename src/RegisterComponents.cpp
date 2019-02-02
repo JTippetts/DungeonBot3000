@@ -45,4 +45,5 @@ void RegisterCustomComponents(Context *context)
 	context->RegisterFactory<CASjbadamsLeap>();
 
 	context->RegisterFactory<CASKHawkEnemyAI>();
+	context->RegisterFactory<CASKHawkEnemyShootFire>();
 }

@@ -437,7 +437,7 @@ void CASEnemyKick::HandleTrigger(CombatController *actor, String animname, unsig
 	}
 }
 
-CASEnemyAttack::CASEnemyAttack(Context *context) : CombatActionState(context), target_(0)
+CASEnemyAttack::CASEnemyAttack(Context *context) : CombatActionState(context)
 {
 }
 
@@ -509,6 +509,11 @@ void CASEnemyAttack::End(CombatController *actor)
 
 CombatActionState *CASEnemyAttack::Update(CombatController *actor, float dt)
 {
+	if(!target_ || target_.Expired())
+	{
+		return actor->GetDerivedState<CASEnemyAI>();
+	}
+
 	auto node=actor->GetNode();
 	auto ac=node->GetComponent<AnimationController>();
 	if(ac)
@@ -522,8 +527,8 @@ CombatActionState *CASEnemyAttack::Update(CombatController *actor, float dt)
 
 	auto ca = node->GetComponent<CrowdAgent>();
 
-	auto pd = node->GetSubsystem<PlayerData>();
-	auto playerpos = pd->GetPlayerNode()->GetWorldPosition();
+	//auto pd = node->GetSubsystem<PlayerData>();
+	auto playerpos = target_->GetWorldPosition();
 	auto delta = playerpos - node->GetWorldPosition();
 
 	node->SetRotation(node->GetRotation().Slerp(Quaternion(Vector3::FORWARD, delta), 10.0f * dt));
@@ -537,7 +542,7 @@ void CASEnemyAttack::HandleTrigger(CombatController *actor, String animname, uns
 	{
 		auto node=actor->GetNode();
 		auto vitals=node->GetComponent<EnemyVitals>();
-		if(vitals && target_)
+		if(vitals && target_ && !target_.Expired())
 		{
 			//auto pd=node->GetSubsystem<PlayerData>();
 			//auto pv=pd->GetPlayerNode()->GetComponent<PlayerVitals>();
@@ -602,7 +607,7 @@ void CASEnemyAttackPosition::Start(CombatController *actor)
 		}
 	}
 
-	if(target_) position_=target_->GetWorldPosition();
+	if(target_ && !target_.Expired()) position_=target_->GetWorldPosition();
 
 	if(!targetcircle_)
 	{
@@ -668,7 +673,7 @@ void CASEnemyAttackPosition::HandleTrigger(CombatController *actor, String animn
 	{
 		auto node=actor->GetNode();
 		auto vitals=node->GetComponent<EnemyVitals>();
-		if(vitals && target_)
+		if(vitals && target_ && !target_.Expired())
 		{
 			auto delta=target_->GetWorldPosition() - position_;
 			if(delta.Length()<=radius_)

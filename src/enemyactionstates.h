@@ -116,7 +116,7 @@ class CASEnemyAttack : public CombatActionState
 	protected:
 	String animation_;
 	StatSet attackstats_;
-	Node *target_;
+	WeakPtr<Node> target_;
 };
 
 /// Assign an attack upon a set location, rather than a target node. For telegraphed slam attacks, etc... that should be dodged.
@@ -144,7 +144,7 @@ class CASEnemyAttackPosition : public CombatActionState
 
 	Vector3 position_;
 	float radius_;
-	Node *target_;
+	WeakPtr<Node> target_;
 
 	Node* targetcircle_;
 };

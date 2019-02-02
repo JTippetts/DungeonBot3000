@@ -102,7 +102,7 @@ CombatActionState *CASjbadamsLeap::Update(CombatController *actor, float dt)
 	vertscale *= vertscale;
 	vertscale=1.0f-vertscale;
 	Vector3 pos=startingpos_.Lerp(leaptarget_, t);
-	pos.y_=vertscale*12.0f;
+	pos.y_=vertscale*16.0f;
 
 	node->SetWorldPosition(pos);
 
