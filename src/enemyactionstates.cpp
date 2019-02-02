@@ -242,6 +242,104 @@ void CASEnemyApproachTarget::SetTimeout(float timeout)
 	timeout_=timeout;
 }
 
+/////////////////// CASEnemyMovePosition
+CASEnemyMovePosition::CASEnemyMovePosition(Context *context) : CombatActionState(context), distance_(0), target_(0,0,0), tostate_(nullptr), timeout_(0)
+{
+}
+
+void CASEnemyMovePosition::End(CombatController *actor)
+{
+	auto node=actor->GetNode();
+	if(node)
+	{
+		auto ac=node->GetComponent<AnimationController>();
+		if(ac)
+		{
+			ac->Stop(actor->GetAnimPath() + "/Models/Walk.ani");
+		}
+
+		auto ca=node->GetComponent<CrowdAgent>();
+		if(ca)
+		{
+			ca->SetTargetPosition(node->GetWorldPosition());
+		}
+	}
+}
+
+void CASEnemyMovePosition::Start(CombatController *actor)
+{
+	auto node=actor->GetNode();
+	if(node)
+	{
+		auto ac=node->GetComponent<AnimationController>();
+		if(ac)
+		{
+			ac->Play(actor->GetAnimPath() + "/Models/Walk.ani", 0, true, 0.1f);
+		}
+
+		auto ev=node->GetComponent<EnemyVitals>();
+		auto ca=node->GetComponent<CrowdAgent>();
+		if(ev && ca)
+		{
+			StatSetCollection ssc=ev->GetVitalStats();
+			double movespeed=GetStatValue(ssc, "MovementSpeed");
+			ca->SetMaxSpeed(movespeed*rollf(0.7,1.0));
+			ca->SetTargetPosition(target_);
+		}
+	}
+	time_=0.0;
+}
+
+CombatActionState *CASEnemyMovePosition::Update(CombatController *actor, float dt)
+{
+	auto node=actor->GetNode();
+
+	Vector3 pos=node->GetWorldPosition();
+	Vector3 delta=target_-pos;
+
+	if(delta.Length() > 60)
+	{
+		//return actor->GetState<CASEnemyIdle>();
+		return actor->GetState<CASEnemyInactive>();
+	}
+
+	if(delta.Length() <= distance_)
+	{
+		return tostate_;
+	}
+
+	if(timeout_>0.0)
+	{
+		time_+=dt;
+		if(time_ > timeout_)
+		{
+			return actor->GetDerivedState<CASEnemyAI>();
+		}
+	}
+
+	return nullptr;
+}
+
+
+void CASEnemyMovePosition::SetApproachDistance(float dist)
+{
+	distance_=dist;
+}
+
+void CASEnemyMovePosition::SetApproachState(CombatActionState *state)
+{
+	tostate_=state;
+}
+
+void CASEnemyMovePosition::SetApproachPosition(Vector3 target)
+{
+	target_=target;
+}
+void CASEnemyMovePosition::SetTimeout(float timeout)
+{
+	timeout_=timeout;
+}
+
 /////////////////////////
 CASEnemyKick::CASEnemyKick(Context *context) : CombatActionState(context)
 {

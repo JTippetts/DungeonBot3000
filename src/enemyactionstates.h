@@ -65,6 +65,28 @@ class CASEnemyApproachTarget : public CombatActionState
 	float time_;
 };
 
+class CASEnemyMovePosition : public CombatActionState
+{
+	URHO3D_OBJECT(CASEnemyMovePosition, CombatActionState);
+	public:
+	CASEnemyMovePosition(Context *context);
+
+	virtual void End(CombatController *actor) override;
+	virtual void Start(CombatController *actor) override;
+	virtual CombatActionState *Update(CombatController *actor, float dt) override;
+	void SetApproachDistance(float dist);
+	void SetApproachState(CombatActionState *state);
+	void SetApproachPosition(Vector3 pos);
+	void SetTimeout(float timeout);
+
+	protected:
+	float distance_;
+	Vector3 target_;
+	CombatActionState *tostate_;
+	float timeout_;
+	float time_;
+};
+
 class CASEnemyKick : public CombatActionState
 {
 	URHO3D_OBJECT(CASEnemyKick, CombatActionState);

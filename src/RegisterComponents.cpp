@@ -11,6 +11,7 @@
 #include "Components/enemyondeath.h"
 #include "Components/timeddeath.h"
 #include "Enemies/jbadams.h"
+#include "Enemies/khawk.h"
 
 void RegisterCustomComponents(Context *context)
 {
@@ -34,6 +35,7 @@ void RegisterCustomComponents(Context *context)
 	context->RegisterFactory<CASEnemyInactive>();
 	context->RegisterFactory<CASEnemyIdle>();
 	context->RegisterFactory<CASEnemyApproachTarget>();
+	context->RegisterFactory<CASEnemyMovePosition>();
 	context->RegisterFactory<CASEnemyKick>();
 	context->RegisterFactory<CASEnemyAttack>();
 	context->RegisterFactory<CASEnemyAttackPosition>();
@@ -41,4 +43,6 @@ void RegisterCustomComponents(Context *context)
 	context->RegisterFactory<CASUserEnemyAI>();
 	context->RegisterFactory<CASjbadamsEnemyAI>();
 	context->RegisterFactory<CASjbadamsLeap>();
+
+	context->RegisterFactory<CASKHawkEnemyAI>();
 }

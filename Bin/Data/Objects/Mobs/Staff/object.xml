@@ -8,12 +8,12 @@
 	<attribute name="Scale" value="2 2 2" />
 	<attribute name="Variables" />
 	<component type="AnimatedModel">
-		<attribute name="Model" value="Model;Objects/Mobs/KHawk/Models/huge-base.mdl" />
+		<attribute name="Model" value="Model;Objects/Mobs/Common/Models/huge-base.mdl" />
 		<attribute name="Material" value="Material;Objects/Mobs/Common/Materials/lightskin.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 	<component type="AnimatedModel">
-		<attribute name="Model" value="Model;Objects/Mobs/KHawk/Models/huge-blueshirt.mdl" />
+		<attribute name="Model" value="Model;Objects/Mobs/Common/Models/huge-blueshirt.mdl" />
 		<attribute name="Material" value="Material;Objects/Mobs/Common/Materials/greenshirt.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
@@ -29,8 +29,8 @@
 	</component>
 	<component type="CombatController">
 		<attribute name="Object Path" value="Objects/Mobs/KHawk" />
-		<attribute name="Animation Path" value="Objects/Mobs/KHawk" />
-		<attribute name="AI State" value="CASKHawkEnemyAI" />
+		<attribute name="Animation Path" value="Objects/Mobs/Common" />
+		<attribute name="AI State" value="CASUserEnemyAI" />
 		<attribute name="Start State" value="CASEnemyInactive" />
 	</component>
 	<component type="EnemyVitals" >

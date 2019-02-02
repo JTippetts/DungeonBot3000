@@ -251,13 +251,31 @@ void Game::Start()
 		pos.y_=0;
 		XMLFile *xfile;
 		auto rl=rollf(0,100);
-		if(rl < 30) xfile=cache->GetResource<XMLFile>("Objects/Mobs/jbadams/object.xml");
-		else if(rl < 60) xfile=cache->GetResource<XMLFile>("Objects/Mobs/Moderator/object.xml");
-		else xfile=cache->GetResource<XMLFile>("Objects/Mobs/User/object.xml");
-		Node *n=scene_->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
-
-		if(rl<30)
+		//if(rl < 30) xfile=cache->GetResource<XMLFile>("Objects/Mobs/jbadams/object.xml");
+		Node *n;
+		if(rl < 20)
 		{
+			xfile=cache->GetResource<XMLFile>("Objects/Mobs/KHawk/object.xml");
+			n=scene_->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
+			auto rb=n->GetComponent<AnimatedModel>()->GetSkeleton().GetBone("weapon_r");
+			if(rb)
+			{
+				Node *bl=rb->node_->CreateChild();
+				auto smd=bl->CreateComponent<StaticModel>();
+				//smd->SetModel(cache->GetResource<Model>("Objects/Mobs/jbadams/Models/Hammer.mdl"));
+				smd->SetModel(cache->GetResource<Model>("Objects/Mobs/KHawk/Models/RocketLauncher.mdl"));
+				smd->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
+			}
+		}
+		else if(rl < 40)
+		{
+			xfile=cache->GetResource<XMLFile>("Objects/Mobs/Moderator/object.xml");
+			n=scene_->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
+		}
+		else if(rl < 60)
+		{
+			xfile=cache->GetResource<XMLFile>("Objects/Mobs/jbadams/object.xml");
+			n=scene_->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
 			auto rb=n->GetComponent<AnimatedModel>()->GetSkeleton().GetBone("weapon_r");
 			if(rb)
 			{
@@ -266,6 +284,11 @@ void Game::Start()
 				smd->SetModel(cache->GetResource<Model>("Objects/Mobs/jbadams/Models/Hammer.mdl"));
 				smd->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
 			}
+		}
+		else
+		{
+			xfile=cache->GetResource<XMLFile>("Objects/Mobs/User/object.xml");
+			n=scene_->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
 		}
 
 
