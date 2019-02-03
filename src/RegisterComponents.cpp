@@ -10,6 +10,10 @@
 #include "Components/burnindicator.h"
 #include "Components/enemyondeath.h"
 #include "Components/timeddeath.h"
+#include "Components/projectile.h"
+#include "Components/areaburn.h"
+#include "Components/burnpayload.h"
+
 #include "Enemies/jbadams.h"
 #include "Enemies/khawk.h"
 
@@ -26,6 +30,9 @@ void RegisterCustomComponents(Context *context)
 	BurnIndicator::RegisterObject(context);
 	EnemyOnDeath::RegisterObject(context);
 	TimedDeath::RegisterObject(context);
+	Projectile::RegisterObject(context);
+	AreaBurn::RegisterObject(context);
+	BurnPayload::RegisterObject(context);
 
 	context->RegisterFactory<CASPlayerIdle>();
 	context->RegisterFactory<CASPlayerMove>();

@@ -1,8 +1,19 @@
 #include "khawk.h"
-
-#include "KHawk.h"
 #include "../Components/combatcontroller.h"
 #include "../Components/vitals.h"
+#include "../Components/projectile.h"
+#include "../Components/burnpayload.h"
+
+#include <Urho3D/Graphics/StaticModel.h>
+#include <Urho3D/Graphics/Model.h>
+#include <Urho3D/Graphics/Material.h>
+#include <Urho3D/Graphics/Light.h>
+#include <Urho3D/Graphics/ParticleEffect.h>
+#include <Urho3D/Graphics/ParticleEmitter.h>
+#include <Urho3D/Graphics/AnimatedModel.h>
+#include <Urho3D/Resource/ResourceCache.h>
+#include <Urho3D/Resource/XMLFile.h>
+
 
 float rollf(float, float);
 
@@ -150,6 +161,26 @@ CombatActionState *CASKHawkEnemyShootFire::Update(CombatController *actor, float
 void CASKHawkEnemyShootFire::HandleTrigger(CombatController *actor, String animname, unsigned int value)
 {
 	--numshots_;
+
+	auto node = actor->GetNode();
+	auto cache = node->GetSubsystem<ResourceCache>();
+
+	auto proj = node->GetScene()->CreateChild();
+	auto mdl = proj->CreateComponent<StaticModel>();
+	mdl->SetModel(cache->GetResource<Model>(actor->GetAnimPath() + "/Models/Grenade.mdl"));
+	mdl->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
+	auto bone=node->GetComponent<AnimatedModel>()->GetSkeleton().GetBone("rocketstart_r");
+	if(bone)
+	{
+		auto pj = proj->CreateComponent<Projectile>();
+		pj->Setup(bone->node_->GetWorldPosition(), target_->GetWorldPosition(), 160.0f, 10.0f);
+		auto bp = proj->CreateComponent<BurnPayload>();
+		bp->SetDuration(4.0f);
+		bp->SetInterval(0.25f);
+		bp->SetOwner(node);
+		bp->SetRadius(8.0f);
+		bp->SetBurnAmount(120.0f);
+	}
 }
 
 void CASKHawkEnemyShootFire::SetNumShots(int num)
