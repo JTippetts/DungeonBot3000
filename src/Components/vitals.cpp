@@ -56,7 +56,7 @@ void BaseVitals::UpdateDoTs(float dt)
 	{
 		bool erase=false;
 		double mytime=dt;
-		BurnDoT &dot=i->second;
+		BurnDoT &dot=(*i);//i->second;
 		vm[Attacker]=dot.owner_;
 		if(dot.ttl_ != -1)
 		{
@@ -161,7 +161,8 @@ void BaseVitals::ApplyDamageList(BaseVitals *attackervitals, const StatSetCollec
 			dot.counter_=0.0;
 			dot.owner_=attackernode;
 			unsigned int id=attackernode->GetID();
-			dots_[id]=dot;
+			//dots_[id]=dot;
+			dots_.push_back(dot);
 		}
 		else
 		{

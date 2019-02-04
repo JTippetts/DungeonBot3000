@@ -179,7 +179,10 @@ void CASKHawkEnemyShootFire::HandleTrigger(CombatController *actor, String animn
 		bp->SetInterval(0.25f);
 		bp->SetOwner(node);
 		bp->SetRadius(8.0f);
-		bp->SetBurnAmount(120.0f);
+
+		float low=GetStatValue(stats_, "BurnLow");
+		float high=GetStatValue(stats_, "BurnHigh");
+		bp->SetBurnAmount(rollf(low,high));
 	}
 }
 

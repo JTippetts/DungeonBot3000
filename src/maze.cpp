@@ -1,7 +1,7 @@
 #include "maze.h"
 #include <algorithm>
 
-MazeGenerator::MazeGenerator() : nodes()
+MazeGenerator::MazeGenerator()
 {
 	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
 	gen_.seed(seed);

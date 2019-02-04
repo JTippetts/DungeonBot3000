@@ -95,7 +95,17 @@ StatSetCollection PlayerData::GetStatSetCollection(EquipmentSlots slot, const st
 	StatSetCollection coll;
 	coll.push_back(&basestats_);
 
-	// Find eq, pass for now
+	// Push global stats for all eq
+	for(unsigned int g=0; g<EqNumEquipmentSlots; ++g)
+	{
+		coll.push_back(&equipmentglobalstats_[g]);
+	}
+
+	// Push local stats for requested slot
+	if(slot<EqNumEquipmentSlots)
+	{
+		coll.push_back(&equipmentlocalstats_[slot]);
+	}
 
 	if(skillname != "")
 	{
@@ -105,3 +115,36 @@ StatSetCollection PlayerData::GetStatSetCollection(EquipmentSlots slot, const st
 
 	return coll;
 }
+
+void PlayerData::EquipItem(const EquipmentItemDef &item, bool drop)
+{
+	if(item.slot_ < EqNumEquipmentSlots)
+	{
+		if(drop) DropItem(equipment_[item.slot_], Vector3(0,0,0));
+		equipment_[item.slot_]=item;
+		equipmentglobalstats_[item.slot_].Clear();
+		equipmentlocalstats_[item.slot_].Clear();
+		for(auto m : item.itemmods_)
+		{
+			auto mod = itemmodtable_.GetMod(m);
+			if(mod)
+			{
+				if(mod->desig_ == IMImplicit || mod->desig_ == IMLocal)
+				{
+					// Add a local mod
+					equipmentlocalstats_[item.slot_].Merge(mod->statset_);
+				}
+				else
+				{
+					equipmentglobalstats_[item.slot_].Merge(mod->statset_);
+				}
+			}
+		}
+	}
+}
+
+void PlayerData::DropItem(const EquipmentItemDef &item, Vector3 location)
+{
+	// TODO
+}
+

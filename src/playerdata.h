@@ -51,12 +51,19 @@ class PlayerData : public Object
 
 	StatSetCollection GetStatSetCollection(EquipmentSlots slot=EqNumEquipmentSlots, const std::string &skillname="");  // Pass EqNumEquipmentSlots and/or "" to disregard these parameters
 
+	void EquipItem(const EquipmentItemDef &item, bool drop=false);
+	void DropItem(const EquipmentItemDef &item, Vector3 location);
+
 	protected:
 	WeakPtr<Node> playernode_;
 
 	StatSet basestats_;
 	StatSetCollection vitalsstats_;
 	StatModifierHandle levelmodifier_;
+
+	EquipmentItemDef equipment_[EqNumEquipmentSlots];
+	StatSet equipmentglobalstats_[EqNumEquipmentSlots];
+	StatSet equipmentlocalstats_[EqNumEquipmentSlots];
 
 	std::unordered_map<std::string, StatSet> skillstats_;
 

@@ -237,6 +237,8 @@ void Game::Start()
 		smd->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
 	}
 
+	// Give DB3000 a starter blade
+	pd->EquipItem(EquipmentItemDef(EqBlade, "", "", {"StarterBladeImplicit"}), false);
 	pd->SetPlayerNode(n_);
 
 	for(unsigned int i=0; i<300; ++i)

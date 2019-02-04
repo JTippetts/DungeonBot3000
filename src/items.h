@@ -30,7 +30,9 @@ enum EquipmentSlots
 
 struct EquipmentItemDef
 {
-	EquipmentItemDef();
+	EquipmentItemDef() : slot_(EqNumEquipmentSlots){}
+	EquipmentItemDef(int slot, String dropobject, String object, const std::vector<String> &mods) : slot_(slot),
+		dropobjectpath_(dropobject), objectpath_(object), itemmods_(mods){}
 
 	int slot_;                    // Slot type
 

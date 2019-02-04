@@ -7,6 +7,8 @@
 #include <Urho3D/Resource/ResourceCache.h>
 #include <Urho3D/Resource/XMLFile.h>
 
+#include "areaburn.h"
+
 
 void BurnPayload::RegisterObject(Context *context)
 {
@@ -30,6 +32,12 @@ void BurnPayload::HandleTriggerPayload(StringHash eventType, VariantMap &eventDa
 	auto emitter = n->CreateComponent<ParticleEmitter>();
 	emitter->SetEffect(pe);
 	emitter->SetAutoRemoveMode(REMOVE_NODE);
+	auto burner=n->CreateComponent<AreaBurn>();
+	burner->SetBurnAmount(damage_);
+	burner->SetInterval(interval_);
+	burner->SetOwner(owner_);
+	burner->SetRadius(radius_);
+
 	n->SetWorldPosition(pos);
 }
 

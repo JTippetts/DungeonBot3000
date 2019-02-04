@@ -1,0 +1,4 @@
+{
+	"BurnLow": [["Flat", "10*pow(Level,1.5)"]],
+	"BurnHigh": [["Flat", "20*pow(Level,1.5)"]],
+}

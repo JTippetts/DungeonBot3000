@@ -1,9 +1,7 @@
 {
 	"SpinAttack": {
-		"PhysicalLow": [["Flat", "10+SpinAttackLevel*5 + PhysicalDamageToSpinAttackLow"]],
-		"PhysicalHigh": [["Flat", "14+SpinAttackLevel*8 + PhysicalDamageToSpinAttackHigh"]],
-		"BurnLow": [["Flat", "40"]],
-		"BurnHigh": [["Flat", "80"]],
+		"PhysicalLow": [["Scale", "SpinAttackLevel*0.1"]],
+		"PhysicalHigh": [["Scale", "SpinAttackLevel*0.15"]],
 		"MovementSpeed": [["Mult", "-0.4"]],
 		"AttackSpeed": [["Flat", "2.5"]],
 	},

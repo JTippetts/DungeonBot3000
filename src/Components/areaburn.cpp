@@ -1,6 +1,8 @@
 #include "areaburn.h"
 #include "vitals.h"
 
+#include <Urho3D/IO/Log.h>
+
 void AreaBurn::RegisterObject(Context *context)
 {
 	context->RegisterFactory<AreaBurn>();
@@ -29,29 +31,47 @@ void AreaBurn::Update(float dt)
 		counter_=interval_;
 		if(!owner_ || owner_.Expired()) return;
 		PODVector<Node *> targets;
-		BaseVitals *attackervitals=owner_->GetComponent<BaseVitals>();
+		BaseVitals *attackervitals=owner_->GetDerivedComponent<BaseVitals>();
 
 		if(owner_.Get() == node_->GetScene()->GetChild("Dude"))
 		{
 			// Player burn effect
 			node_->GetScene()->GetChildrenWithComponent<EnemyVitals>(targets, false);
+			for(auto i=targets.Begin(); i!=targets.End(); ++i)
+			{
+				Vector3 delta=(*i)->GetWorldPosition() - node_->GetWorldPosition();
+				if(delta.Length() <= radius_)
+				{
+					DamageValueList dmg;
+					dmg.push_back(DamageValue(DBurn, damage_));
+					auto targetvitals = (*i)->GetComponent<EnemyVitals>();
+					if(targetvitals)
+					{
+						targetvitals->ApplyDamageList(attackervitals, attackervitals->GetVitalStats(), dmg, false);
+					}
+				}
+			}
 		}
 		else
 		{
 			node_->GetScene()->GetChildrenWithComponent<PlayerVitals>(targets, false);
-		}
-
-		for(auto i=targets.Begin(); i!=targets.End(); ++i)
-		{
-			Vector3 delta=(*i)->GetWorldPosition() - node_->GetWorldPosition();
-			if(delta.Length() <= radius_)
+			for(auto i=targets.Begin(); i!=targets.End(); ++i)
 			{
-				DamageValueList dmg;
-				dmg.push_back(DamageValue(DBurn, damage_));
-				auto targetvitals = (*i)->GetComponent<BaseVitals>();
-				if(targetvitals) targetvitals->ApplyDamageList(attackervitals, attackervitals->GetVitalStats(), dmg, false);
+				Vector3 delta=(*i)->GetWorldPosition() - node_->GetWorldPosition();
+				if(delta.Length() <= radius_)
+				{
+					DamageValueList dmg;
+					dmg.push_back(DamageValue(DBurn, damage_));
+					auto targetvitals = (*i)->GetComponent<PlayerVitals>();
+					if(targetvitals)
+					{
+						targetvitals->ApplyDamageList(attackervitals, attackervitals->GetVitalStats(), dmg, false);
+					}
+				}
 			}
 		}
+
+
 	}
 	else
 	{

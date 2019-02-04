@@ -53,7 +53,8 @@ class BaseVitals : public LogicComponent
 	double currentlife_, maximumlife_;
 	double energy_;
 
-	std::unordered_map<unsigned int, BurnDoT> dots_;
+	//std::unordered_map<unsigned int, BurnDoT> dots_;
+	std::list<BurnDoT> dots_;
 	std::list<HealHoT> hots_;
 
 	virtual void Update(float dt) override;

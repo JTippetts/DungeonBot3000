@@ -322,7 +322,7 @@ void CASPlayerSpinAttack::HandleTrigger(CombatController *actor, String animname
 				if(vtls && myvitals)
 				{
 					auto pd=node->GetSubsystem<PlayerData>();
-					StatSetCollection ssc=pd->GetStatSetCollection(EqNumEquipmentSlots, "SpinAttack");
+					StatSetCollection ssc=pd->GetStatSetCollection(EqBlade, "SpinAttack");
 					DamageValueList dmg=BuildDamageList(ssc);
 					vtls->ApplyDamageList(myvitals,ssc,dmg);
 				}
