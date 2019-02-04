@@ -28,14 +28,23 @@ enum EquipmentSlots
 	EqNumEquipmentSlots
 };
 
+enum ItemRarity
+{
+	IRNormal,
+	IRMagic,
+	IRRare,
+	IRUnique
+};
+
 struct EquipmentItemDef
 {
 	EquipmentItemDef() : slot_(EqNumEquipmentSlots){}
-	EquipmentItemDef(int slot, String dropobject, String object, const std::vector<String> &mods) : slot_(slot),
+	EquipmentItemDef(int slot, ItemRarity rarity, String name, String dropobject, String object, const std::vector<String> &mods) : slot_(slot), rarity_(rarity), name_(name),
 		dropobjectpath_(dropobject), objectpath_(object), itemmods_(mods){}
 
 	int slot_;                    // Slot type
-
+	ItemRarity rarity_;
+	String name_;
 	String dropobjectpath_;
 	String objectpath_;
 	std::vector<String> itemmods_;

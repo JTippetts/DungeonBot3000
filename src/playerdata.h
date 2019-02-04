@@ -5,11 +5,11 @@
 #include <Urho3D/Core/Object.h>
 #include <Urho3D/Core/Context.h>
 #include <Urho3D/Scene/Node.h>
+#include <Urho3D/Scene/Scene.h>
 #include "itemmods.h"
 #include "items.h"
 #include <unordered_map>
 #include <vector>
-
 
 using namespace Urho3D;
 
@@ -27,6 +27,16 @@ class PlayerData : public Object
 	Node *GetPlayerNode()
 	{
 		return playernode_.Get();
+	}
+
+	Scene *GetCurrentScene()
+	{
+		return currentscene_;
+	}
+
+	void SetCurrentScene(Scene *scene)
+	{
+		currentscene_=scene;
 	}
 
 	void LoadItemModTable(const String &name);
@@ -52,10 +62,11 @@ class PlayerData : public Object
 	StatSetCollection GetStatSetCollection(EquipmentSlots slot=EqNumEquipmentSlots, const std::string &skillname="");  // Pass EqNumEquipmentSlots and/or "" to disregard these parameters
 
 	void EquipItem(const EquipmentItemDef &item, bool drop=false);
-	void DropItem(const EquipmentItemDef &item, Vector3 location);
+	void DropItem(const EquipmentItemDef &item, Vector3 dropperlocation, Vector3 location);
 
 	protected:
 	WeakPtr<Node> playernode_;
+	WeakPtr<Scene> currentscene_;
 
 	StatSet basestats_;
 	StatSetCollection vitalsstats_;

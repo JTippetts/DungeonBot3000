@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<element type="Button">
+	<attribute name="Pivot" value="0 0" />
+	<attribute name="Layout Mode" value="Horizontal" />
+	<attribute name="Image Rect" value="88 92 89 93" />
+	<attribute name="Hover Image Offset" value="0 0" />
+	<attribute name="Pressed Image Offset" value="0 0" />
+	<attribute name="Pressed Child Offset" value="0 0" />
+	<attribute name="Texture" value="Texture2D;Textures/UI.png" />
+	<attribute name="Color" value="0.25 0.25 0.25 1" />
+	<element type="Text">
+		<attribute name="Name" value="NameTag" />
+		<attribute name="Min Anchor" value="0 0.5" />
+		<attribute name="Max Anchor" value="0 0.5" />
+		<attribute name="Pivot" value="0 0.5" />
+		<attribute name="Color" value="1 1 1 1" />
+		<attribute name="Text" value="Button" />
+		<attribute name="Font" value="Font;Fonts/Anonymous Pro.ttf" />
+		<attribute name="Font Size" value="16" />
+	</element>
+</element>

@@ -4,6 +4,14 @@
 #include <Urho3D/Resource/JSONFile.h>
 #include <Urho3D/Resource/JSONValue.h>
 #include <Urho3D/IO/Log.h>
+#include <Urho3D/Graphics/StaticModel.h>
+#include <Urho3D/Graphics/Model.h>
+#include <Urho3D/Graphics/Material.h>
+#include <Urho3D/Resource/XMLFile.h>
+#include <Urho3D/Navigation/DynamicNavigationMesh.h>
+
+#include "Components/dropitem.h"
+#include "Components/itemnametag.h"
 
 PlayerData::PlayerData(Context *context) : Object(context)
 {
@@ -120,7 +128,11 @@ void PlayerData::EquipItem(const EquipmentItemDef &item, bool drop)
 {
 	if(item.slot_ < EqNumEquipmentSlots)
 	{
-		if(drop) DropItem(equipment_[item.slot_], Vector3(0,0,0));
+		if(drop && equipment_[item.slot_].slot_!=EqNumEquipmentSlots)
+		{
+			// Drop currently equipped item
+			DropItem(equipment_[item.slot_], Vector3(0,0,0), Vector3(0,0,0));
+		}
 		equipment_[item.slot_]=item;
 		equipmentglobalstats_[item.slot_].Clear();
 		equipmentlocalstats_[item.slot_].Clear();
@@ -143,8 +155,45 @@ void PlayerData::EquipItem(const EquipmentItemDef &item, bool drop)
 	}
 }
 
-void PlayerData::DropItem(const EquipmentItemDef &item, Vector3 location)
+void PlayerData::DropItem(const EquipmentItemDef &item, Vector3 dropperlocation, Vector3 location)
 {
-	// TODO
+	if(!currentscene_) return;
+
+	//XMLFile *file=cache->GetResource<XMLFile>(item.dropobjectpath_);
+	//Node *n=scene_->InstantiateXML(file->GetRoot(), Vector3(0,0,0), Quaternion(0,Vector3(0,1,0)));
+	Node *n=currentscene_->CreateChild();
+
+	auto nametag = n->CreateComponent<ItemNameTag>();
+	if(nametag)
+	{
+		nametag->SetItemName(item.name_);
+		nametag->SetItemColor(Color(1,1,1));
+		switch(item.rarity_)
+		{
+			case IRNormal: nametag->SetItemColor(Color(1,1,1)); break;
+			case IRMagic: nametag->SetItemColor(Color(0.25,0.25,1)); break;
+			case IRRare: nametag->SetItemColor(Color(1,1,0)); break;
+			case IRUnique: nametag->SetItemColor(Color(1,0.75,0)); break;
+		};
+	}
+	else
+	{
+		Log::Write(LOG_INFO, "Name tag not created.");
+	}
+
+	auto dropitem = n->CreateComponent<DropItemContainer>();
+	if(dropitem)
+	{
+		dropitem->SetItem(item);
+	}
+	else
+	{
+		Log::Write(LOG_INFO, "Drop item not created.");
+	}
+
+	auto navmesh=currentscene_->GetComponent<DynamicNavigationMesh>();
+	if(navmesh) location = navmesh->FindNearestPoint(location);
+
+	n->SetWorldPosition(location);
 }
 

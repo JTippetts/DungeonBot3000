@@ -26,6 +26,26 @@ class CASPlayerMove : public CombatActionState
 	virtual bool HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt) override;
 };
 
+class CASPlayerLoot : public CombatActionState
+{
+	URHO3D_OBJECT(CASPlayerLoot, CombatActionState);
+	public:
+	CASPlayerLoot(Context *context);
+
+	void SetItem(Node *i)
+	{
+		item_=i;
+	}
+
+	virtual void Start(CombatController *actor) override;
+	virtual void End(CombatController *actor) override;
+	virtual CombatActionState *Update(CombatController *actor, float dt) override;
+	virtual bool HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt) override;
+
+	protected:
+	WeakPtr<Node> item_;
+};
+
 class CASPlayerSpinAttack : public CombatActionState
 {
 	URHO3D_OBJECT(CASPlayerSpinAttack, CombatActionState);

@@ -48,6 +48,7 @@
 #include "Components/vitals.h"
 
 #include "playerdata.h"
+#include "itemnametagcontainer.h"
 #include "playeractionstates.h"
 #include "enemyactionstates.h"
 
@@ -133,6 +134,7 @@ void Game::Start()
 	SubscribeToEvent(StringHash("Update"), URHO3D_HANDLER(Game, HandleUpdate));
 
 	context_->RegisterSubsystem(new PlayerData(context_));
+	context_->RegisterSubsystem(new ItemNameTagContainer(context_));
 
 	auto pd=context_->GetSubsystem<PlayerData>();
 	if(pd)
@@ -174,6 +176,8 @@ void Game::Start()
 	auto nav=scene_->CreateComponent<DynamicNavigationMesh>();
 	scene_->CreateComponent<Navigable>();
 	scene_->CreateComponent<CrowdManager>();
+
+	pd->SetCurrentScene(scene_);
 
 	nav->SetAgentHeight(1.0);
 	nav->SetAgentRadius(2.0f);
@@ -238,7 +242,8 @@ void Game::Start()
 	}
 
 	// Give DB3000 a starter blade
-	pd->EquipItem(EquipmentItemDef(EqBlade, "", "", {"StarterBladeImplicit"}), false);
+	pd->EquipItem(EquipmentItemDef(EqBlade, IRNormal, "Starter Blade", "", "", {"StarterBladeImplicit"}), false);
+	pd->DropItem(EquipmentItemDef(EqBlade, IRNormal, "Starter Blade", "", "", {"StarterBladeImplicit"}), Vector3(0,0,0), Vector3(2,0,2));
 	pd->SetPlayerNode(n_);
 
 	for(unsigned int i=0; i<300; ++i)
@@ -389,6 +394,20 @@ void Game::HandleUpdate(StringHash eventType, VariantMap &eventData)
 	VariantMap vm;
 	vm[position]=scene_->GetChild("Dude")->GetPosition();
 	SendEvent(CameraSetPosition, vm);
+
+	auto ui=GetSubsystem<UI>();
+	auto input=GetSubsystem<Input>();
+
+	// Do hover
+	IntVector2 mousepos;
+	if(input->IsMouseVisible()) mousepos=input->GetMousePosition();
+	else mousepos=ui->GetCursorPosition();
+
+	auto element = ui->GetElementAt(mousepos);
+	if(element)
+	{
+		while(element->GetParent() != ui->GetRoot()) element=element->GetParent();
+	}
 }
 
 URHO3D_DEFINE_APPLICATION_MAIN(Game)

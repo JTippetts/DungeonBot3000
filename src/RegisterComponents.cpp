@@ -13,6 +13,8 @@
 #include "Components/projectile.h"
 #include "Components/areaburn.h"
 #include "Components/burnpayload.h"
+#include "Components/itemnametag.h"
+#include "Components/dropitem.h"
 
 #include "Enemies/jbadams.h"
 #include "Enemies/khawk.h"
@@ -33,11 +35,14 @@ void RegisterCustomComponents(Context *context)
 	Projectile::RegisterObject(context);
 	AreaBurn::RegisterObject(context);
 	BurnPayload::RegisterObject(context);
+	DropItemContainer::RegisterObject(context);
+	ItemNameTag::RegisterObject(context);
 
 	context->RegisterFactory<CASPlayerIdle>();
 	context->RegisterFactory<CASPlayerMove>();
 	context->RegisterFactory<CASPlayerSpinAttack>();
 	context->RegisterFactory<CASPlayerLaserBeam>();
+	context->RegisterFactory<CASPlayerLoot>();
 
 	context->RegisterFactory<CASEnemyInactive>();
 	context->RegisterFactory<CASEnemyIdle>();

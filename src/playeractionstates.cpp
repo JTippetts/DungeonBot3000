@@ -21,6 +21,7 @@
 #include "Components/vitals.h"
 
 #include "playeractionstates.h"
+#include "itemnametagcontainer.h"
 
 Node *TopLevelNode(Drawable *d, Scene *s)
 {
@@ -84,6 +85,31 @@ CombatActionState *CASPlayerIdle::Update(CombatController *actor, float dt)
 	auto node=actor->GetNode();
 	auto input=node->GetSubsystem<Input>();
 
+	// Check to see if we clicked on something
+	if(input->GetMouseButtonPress(MOUSEB_LEFT))
+	{
+		auto nametags=GetSubsystem<ItemNameTagContainer>();
+		if(nametags)
+		{
+			auto nametag=nametags->GetHoveredTag();
+			if(nametag)
+			{
+				auto loot=actor->GetState<CASPlayerLoot>();
+				loot->SetItem(nametag->GetNode());
+				Log::Write(LOG_INFO, "Looting...");
+				return loot;
+			}
+			else
+			{
+				Log::Write(LOG_INFO, "No tag");
+			}
+		}
+		else
+		{
+			Log::Write(LOG_INFO, "Could not get name tag container");
+		}
+	}
+
 	if(input->GetMouseButtonDown(MOUSEB_RIGHT))
 	{
 		// Do right button
@@ -91,7 +117,7 @@ CombatActionState *CASPlayerIdle::Update(CombatController *actor, float dt)
 		//return actor->GetState<CASPlayerSpinAttack>();
 		return actor->GetState<CASPlayerLaserBeam>();
 	}
-	else if(input->GetMouseButtonDown(MOUSEB_LEFT))
+	else if(input->GetMouseButtonPress(MOUSEB_LEFT))
 	{
 		// Do walk
 		return actor->GetState<CASPlayerMove>();
@@ -206,6 +232,107 @@ CombatActionState *CASPlayerMove::Update(CombatController *actor, float dt)
 }
 
 bool CASPlayerMove::HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt)
+{
+	return false;
+}
+
+
+/////////// Loot
+CASPlayerLoot::CASPlayerLoot(Context *context) : CombatActionState(context)
+{
+}
+
+void CASPlayerLoot::Start(CombatController *actor)
+{
+	auto node=actor->GetNode();
+	if(node)
+	{
+		auto ac=node->GetComponent<AnimationController>();
+		if(ac)
+		{
+			ac->Play(actor->GetAnimPath() + "/Models/Walk.ani", 0, true, 0.1f);
+		}
+	}
+}
+
+void CASPlayerLoot::End(CombatController *actor)
+{
+	auto node=actor->GetNode();
+	if(node)
+	{
+		auto ac=node->GetComponent<AnimationController>();
+		if(ac)
+		{
+			ac->Stop(actor->GetAnimPath() + "/Models/Walk.ani");
+		}
+
+		auto ca=node->GetComponent<CrowdAgent>();
+		if(ca)
+		{
+			ca->SetTargetPosition(node->GetWorldPosition());
+		}
+	}
+}
+
+CombatActionState *CASPlayerLoot::Update(CombatController *actor, float dt)
+{
+	auto node=actor->GetNode();
+	auto input=actor->GetSubsystem<Input>();
+	if(!item_) return actor->GetState<CASPlayerIdle>();
+
+	if(input->GetMouseButtonPress(MOUSEB_RIGHT))
+	{
+		//return actor->GetState<CASPlayerSpinAttack>();
+		return actor->GetState<CASPlayerLaserBeam>();
+	}
+	else if(input->GetKeyDown(KEY_Q))
+	{
+		//return actor->GetState<CASPlayerLaserBeam>();
+		return actor->GetState<CASPlayerSpinAttack>();
+	}
+	else if(input->GetMouseButtonDown(MOUSEB_LEFT))
+	{
+		Vector3 ground=item_->GetWorldPosition();
+
+		auto nav=node->GetScene()->GetComponent<DynamicNavigationMesh>();
+		auto pd=node->GetSubsystem<PlayerData>();
+		auto ca=node->GetComponent<CrowdAgent>();
+
+		Vector3 delta=ground-node->GetWorldPosition();
+		Log::Write(LOG_INFO, String("Distance to loot: ") + String(delta.Length()));
+		if(delta.Length() < ca->GetRadius())
+		{
+			// At item, loot it
+			Log::Write(LOG_INFO, "Loot!!");
+			return actor->GetState<CASPlayerIdle>();
+		}
+
+		StatSetCollection ssc=pd->GetStatSetCollection(EqNumEquipmentSlots, "");
+		double movespeed=GetStatValue(ssc, "MovementSpeed");
+		ca->SetMaxSpeed(movespeed);
+		//Vector3 gp=nav->FindNearestPoint(Vector3(ground.x_,0,ground.y_), Vector3(10,10,10));
+		ca->SetTargetPosition(ground);
+
+		return nullptr;
+	}
+	else
+	{
+		auto ca=node->GetComponent<CrowdAgent>();
+		if(ca)
+		{
+			Vector3 vel=ca->GetActualVelocity();
+			if(vel.Length() < ca->GetRadius())
+			{
+				Log::Write(LOG_INFO, "Loot it now!!!");
+				return actor->GetState<CASPlayerIdle>();
+			}
+		}
+	}
+
+	return nullptr;
+}
+
+bool CASPlayerLoot::HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt)
 {
 	return false;
 }
@@ -515,6 +642,7 @@ CombatActionState *CASPlayerLaserBeam::Update(CombatController *actor, float dt)
 	}
 	else
 	{
+		if(input->GetMouseButtonDown(MOUSEB_LEFT)) return actor->GetState<CASPlayerMove>();
 		return actor->GetState<CASPlayerIdle>();
 	}
 }

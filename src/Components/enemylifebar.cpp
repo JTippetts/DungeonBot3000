@@ -103,3 +103,8 @@ void EnemyLifeBar::Update(float dt)
 	// Testing
 	//element_->SetVisible(true);
 }
+
+void EnemyLifeBar::Stop()
+{
+	if(element_) element_->Remove();
+}
