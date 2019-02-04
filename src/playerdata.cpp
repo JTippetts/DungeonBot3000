@@ -131,7 +131,9 @@ void PlayerData::EquipItem(const EquipmentItemDef &item, bool drop)
 		if(drop && equipment_[item.slot_].slot_!=EqNumEquipmentSlots)
 		{
 			// Drop currently equipped item
-			DropItem(equipment_[item.slot_], Vector3(0,0,0), Vector3(0,0,0));
+			auto nav=currentscene_->GetComponent<DynamicNavigationMesh>();
+			Vector3 pt=nav->GetRandomPointInCircle(playernode_->GetWorldPosition(), 0.8f);
+			DropItem(equipment_[item.slot_], playernode_->GetWorldPosition(), pt);
 		}
 		equipment_[item.slot_]=item;
 		equipmentglobalstats_[item.slot_].Clear();
@@ -171,9 +173,9 @@ void PlayerData::DropItem(const EquipmentItemDef &item, Vector3 dropperlocation,
 		switch(item.rarity_)
 		{
 			case IRNormal: nametag->SetItemColor(Color(1,1,1)); break;
-			case IRMagic: nametag->SetItemColor(Color(0.25,0.25,1)); break;
-			case IRRare: nametag->SetItemColor(Color(1,1,0)); break;
-			case IRUnique: nametag->SetItemColor(Color(1,0.75,0)); break;
+			case IRMagic: nametag->SetItemColor(Color(0.5,0.5,1)); break;
+			case IRRare: nametag->SetItemColor(Color(1,1,0.5)); break;
+			case IRUnique: nametag->SetItemColor(Color(1,0.75,0.25)); break;
 		};
 	}
 	else

@@ -22,6 +22,7 @@
 
 #include "playeractionstates.h"
 #include "itemnametagcontainer.h"
+#include "Components/dropitem.h"
 
 Node *TopLevelNode(Drawable *d, Scene *s)
 {
@@ -304,6 +305,13 @@ CombatActionState *CASPlayerLoot::Update(CombatController *actor, float dt)
 		{
 			// At item, loot it
 			Log::Write(LOG_INFO, "Loot!!");
+			auto itemdrop = item_->GetComponent<DropItemContainer>();
+			if(itemdrop)
+			{
+				auto pd=node->GetSubsystem<PlayerData>();
+				pd->EquipItem(itemdrop->GetItem(), true);
+				item_->Remove();
+			}
 			return actor->GetState<CASPlayerIdle>();
 		}
 
@@ -324,6 +332,13 @@ CombatActionState *CASPlayerLoot::Update(CombatController *actor, float dt)
 			if(vel.Length() < ca->GetRadius())
 			{
 				Log::Write(LOG_INFO, "Loot it now!!!");
+				auto itemdrop = item_->GetComponent<DropItemContainer>();
+				if(itemdrop)
+				{
+					auto pd=node->GetSubsystem<PlayerData>();
+					pd->EquipItem(itemdrop->GetItem(), true);
+					item_->Remove();
+				}
 				return actor->GetState<CASPlayerIdle>();
 			}
 		}
@@ -592,7 +607,6 @@ CombatActionState *CASPlayerLaserBeam::Update(CombatController *actor, float dt)
 			auto turretnode = node->GetComponent<AnimatedModel>()->GetSkeleton().GetBone("Turret")->node_;
 			auto turretpos = turretnode->GetWorldPosition();
 			beam_->SetWorldPosition(turretpos);
-			//beam_->SetDirection(endpos-turretpos);
 			auto zaxis = endpos - turretpos;
 			zaxis.Normalize();
 
@@ -621,11 +635,7 @@ CombatActionState *CASPlayerLaserBeam::Update(CombatController *actor, float dt)
 					if(vtls && myvitals)
 					{
 						DamageValueList dmg=BuildDamageList(ssc);
-						for(auto &d : dmg)
-						{
-							//d.value_*=dt;
-							//Log::Write(LOG_INFO, String(d.value_));
-						}
+
 						vtls->ApplyDamageList(myvitals,ssc,dmg);
 					}
 				}
