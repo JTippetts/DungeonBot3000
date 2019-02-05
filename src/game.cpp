@@ -52,7 +52,7 @@
 #include "playeractionstates.h"
 #include "enemyactionstates.h"
 
-#include "maze.h"
+#include "maze2.h"
 #include "combat.h"
 
 float roll(int low, int high)
@@ -126,6 +126,10 @@ void Game::Setup()
 
 void Game::Start()
 {
+	//MazeGenerator maze(8,8);
+	Maze2 maze;
+	maze.Init(8,8);
+
     SetWindowTitleAndIcon();
     CreateConsoleAndDebugHud();
     SubscribeToEvent(E_KEYDOWN, URHO3D_HANDLER(Game, HandleKeyDown));
@@ -154,18 +158,15 @@ void Game::Start()
 	cursor->SetVisible(true);
 	cursor->SetPosition(ui->GetRoot()->GetWidth()/2, ui->GetRoot()->GetHeight()/2);
 
-	MazeGenerator maze;
+	//maze.setAllEdges();
+	maze.DepthFirstMaze(0,0);
 
-	maze.init(8,8);
-	maze.setAllEdges();
-	maze.generateDepthFirstMaze(0,0);
-
-	for(unsigned int x=0; x<maze.getCellWidth(); ++x)
+	for(unsigned int x=0; x<maze.GetCellWidth(); ++x)
 	{
 		String row;
-		for(unsigned int y=0; y<maze.getCellHeight(); ++y)
+		for(unsigned int y=0; y<maze.GetCellHeight(); ++y)
 		{
-			row = row + String((int)maze.getEdgePattern(x,y)) + String(" ");
+			row = row + String((int)maze.GetCellPattern(x,y)) + String(" ");
 		}
 		Log::Write(LOG_INFO, row);
 	}
@@ -189,11 +190,11 @@ void Game::Start()
 	LoadLightingAndCamera(scene_, String("Areas/Test"));
 
 
-	for(unsigned int x=0; x<maze.getCellWidth(); ++x)
+	for(unsigned int x=0; x<maze.GetCellWidth(); ++x)
 	{
-		for(unsigned int y=0; y<maze.getCellHeight(); ++y)
+		for(unsigned int y=0; y<maze.GetCellHeight(); ++y)
 		{
-			unsigned int p=maze.getEdgePattern(x,y);
+			unsigned int p=maze.GetCellPattern(x,y);
 			auto nd=scene_->CreateChild();
 			int rl=roll(0,100);
 			String type;
@@ -260,7 +261,7 @@ void Game::Start()
 		auto rl=rollf(0,100);
 		//if(rl < 30) xfile=cache->GetResource<XMLFile>("Objects/Mobs/jbadams/object.xml");
 		Node *n;
-		if(rl < 20)
+		if(rl < 5)
 		{
 			xfile=cache->GetResource<XMLFile>("Objects/Mobs/KHawk/object.xml");
 			n=scene_->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
@@ -279,7 +280,7 @@ void Game::Start()
 			xfile=cache->GetResource<XMLFile>("Objects/Mobs/Moderator/object.xml");
 			n=scene_->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
 		}
-		else if(rl < 60)
+		else if(rl < 45)
 		{
 			xfile=cache->GetResource<XMLFile>("Objects/Mobs/jbadams/object.xml");
 			n=scene_->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));

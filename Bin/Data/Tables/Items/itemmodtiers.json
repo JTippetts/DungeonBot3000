@@ -23,4 +23,12 @@
 			{"Level": 10, "Mods": ["Overcharging", "Galvanizing", "Energizing"]},
 		]
 	},
+	"LifeLeechTiers": {
+		"Weighting": 2,
+		"Tables": [
+			{"Level": 1, "Mods": ["Leeching"]},
+			{"Level": 5, "Mods": ["Leeching", "Draining"]},
+			{"Level": 10, "Mods": ["Leeching", "Draining", "Bloodsucking"]},
+		]
+	},
 }

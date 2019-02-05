@@ -1,10 +1,12 @@
 #include "maze.h"
 #include <algorithm>
 
-MazeGenerator::MazeGenerator()
+MazeGenerator::MazeGenerator(unsigned int w, unsigned int h)
 {
 	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
 	gen_.seed(seed);
+
+	init(w,h);
 }
 
 void MazeGenerator::buildNodeList(std::vector<SNodeListElement> &list)
@@ -44,8 +46,7 @@ int MazeGenerator::rollRange(int low, int high)
 
 void MazeGenerator::init(unsigned int cw, unsigned int ch)
 {
-    destroy();
-    if(cw==0 || ch==0) return;
+   if(cw==0 || ch==0) return;
 
     cell_width=cw; cell_height=ch;
     node_width=cw+1; node_height=ch+1;
@@ -56,10 +57,6 @@ void MazeGenerator::init(unsigned int cw, unsigned int ch)
 	cells.resize(cell_width * cell_height);
     clearAllEdges();
     clearAllCells();
-}
-
-void MazeGenerator::destroy()
-{
 }
 
 // Node-based functions

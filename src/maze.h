@@ -7,6 +7,8 @@ struct MazeGeneratorNode
 {
     unsigned char edges;
 
+	MazeGeneratorNode() : edges(0){}
+
     void setEdge(unsigned char e){edges |= e;};
     void clearEdge(unsigned char e){edges &= ~e;};
     void clear(){edges=0;};
@@ -34,11 +36,10 @@ enum EEdgeMasks
 class MazeGenerator
 {
     public:
-        MazeGenerator();
-        ~MazeGenerator(){destroy();};
+        MazeGenerator(unsigned int w, unsigned int h);
+        ~MazeGenerator(){};
 
         void init(unsigned int cw, unsigned int ch);
-        void destroy();
 
         unsigned int getCellWidth(){return cell_width;};
         unsigned int getCellHeight(){return cell_height;};
