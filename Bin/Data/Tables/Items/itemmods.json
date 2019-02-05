@@ -8,7 +8,7 @@
 	}],
 
 	"Invigorating":["Global", "Increase life regeneration by 15%.", {
-		"LifeRegen": [["Flat", "50.5"]]
+		"LifeRegen": [["Flat", "0.15"]]
 	}],
 
 	"Energizing":["Global", "Increase energy generation by 5%.", {
@@ -36,6 +36,18 @@
 	"Brutal":["Local", "Increase physical damage by 40 to 65.", {
 		"PhysicalLow": [["Flat", "40"]],
 		"PhysicalHigh": [["Flat", "65"]]
+	}],
+
+	"Leeching":["Global", "Leech 1% of non-burning damage.", {
+		"Leech": [["Flat", "0.01"]],
+	}],
+
+	"Draining":["Global", "Leech 3% of non-burning damage.", {
+		"Leech": [["Flat", "0.03"]],
+	}],
+
+	"Bloodsucking":["Global", "Leech 5% of non-burning damage.", {
+		"Leech": [["Flat", "0.5"]],
 	}],
 
 	"Fiery": ["Local", "Convert 50% of physical damage to fire.", {

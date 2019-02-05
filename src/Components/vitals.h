@@ -32,7 +32,7 @@ struct HealHoT
 	double ttl_;
 	double counter_;
 	double hps_;
-	StatSetCollectionSnapshot ownerstats_;
+	//StatSetCollectionSnapshot ownerstats_;
 };
 
 class BaseVitals : public LogicComponent
@@ -48,6 +48,7 @@ class BaseVitals : public LogicComponent
 	//void ApplyDamageList(Node *attackernode, const StatSetCollection &attackerstats, const DamageValueList &dmg);
 	void ApplyDamageList(BaseVitals *attackervitals, const StatSetCollection &attackerstats, const DamageValueList &dmg, bool reflectable=true);
 	void ApplyHealing(double h);
+	void ApplyHoT(double h, double ttl);
 
 	protected:
 	double currentlife_, maximumlife_;

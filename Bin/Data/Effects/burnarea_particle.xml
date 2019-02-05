@@ -23,5 +23,5 @@
 	<rotationspeed min="0" max="0" />
 	<sizedelta add="0" mul="0.5" />
 	<faceCameraMode value="Rotate XYZ" />
-	<color value="0.75 0.5 0.25 1" />
+	<color value="0.25 0.125 0.0375 1" />
 </particleeffect>

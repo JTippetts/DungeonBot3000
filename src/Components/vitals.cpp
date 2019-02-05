@@ -92,6 +92,16 @@ void BaseVitals::UpdateDoTs(float dt)
 	node_->SendEvent(BurnsPresent, vm);
 }
 
+void BaseVitals::ApplyHoT(double h, double ttl)
+{
+	HealHoT hot;
+	hot.ttl_=ttl;
+	hot.hps_=h;
+	hot.counter_=0.0;
+
+	hots_.push_back(hot);
+}
+
 void BaseVitals::UpdateHoTs(float dt)
 {
 	static StringHash LifeRegen("LifeRegen");
@@ -127,6 +137,7 @@ void BaseVitals::UpdateHoTs(float dt)
 
 		double amt=hot.hps_ * mytime;
 		double actual=ProcessHoT(vitalstats, amt);
+		Log::Write(LOG_INFO, String("HoT:") + String(actual));
 		ApplyHealing(actual);
 		node_->SendEvent(HoTApplied, vm);
 		if(erase) i=hots_.erase(i);
@@ -186,6 +197,13 @@ void BaseVitals::ApplyDamageList(BaseVitals *attackervitals, const StatSetCollec
 	currentlife_ -= taken;
 	vm[Damage]=taken;
 	node_->SendEvent(DamageTaken, vm);
+
+	// Send back any leach
+	double leech=GetStatValue(attackerstats, "Leech");
+	if(leech>0.0)
+	{
+		attackervitals->ApplyHoT(taken * leech, 4.0);
+	}
 
 	// Send back reflected
 	if(reflected.size()>0 && reflectable)
