@@ -12,6 +12,7 @@
 
 #include "Components/dropitem.h"
 #include "Components/itemnametag.h"
+#include "Components/vitals.h"
 
 PlayerData::PlayerData(Context *context) : Object(context)
 {
@@ -146,15 +147,20 @@ void PlayerData::EquipItem(const EquipmentItemDef &item, bool drop)
 				if(mod->desig_ == IMImplicit || mod->desig_ == IMLocal)
 				{
 					// Add a local mod
+					Log::Write(LOG_INFO, String("Added local mod ") + String(m) + ":" + String((int)mod->desig_));
 					equipmentlocalstats_[item.slot_].Merge(mod->statset_);
 				}
 				else
 				{
+					Log::Write(LOG_INFO, String("Added global mod ") + String(m));
 					equipmentglobalstats_[item.slot_].Merge(mod->statset_);
 				}
 			}
 		}
 	}
+
+	auto ssc=GetVitalsStats();
+	Log::Write(LOG_INFO, String("Life regen: ") + String(GetStatValue(ssc, "LifeRegen")));
 }
 
 void PlayerData::DropItem(const EquipmentItemDef &item, Vector3 dropperlocation, Vector3 location)

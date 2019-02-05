@@ -243,7 +243,7 @@ void Game::Start()
 
 	// Give DB3000 a starter blade
 	pd->EquipItem(EquipmentItemDef(EqBlade, IRNormal, "Starter Blade", "", "", {"StarterBladeImplicit"}), false);
-	pd->DropItem(EquipmentItemDef(EqBlade, IRMagic, "Steel Blade", "", "", {"SteelBladeImplicit", "Invigorating"}), Vector3(0,0,0), Vector3(2,0,2));
+	pd->DropItem(EquipmentItemDef(EqBlade, IRMagic, "Steel Blade", "", "", {"SteelBladeImplicit", "Invigorating", "InfernalBladeBurnImplicit"}), Vector3(0,0,0), Vector3(2,0,2));
 	pd->SetPlayerNode(n_);
 
 	for(unsigned int i=0; i<300; ++i)

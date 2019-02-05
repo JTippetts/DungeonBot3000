@@ -8,7 +8,7 @@
 	}],
 
 	"Invigorating":["Global", "Increase life regeneration by 15%.", {
-		"LifeRegen": [["Flat", "0.15"]]
+		"LifeRegen": [["Flat", "50.5"]]
 	}],
 
 	"Energizing":["Global", "Increase energy generation by 5%.", {

@@ -51,6 +51,10 @@ class PlayerData : public Object
 	{
 		vitalsstats_.clear();
 		vitalsstats_.push_back(&basestats_);
+		for(unsigned int g=0; g<EqNumEquipmentSlots; ++g)
+		{
+			vitalsstats_.push_back(&equipmentglobalstats_[g]);
+		}
 		return vitalsstats_;
 	}
 

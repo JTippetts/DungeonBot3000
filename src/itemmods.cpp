@@ -32,10 +32,12 @@ void ItemModTable::LoadJSON(const JSONValue &json)
 			const JSONArray &arr=val.GetArray();
 			if(arr.Size()>=3)
 			{
-				String designation=arr[1].GetString();
+				String designation=arr[0].GetString();
 				ItemModDesignation desig=IMImplicit;
 				if(designation=="Local") desig=IMLocal;
 				else if(designation=="Global") desig=IMGlobal;
+
+				Log::Write(LOG_INFO, String("Item mod designation: ") + designation + ":" + String(int(desig)));
 
 				String desc=arr[1].GetString();
 				const JSONValue &ss=arr[2];
