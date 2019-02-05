@@ -132,8 +132,8 @@ void PlayerData::EquipItem(const EquipmentItemDef &item, bool drop)
 		{
 			// Drop currently equipped item
 			auto nav=currentscene_->GetComponent<DynamicNavigationMesh>();
-			Vector3 pt=nav->GetRandomPointInCircle(playernode_->GetWorldPosition(), 0.8f);
-			DropItem(equipment_[item.slot_], playernode_->GetWorldPosition(), pt);
+			//Vector3 pt=nav->GetRandomPointInCircle(playernode_->GetWorldPosition(), 0.8f);
+			DropItem(equipment_[item.slot_], playernode_->GetWorldPosition(), playernode_->GetWorldPosition());
 		}
 		equipment_[item.slot_]=item;
 		equipmentglobalstats_[item.slot_].Clear();
