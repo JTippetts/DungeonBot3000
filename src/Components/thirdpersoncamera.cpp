@@ -358,45 +358,22 @@ Node *ThirdPersonCamera::TopLevelNode(Drawable *d, Scene *s)
 }
 
 
-CombatCameraController::CombatCameraController(Context *context) : LogicComponent(context), active_(false), offset_(0)
+void CombatCameraController::RegisterObject(Context *context)
+{
+	context->RegisterFactory<CombatCameraController>();
+	URHO3D_ACCESSOR_ATTRIBUTE("Offset", GetOffset, SetOffset, float, 0.0f, AM_DEFAULT);
+}
+
+CombatCameraController::CombatCameraController(Context *context) : LogicComponent(context), offset_(0)
 {
 	SetUpdateEventMask(USE_UPDATE);
 }
 
-void CombatCameraController::Start()
-{
-	SubscribeToEvent(node_, StringHash("CombatActivate"), URHO3D_HANDLER(CombatCameraController, HandleCombatTurnBegin));
-	SubscribeToEvent(node_, StringHash("CombatDeactivate"), URHO3D_HANDLER(CombatCameraController, HandleCombatTurnEnd));
-}
-
 void CombatCameraController::Update(float dt)
 {
-	if(!active_) return;
-
 	static StringHash position("position"), camerasetposition("CameraSetPosition");
 	VariantMap vm;
 	Vector3 pos=node_->GetPosition();
 	vm[position]=Vector3(pos.x_, pos.y_+offset_, pos.z_);
 	node_->SendEvent(camerasetposition, vm);
-}
-
-void CombatCameraController::OnMarkedDirty(Node *n)
-{
-	if(!active_) return;
-
-	static StringHash position("position"), camerasetposition("CameraSetPosition");
-	VariantMap vm;
-	Vector3 pos=node_->GetPosition();
-	vm[position]=Vector3(pos.x_, pos.y_+1, pos.z_);
-	node_->SendEvent(camerasetposition, vm);
-}
-
-void CombatCameraController::HandleCombatTurnBegin(StringHash eventType, VariantMap& eventData)
-{
-	active_=true;
-}
-
-void CombatCameraController::HandleCombatTurnEnd(StringHash eventType, VariantMap& eventData)
-{
-	active_=false;
 }

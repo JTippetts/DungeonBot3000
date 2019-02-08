@@ -33,15 +33,27 @@
 #include <Urho3D/Resource/Image.h>
 #include <Urho3D/Navigation/DynamicNavigationMesh.h>
 #include <Urho3D/Navigation/CrowdManager.h>
+#include <Urho3D/Navigation/Navigable.h>
+#include <Urho3D/Graphics/DebugRenderer.h>
+
 
 #include "lightingcamera.h"
 
-SharedPtr<Scene> CreateLevel(Context *context, String levelpath)
+SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int level)
 {
 	SharedPtr<Scene> scene(new Scene(context));
 	scene->CreateComponent<Octree>();
-	scene->CreateComponent<DynamicNavigationMesh>();
+	auto dbg=scene->CreateComponent<DebugRenderer>();
+	auto nav=scene->CreateComponent<DynamicNavigationMesh>();
+	scene->CreateComponent<Navigable>();
 	scene->CreateComponent<CrowdManager>();
+
+	nav->SetAgentHeight(1.0);
+	nav->SetAgentRadius(2.0f);
+	nav->SetAgentMaxClimb(0.01);
+	nav->SetCellSize(1.0);
+	nav->SetCellHeight(0.5);
+	nav->SetTileSize(64);
 
 	LoadLightingAndCamera(scene, levelpath);
 	return scene;

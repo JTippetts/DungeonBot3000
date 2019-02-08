@@ -1,0 +1,42 @@
+{
+	"attributes": {
+		"Is Enabled": true,
+		"Variables": {
+			"F7E3AEB2": {
+				"type": "Bool",
+				"value": true
+			}
+		}
+	},
+	"components": [
+		{
+			"type": "StaticModel",
+			"attributes": {
+				"Model": "Model;Areas/Test/Models/Floor0_A.mdl",
+				"Material": "Material;Areas/Test/floormaterial.xml"
+			}
+		},
+		{
+			"type": "Navigable",
+			"attributes": {
+				"Recursive": false
+			}
+		}
+	],
+	"children": [
+		{
+			"attributes": {
+				"Is Enabled": true,
+			},
+			"components": [
+				{
+					"type": "StaticModel",
+					"attributes": {
+						"Model": "Model;Areas/Test/Models/Wall0_A.mdl",
+						"Material": "Material;Areas/Test/wallmaterial.xml"
+					}
+				}
+			],
+		}
+	]
+}

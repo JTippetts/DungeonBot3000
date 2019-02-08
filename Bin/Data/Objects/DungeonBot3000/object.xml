@@ -39,6 +39,9 @@
 		<attribute name="Animation Path" value="Objects/DungeonBot3000" />
 		<attribute name="Start State" value="CASPlayerIdle" />
 	</component>
+	<component type="CombatCameraController">
+		<attribute name="Offset" value="0.5" />
+	</component>
 	<component type="PlayerVitals" >
 	</component>
 	<component type="LifeBubbleUI" >

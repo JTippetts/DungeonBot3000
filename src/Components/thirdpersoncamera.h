@@ -107,20 +107,14 @@ class CombatCameraController : public LogicComponent
 	URHO3D_OBJECT(CombatCameraController, LogicComponent);
 
 	public:
+	static void RegisterObject(Context *context);
 	CombatCameraController(Context *context);
 	virtual void Update(float dt);
 
 	void SetOffset(float o){offset_=o;}
-	float GetOffset(){return offset_;}
+	const float GetOffset() const{return offset_;}
 
 	protected:
-	virtual void Start();
-	virtual void OnMarkedDirty(Node *n);
-
-	void HandleCombatTurnBegin(StringHash eventType, VariantMap& eventData);
-	void HandleCombatTurnEnd(StringHash eventType, VariantMap& eventData);
-
-	bool active_;
 	float offset_;
 
 };

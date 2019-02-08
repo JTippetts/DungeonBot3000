@@ -22,7 +22,7 @@
 void RegisterCustomComponents(Context *context)
 {
 	ThirdPersonCamera::RegisterObject(context);
-	context->RegisterFactory<CombatCameraController>("Custom");
+	CombatCameraController::RegisterObject(context);
 	RotationSmoothing::RegisterObject(context);
 	CombatController::RegisterObject(context);
 	PlayerVitals::RegisterObject(context);

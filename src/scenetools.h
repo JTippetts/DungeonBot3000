@@ -7,5 +7,5 @@
 
 using namespace Urho3D;
 
-SharedPtr<Scene> CreateLevel(Context *context, String levelpath);
+SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int level);
 

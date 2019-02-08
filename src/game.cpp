@@ -197,11 +197,24 @@ void Game::Start()
 			unsigned int p=maze.GetCellPattern(x,y);
 			auto nd=scene_->CreateChild();
 			int rl=roll(0,100);
-			String type;
-			if(rl<=33) type="B";
-			else type="A";
 
-			auto md=nd->CreateComponent<StaticModel>();
+			String path;
+			if(rl<=33)
+			{
+				path = String("Areas/Test/tile") + String(p) + "_A.json";
+			}
+			else
+			{
+				path = String("Areas/Test/tile") + String(p) + "_B.json";
+			}
+
+			auto f=cache->GetResource<JSONFile>(path);
+			if(f)
+			{
+				auto nd=scene_->InstantiateJSON(f->GetRoot(), Vector3(y*200.0f + 100.0f, 0.0f, x*200.0f + 100.0f), Quaternion());
+			}
+
+			/*auto md=nd->CreateComponent<StaticModel>();
 			md->SetModel(cache->GetResource<Model>(String("Areas/Test/Models/Floor") + String(p) + String("_") + type + String(".mdl")));
 			//md->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
 			md->SetMaterial(cache->GetResource<Material>("Areas/Test/floormaterial.xml"));
@@ -212,10 +225,17 @@ void Game::Start()
 			md->SetMaterial(cache->GetResource<Material>("Areas/Test/wallmaterial.xml"));
 			md->SetCastShadows(true);
 
-			nd->SetPosition(Vector3(y*100, 0, x*100));
+			nd->SetPosition(Vector3(y*200+100, 0, x*200+100));
+			nd->SetScale(Vector3(1,1,1));
 
 			nd->SetVar("world", true);
-			//nd->SetScale(Vector3(0.1,0.1,0.1));
+
+			auto stairs=nd->CreateChild();
+			md=stairs->CreateComponent<StaticModel>();
+			md->SetModel(cache->GetResource<Model>(String("Areas/Test/Models/StairsUp.mdl")));
+			md->SetMaterial(cache->GetResource<Material>("Areas/Test/wallmaterial.xml"));
+			md->SetCastShadows(true);
+			//nd->SetScale(Vector3(0.1,0.1,0.1));*/
 		}
 	}
 
@@ -244,8 +264,9 @@ void Game::Start()
 
 	// Give DB3000 a starter blade
 	pd->EquipItem(EquipmentItemDef(EqBlade, IRNormal, "Starter Blade", "", "", {"StarterBladeImplicit"}), false);
-	pd->DropItem(EquipmentItemDef(EqBlade, IRMagic, "Steel Blade", "", "", {"SteelBladeImplicit", "Invigorating", "InfernalBladeBurnImplicit", "Bloodsucking"}), Vector3(0,0,0), Vector3(2,0,2));
+	pd->DropItem(EquipmentItemDef(EqBlade, IRMagic, "Steel Blade", "", "", {"SteelBladeImplicit", "Invigorating", "InfernalBladeBurnImplicit", "Bloodsucking"}), Vector3(100,0,100), Vector3(102,0,102));
 	pd->SetPlayerNode(n_);
+	n_->SetPosition(Vector3(100,0,100));
 
 	for(unsigned int i=0; i<300; ++i)
 	{
@@ -391,10 +412,6 @@ void Game::HandleUpdate(StringHash eventType, VariantMap &eventData)
 {
 	static StringHash TimeStep("TimeStep"), CameraSetPosition("CameraSetPosition"), position("position");
 	float dt=eventData[TimeStep].GetFloat();
-
-	VariantMap vm;
-	vm[position]=scene_->GetChild("Dude")->GetPosition();
-	SendEvent(CameraSetPosition, vm);
 
 	auto ui=GetSubsystem<UI>();
 	auto input=GetSubsystem<Input>();
