@@ -45,14 +45,17 @@
 #include "lightingcamera.h"
 #include "maze2.h"
 #include "Components/scenefader.h"
+#include "playerdata.h"
 
 using namespace Urho3D;
 
 int roll(int low, int high);
 
-SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int level)
+SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int level, unsigned int previouslevel)
 {
 	auto cache=context->GetSubsystem<ResourceCache>();
+
+	unsigned int w=3,h=3;
 
 	SharedPtr<Scene> scene(new Scene(context));
 	scene->CreateComponent<Octree>();
@@ -85,8 +88,18 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 	LoadLightingAndCamera(scene, levelpath);
 
 	Maze2 maze;
-	maze.Init(8,8);
+	maze.Init(w,h);
 	maze.DepthFirstMaze(0,0);
+
+	unsigned int upx=roll(0,w-1);
+	unsigned int upy=roll(0,h-1);
+
+	unsigned int downx,downy;
+	do
+	{
+		downx=roll(0,w-1);
+		downy=roll(0,h-1);
+	} while(downx==upx && downy==upy);
 
 	for(unsigned int x=0; x<maze.GetCellWidth(); ++x)
 	{
@@ -98,17 +111,35 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 			String path;
 			if(rl<=50)
 			{
-				path = levelpath + String("/tile") + String(p) + "_A.json";
+				if(x==downx && y==downy) path = levelpath + String("/tiledown") + String(p) + "_A.json";
+				else path = levelpath + String("/tile") + String(p) + "_A.json";
 			}
 			else
 			{
-				path = levelpath + String("/tile") + String(p) + "_B.json";
+				if(x==downx && y==downy) path = levelpath + String("/tiledown") + String(p) + "_B.json";
+				else path = levelpath + String("/tile") + String(p) + "_B.json";
 			}
 
 			auto f=cache->GetResource<JSONFile>(path);
 			if(f)
 			{
 				auto nd=scene->InstantiateJSON(f->GetRoot(), Vector3(y*200.0f + 100.0f, 0.0f, x*200.0f + 100.0f), Quaternion());
+				if(x==upx && y==upy)
+				{
+					auto up=nd->CreateChild();
+					auto md=up->CreateComponent<StaticModel>();
+					md->SetModel(cache->GetResource<Model>(levelpath + "/Models/StairsUp.mdl"));
+					md->SetMaterial(cache->GetResource<Material>(levelpath + "/wallmaterial.xml"));
+					md->SetCastShadows(true);
+				}
+				else if(x==downx && y==downy)
+				{
+					auto up=nd->CreateChild();
+					auto md=up->CreateComponent<StaticModel>();
+					md->SetModel(cache->GetResource<Model>(levelpath + "/Models/StairsDown.mdl"));
+					md->SetMaterial(cache->GetResource<Material>(levelpath + "/wallmaterial.xml"));
+					md->SetCastShadows(true);
+				}
 			}
 		}
 	}
@@ -120,6 +151,25 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 	{
 		fader->SetFadeDuration(0.5);
 		fader->SetFadeState(SceneFader::FadingIn);
+	}
+
+	auto pd=scene->GetSubsystem<PlayerData>();
+	if(pd)
+	{
+		pd->SetCurrentScene(scene);
+		if(level < previouslevel)
+		{
+			// Spawn at down stairs
+			pd->SpawnPlayer(Vector3((float)downy * 200.0f + 110.0f, 0.0f, (float)downx * 200.0f + 100.0f));
+		}
+		else if(level > previouslevel)
+		{
+			pd->SpawnPlayer(Vector3((float)upy * 200.0f + 110.0f, 0.0f, (float)upx * 200.0f + 100.0f));
+		}
+		else
+		{
+			pd->SpawnPlayer(Vector3((float)upy * 200.0f + 110.0f, 0.0f, (float)upx * 200.0f + 100.0f));
+		}
 	}
 	return scene;
 }

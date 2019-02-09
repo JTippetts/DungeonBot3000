@@ -148,18 +148,18 @@ void Game::Start()
 	cursor->SetVisible(true);
 	cursor->SetPosition(ui->GetRoot()->GetWidth()/2, ui->GetRoot()->GetHeight()/2);
 
-	scene_=CreateLevel(context_, "Areas/test", 1);
+	scene_=CreateLevel(context_, "Areas/test", 1, 2);
 	auto nav=scene_->GetComponent<DynamicNavigationMesh>();
 
 	if(pd)
 	{
 		pd->NewPlayer();
-		pd->SetCurrentScene(scene_);
-		pd->SpawnPlayer(Vector3(100,0,100));
+		//pd->SetCurrentScene(scene_);
+		//pd->SpawnPlayer(Vector3(110,0,100));
 		pd->DropItem(EquipmentItemDef(EqBlade, IRMagic, "Steel Blade", "", "", {"SteelBladeImplicit", "Invigorating", "InfernalBladeBurnImplicit", "Bloodsucking"}), Vector3(100,0,100), Vector3(102,0,102));
 	}
 
-	for(unsigned int i=0; i<3000; ++i)
+	for(unsigned int i=0; i<300; ++i)
 	{
 
 		Vector3 pos;
