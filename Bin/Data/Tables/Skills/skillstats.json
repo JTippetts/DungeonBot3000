@@ -3,7 +3,7 @@
 		"PhysicalLow": [["Scale", "SpinAttackLevel*0.1"]],
 		"PhysicalHigh": [["Scale", "SpinAttackLevel*0.15"]],
 		"MovementSpeed": [["Mult", "-0.4"]],
-		"AttackSpeed": [["Flat", "2.5"]],
+		"AttackSpeed": [["Flat", "4.5"]],
 	},
 
 	"LaserBeam": {

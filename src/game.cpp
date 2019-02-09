@@ -54,8 +54,9 @@
 
 #include "maze2.h"
 #include "combat.h"
+#include "scenetools.h"
 
-float roll(int low, int high)
+int roll(int low, int high)
 {
 	static std::mt19937 gen;
 	static bool first=true;
@@ -126,11 +127,7 @@ void Game::Setup()
 
 void Game::Start()
 {
-	//MazeGenerator maze(8,8);
-	Maze2 maze;
-	maze.Init(8,8);
-
-    SetWindowTitleAndIcon();
+	SetWindowTitleAndIcon();
     CreateConsoleAndDebugHud();
     SubscribeToEvent(E_KEYDOWN, URHO3D_HANDLER(Game, HandleKeyDown));
     SubscribeToEvent(E_KEYUP, URHO3D_HANDLER(Game, HandleKeyUp));
@@ -158,90 +155,10 @@ void Game::Start()
 	cursor->SetVisible(true);
 	cursor->SetPosition(ui->GetRoot()->GetWidth()/2, ui->GetRoot()->GetHeight()/2);
 
-	//maze.setAllEdges();
-	maze.DepthFirstMaze(0,0);
-
-	for(unsigned int x=0; x<maze.GetCellWidth(); ++x)
-	{
-		String row;
-		for(unsigned int y=0; y<maze.GetCellHeight(); ++y)
-		{
-			row = row + String((int)maze.GetCellPattern(x,y)) + String(" ");
-		}
-		Log::Write(LOG_INFO, row);
-	}
-
-	scene_=new Scene(context_);
-	scene_->CreateComponent<Octree>();
-	auto dbg=scene_->CreateComponent<DebugRenderer>();
-	auto nav=scene_->CreateComponent<DynamicNavigationMesh>();
-	scene_->CreateComponent<Navigable>();
-	scene_->CreateComponent<CrowdManager>();
+	scene_=CreateLevel(context_, "Areas/test", 1);
+	auto nav=scene_->GetComponent<DynamicNavigationMesh>();
 
 	pd->SetCurrentScene(scene_);
-
-	nav->SetAgentHeight(1.0);
-	nav->SetAgentRadius(2.0f);
-	nav->SetAgentMaxClimb(0.01);
-	nav->SetCellSize(1.0);
-	nav->SetCellHeight(0.5);
-	nav->SetTileSize(64);
-
-	LoadLightingAndCamera(scene_, String("Areas/Test"));
-
-
-	for(unsigned int x=0; x<maze.GetCellWidth(); ++x)
-	{
-		for(unsigned int y=0; y<maze.GetCellHeight(); ++y)
-		{
-			unsigned int p=maze.GetCellPattern(x,y);
-			auto nd=scene_->CreateChild();
-			int rl=roll(0,100);
-
-			String path;
-			if(rl<=33)
-			{
-				path = String("Areas/Test/tile") + String(p) + "_A.json";
-			}
-			else
-			{
-				path = String("Areas/Test/tile") + String(p) + "_B.json";
-			}
-
-			auto f=cache->GetResource<JSONFile>(path);
-			if(f)
-			{
-				auto nd=scene_->InstantiateJSON(f->GetRoot(), Vector3(y*200.0f + 100.0f, 0.0f, x*200.0f + 100.0f), Quaternion());
-			}
-
-			/*auto md=nd->CreateComponent<StaticModel>();
-			md->SetModel(cache->GetResource<Model>(String("Areas/Test/Models/Floor") + String(p) + String("_") + type + String(".mdl")));
-			//md->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
-			md->SetMaterial(cache->GetResource<Material>("Areas/Test/floormaterial.xml"));
-			md->SetCastShadows(true);
-
-			md=nd->CreateComponent<StaticModel>();
-			md->SetModel(cache->GetResource<Model>(String("Areas/Test/Models/Wall") + String(p) + String("_") + type + String(".mdl")));
-			md->SetMaterial(cache->GetResource<Material>("Areas/Test/wallmaterial.xml"));
-			md->SetCastShadows(true);
-
-			nd->SetPosition(Vector3(y*200+100, 0, x*200+100));
-			nd->SetScale(Vector3(1,1,1));
-
-			nd->SetVar("world", true);
-
-			auto stairs=nd->CreateChild();
-			md=stairs->CreateComponent<StaticModel>();
-			md->SetModel(cache->GetResource<Model>(String("Areas/Test/Models/StairsUp.mdl")));
-			md->SetMaterial(cache->GetResource<Material>("Areas/Test/wallmaterial.xml"));
-			md->SetCastShadows(true);
-			//nd->SetScale(Vector3(0.1,0.1,0.1));*/
-		}
-	}
-
-	nav->Build();
-
-
 	XMLFile *file=cache->GetResource<XMLFile>("Objects/DungeonBot3000/object.xml");
 	Node *n_=scene_->InstantiateXML(file->GetRoot(), Vector3(0,0,0), Quaternion(0,Vector3(0,1,0)));
 	auto rb=n_->GetComponent<AnimatedModel>()->GetSkeleton().GetBone("LBlade");

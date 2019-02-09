@@ -13,6 +13,9 @@
 #include <Urho3D/Graphics/Material.h>
 #include <Urho3D/Graphics/AnimatedModel.h>
 #include <Urho3D/Graphics/Light.h>
+#include <Urho3D/Audio/Audio.h>
+#include <Urho3D/Audio/SoundSource.h>
+#include <Urho3D/Audio/Sound.h>
 
 #include "combatactionstates.h"
 #include "Components/thirdpersoncamera.h"
@@ -452,6 +455,7 @@ void CASPlayerSpinAttack::HandleTrigger(CombatController *actor, String animname
 		PODVector<Node *> dudes;
 		node->GetScene()->GetChildrenWithComponent<EnemyVitals>(dudes, false);
 		Vector3 mypos=node->GetWorldPosition();
+		auto cache=node->GetSubsystem<ResourceCache>();
 
 		for(auto i=dudes.Begin(); i!=dudes.End(); ++i)
 		{
@@ -467,6 +471,16 @@ void CASPlayerSpinAttack::HandleTrigger(CombatController *actor, String animname
 					StatSetCollection ssc=pd->GetStatSetCollection(EqBlade, "SpinAttack");
 					DamageValueList dmg=BuildDamageList(ssc);
 					vtls->ApplyDamageList(myvitals,ssc,dmg);
+				}
+
+				auto* sound = cache->GetResource<Sound>("Sound/PlayerFistHit.wav");
+
+				if (sound)
+				{
+					auto* soundSource = node->GetScene()->CreateComponent<SoundSource>();
+					soundSource->SetAutoRemoveMode(REMOVE_COMPONENT);
+					soundSource->Play(sound);
+					soundSource->SetGain(0.75f);
 				}
 			}
 		}

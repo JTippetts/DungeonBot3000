@@ -15,6 +15,7 @@
 #include "Components/burnpayload.h"
 #include "Components/itemnametag.h"
 #include "Components/dropitem.h"
+#include "Components/scenefader.h"
 
 #include "Enemies/jbadams.h"
 #include "Enemies/khawk.h"
@@ -37,6 +38,7 @@ void RegisterCustomComponents(Context *context)
 	BurnPayload::RegisterObject(context);
 	DropItemContainer::RegisterObject(context);
 	ItemNameTag::RegisterObject(context);
+	SceneFader::RegisterObject(context);
 
 	context->RegisterFactory<CASPlayerIdle>();
 	context->RegisterFactory<CASPlayerMove>();
