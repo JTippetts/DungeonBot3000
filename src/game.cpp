@@ -138,13 +138,6 @@ void Game::Start()
 	context_->RegisterSubsystem(new ItemNameTagContainer(context_));
 
 	auto pd=context_->GetSubsystem<PlayerData>();
-	if(pd)
-	{
-		pd->LoadItemModTable("Tables/Items/itemmods.json");
-		pd->LoadItemModTiers("Tables/Items/itemmodtiers.json");
-		pd->LoadBaseStats("Tables/Player/base.json");
-		pd->LoadSkillStats("Tables/Skills/skillstats.json");
-	}
 
 	ResourceCache* cache = GetSubsystem<ResourceCache>();
 	UI *ui=GetSubsystem<UI>();
@@ -158,34 +151,15 @@ void Game::Start()
 	scene_=CreateLevel(context_, "Areas/test", 1);
 	auto nav=scene_->GetComponent<DynamicNavigationMesh>();
 
-	pd->SetCurrentScene(scene_);
-	XMLFile *file=cache->GetResource<XMLFile>("Objects/DungeonBot3000/object.xml");
-	Node *n_=scene_->InstantiateXML(file->GetRoot(), Vector3(0,0,0), Quaternion(0,Vector3(0,1,0)));
-	auto rb=n_->GetComponent<AnimatedModel>()->GetSkeleton().GetBone("LBlade");
-	if(rb)
+	if(pd)
 	{
-		Node *bl=rb->node_->CreateChild();
-		auto smd=bl->CreateComponent<StaticModel>();
-		smd->SetModel(cache->GetResource<Model>("Objects/DungeonBot3000/Models/Blade.mdl"));
-		smd->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
+		pd->NewPlayer();
+		pd->SetCurrentScene(scene_);
+		pd->SpawnPlayer(Vector3(100,0,100));
+		pd->DropItem(EquipmentItemDef(EqBlade, IRMagic, "Steel Blade", "", "", {"SteelBladeImplicit", "Invigorating", "InfernalBladeBurnImplicit", "Bloodsucking"}), Vector3(100,0,100), Vector3(102,0,102));
 	}
 
-	rb=n_->GetComponent<AnimatedModel>()->GetSkeleton().GetBone("RBlade");
-	if(rb)
-	{
-		Node *bl=rb->node_->CreateChild();
-		auto smd=bl->CreateComponent<StaticModel>();
-		smd->SetModel(cache->GetResource<Model>("Objects/DungeonBot3000/Models/Blade.mdl"));
-		smd->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
-	}
-
-	// Give DB3000 a starter blade
-	pd->EquipItem(EquipmentItemDef(EqBlade, IRNormal, "Starter Blade", "", "", {"StarterBladeImplicit"}), false);
-	pd->DropItem(EquipmentItemDef(EqBlade, IRMagic, "Steel Blade", "", "", {"SteelBladeImplicit", "Invigorating", "InfernalBladeBurnImplicit", "Bloodsucking"}), Vector3(100,0,100), Vector3(102,0,102));
-	pd->SetPlayerNode(n_);
-	n_->SetPosition(Vector3(100,0,100));
-
-	for(unsigned int i=0; i<300; ++i)
+	for(unsigned int i=0; i<3000; ++i)
 	{
 
 		Vector3 pos;

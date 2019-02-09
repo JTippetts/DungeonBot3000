@@ -68,6 +68,9 @@ class PlayerData : public Object
 	void EquipItem(const EquipmentItemDef &item, bool drop=false);
 	void DropItem(const EquipmentItemDef &item, Vector3 dropperlocation, Vector3 location);
 
+	void NewPlayer();
+	void SpawnPlayer(Vector3 location);  // Spawn player into current scene
+
 	protected:
 	WeakPtr<Node> playernode_;
 	WeakPtr<Scene> currentscene_;

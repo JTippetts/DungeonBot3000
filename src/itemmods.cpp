@@ -96,6 +96,7 @@ void ItemModTierTable::LoadJSON(const JSONValue &json)
 	//		Level: Number (minimum level it can appear)
 	//      Mods: Array
 	//			String (name of mod in master mod list)
+	table_.clear();
 
 	if(json.IsObject())
 	{

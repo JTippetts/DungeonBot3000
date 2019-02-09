@@ -137,7 +137,6 @@ void BaseVitals::UpdateHoTs(float dt)
 
 		double amt=hot.hps_ * mytime;
 		double actual=ProcessHoT(vitalstats, amt);
-		Log::Write(LOG_INFO, String("HoT:") + String(actual));
 		ApplyHealing(actual);
 		node_->SendEvent(HoTApplied, vm);
 		if(erase) i=hots_.erase(i);

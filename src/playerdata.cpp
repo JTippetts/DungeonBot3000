@@ -9,6 +9,11 @@
 #include <Urho3D/Graphics/Material.h>
 #include <Urho3D/Resource/XMLFile.h>
 #include <Urho3D/Navigation/DynamicNavigationMesh.h>
+#include <Urho3D/Graphics/AnimatedModel.h>
+#include <Urho3D/Resource/ResourceCache.h>
+#include <Urho3D/Resource/XMLFile.h>
+#include <Urho3D/Graphics/Material.h>
+#include <Urho3D/Graphics/Model.h>
 
 #include "Components/dropitem.h"
 #include "Components/itemnametag.h"
@@ -45,16 +50,18 @@ void PlayerData::LoadBaseStats(const String &name)
 	JSONFile *file = cache->GetResource<JSONFile>(name);
 	if(file)
 	{
+		basestats_.Clear();
 		basestats_.LoadJSON(file->GetRoot());
+		levelmodifier_ = basestats_.AddMod("Level", StatModifier::FLAT, "1");
 	}
-
-	levelmodifier_ = basestats_.AddMod("Level", StatModifier::FLAT, "10");
 }
 
 void PlayerData::LoadSkillStats(const String &name)
 {
 	ResourceCache *cache=context_->GetSubsystem<ResourceCache>();
 	JSONFile *file = cache->GetResource<JSONFile>(name);
+	skillstats_.clear();
+
 	if(file)
 	{
 		// File must be an object
@@ -205,3 +212,47 @@ void PlayerData::DropItem(const EquipmentItemDef &item, Vector3 dropperlocation,
 	n->SetWorldPosition(location);
 }
 
+void PlayerData::NewPlayer()
+{
+	// Reset the game to a new player state
+	LoadItemModTable("Tables/Items/itemmods.json");
+	LoadItemModTiers("Tables/Items/itemmodtiers.json");
+	LoadBaseStats("Tables/Player/base.json");
+	LoadSkillStats("Tables/Skills/skillstats.json");
+
+	EquipItem(EquipmentItemDef(EqBlade, IRNormal, "Starter Blade", "", "", {"StarterBladeImplicit"}), false);
+}
+
+void PlayerData::SpawnPlayer(Vector3 location)
+{
+	if(!currentscene_)
+	{
+		Log::Write(LOG_ERROR, "Can not spawn player: no scene attached.");
+		return;
+	}
+
+	auto cache=currentscene_->GetSubsystem<ResourceCache>();
+
+	XMLFile *file=cache->GetResource<XMLFile>("Objects/DungeonBot3000/object.xml");
+	Node *n=currentscene_->InstantiateXML(file->GetRoot(), Vector3(0,0,0), Quaternion(0,Vector3(0,1,0)));
+	auto rb=n->GetComponent<AnimatedModel>()->GetSkeleton().GetBone("LBlade");
+	if(rb)
+	{
+		Node *bl=rb->node_->CreateChild();
+		auto smd=bl->CreateComponent<StaticModel>();
+		smd->SetModel(cache->GetResource<Model>("Objects/DungeonBot3000/Models/Blade.mdl"));
+		smd->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
+	}
+
+	rb=n->GetComponent<AnimatedModel>()->GetSkeleton().GetBone("RBlade");
+	if(rb)
+	{
+		Node *bl=rb->node_->CreateChild();
+		auto smd=bl->CreateComponent<StaticModel>();
+		smd->SetModel(cache->GetResource<Model>("Objects/DungeonBot3000/Models/Blade.mdl"));
+		smd->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
+	}
+	n->SetWorldPosition(location);
+
+	SetPlayerNode(n);
+}
