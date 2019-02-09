@@ -156,20 +156,21 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 	auto pd=scene->GetSubsystem<PlayerData>();
 	if(pd)
 	{
-		pd->SetCurrentScene(scene);
 		if(level < previouslevel)
 		{
 			// Spawn at down stairs
-			pd->SpawnPlayer(Vector3((float)downy * 200.0f + 110.0f, 0.0f, (float)downx * 200.0f + 100.0f));
+			pd->SpawnPlayer(scene, Vector3((float)downy * 200.0f + 110.0f, 0.0f, (float)downx * 200.0f + 100.0f));
 		}
 		else if(level > previouslevel)
 		{
-			pd->SpawnPlayer(Vector3((float)upy * 200.0f + 110.0f, 0.0f, (float)upx * 200.0f + 100.0f));
+			pd->SpawnPlayer(scene, Vector3((float)upy * 200.0f + 110.0f, 0.0f, (float)upx * 200.0f + 100.0f));
 		}
 		else
 		{
-			pd->SpawnPlayer(Vector3((float)upy * 200.0f + 110.0f, 0.0f, (float)upx * 200.0f + 100.0f));
+			pd->SpawnPlayer(scene, Vector3((float)upy * 200.0f + 110.0f, 0.0f, (float)upx * 200.0f + 100.0f));
 		}
 	}
+
+	scene->SetUpdateEnabled(false);
 	return scene;
 }

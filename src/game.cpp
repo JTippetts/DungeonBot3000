@@ -55,6 +55,7 @@
 #include "maze2.h"
 #include "combat.h"
 #include "scenetools.h"
+#include "gamestatehandler.h"
 
 int roll(int low, int high)
 {
@@ -136,8 +137,10 @@ void Game::Start()
 
 	context_->RegisterSubsystem(new PlayerData(context_));
 	context_->RegisterSubsystem(new ItemNameTagContainer(context_));
+	context_->RegisterSubsystem(new GameStateHandler(context_));
 
 	auto pd=context_->GetSubsystem<PlayerData>();
+	auto gamestate=context_->GetSubsystem<GameStateHandler>();
 
 	ResourceCache* cache = GetSubsystem<ResourceCache>();
 	UI *ui=GetSubsystem<UI>();
@@ -148,13 +151,14 @@ void Game::Start()
 	cursor->SetVisible(true);
 	cursor->SetPosition(ui->GetRoot()->GetWidth()/2, ui->GetRoot()->GetHeight()/2);
 
-	scene_=CreateLevel(context_, "Areas/test", 1, 2);
-	auto nav=scene_->GetComponent<DynamicNavigationMesh>();
+	auto scene=CreateLevel(context_, "Areas/test", 1, 2);
+	gamestate->SetState(scene);
+	auto nav=scene->GetComponent<DynamicNavigationMesh>();
 
 	if(pd)
 	{
 		pd->NewPlayer();
-		//pd->SetCurrentScene(scene_);
+		//pd->SetCurrentScene(scene);
 		//pd->SpawnPlayer(Vector3(110,0,100));
 		pd->DropItem(EquipmentItemDef(EqBlade, IRMagic, "Steel Blade", "", "", {"SteelBladeImplicit", "Invigorating", "InfernalBladeBurnImplicit", "Bloodsucking"}), Vector3(100,0,100), Vector3(102,0,102));
 	}
@@ -176,7 +180,7 @@ void Game::Start()
 		if(rl < 5)
 		{
 			xfile=cache->GetResource<XMLFile>("Objects/Mobs/KHawk/object.xml");
-			n=scene_->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
+			n=scene->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
 			auto rb=n->GetComponent<AnimatedModel>()->GetSkeleton().GetBone("weapon_r");
 			if(rb)
 			{
@@ -190,12 +194,12 @@ void Game::Start()
 		else if(rl < 40)
 		{
 			xfile=cache->GetResource<XMLFile>("Objects/Mobs/Moderator/object.xml");
-			n=scene_->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
+			n=scene->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
 		}
 		else if(rl < 45)
 		{
 			xfile=cache->GetResource<XMLFile>("Objects/Mobs/jbadams/object.xml");
-			n=scene_->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
+			n=scene->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
 			auto rb=n->GetComponent<AnimatedModel>()->GetSkeleton().GetBone("weapon_r");
 			if(rb)
 			{
@@ -208,7 +212,7 @@ void Game::Start()
 		else
 		{
 			xfile=cache->GetResource<XMLFile>("Objects/Mobs/User/object.xml");
-			n=scene_->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
+			n=scene->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
 		}
 
 
@@ -269,6 +273,14 @@ void Game::HandleKeyUp(StringHash eventType, VariantMap& eventData)
            engine_->Exit();
         }
     }
+	else if (key == KEY_N)
+	{
+		auto gamestate = GetSubsystem<GameStateHandler>();
+		if(gamestate)
+		{
+			gamestate->SetState(CreateLevel(context_, "Areas/test", 1, 2));
+		}
+	}
 }
 
 void Game::HandleKeyDown(StringHash eventType, VariantMap& eventData)
@@ -294,8 +306,8 @@ void Game::HandleKeyDown(StringHash eventType, VariantMap& eventData)
 
 void Game::HandlePostRenderUpdate(StringHash eventType, VariantMap &eventData)
 {
-	//scene_->GetComponent<DynamicNavigationMesh>()->DrawDebugGeometry(true);
-	//scene_->GetComponent<CrowdManager>()->DrawDebugGeometry(true);
+	//scene->GetComponent<DynamicNavigationMesh>()->DrawDebugGeometry(true);
+	//scene->GetComponent<CrowdManager>()->DrawDebugGeometry(true);
 
 }
 

@@ -12,6 +12,7 @@
 #include <Urho3D/Graphics/RenderSurface.h>
 #include <Urho3D/UI/UI.h>
 #include <Urho3D/Resource/XMLFile.h>
+#include <Urho3D/IO/Log.h>
 
 #include "vitals.h"
 
@@ -92,4 +93,23 @@ void LifeBubbleUI::Update(float dt)
 
 		healthmat_->SetShaderParameter("Level", Variant(cl));
 	}
+}
+
+void LifeBubbleUI::Stop()
+{
+/*
+SharedPtr<Scene> rttscene_;
+	SharedPtr<Node> rttcameranode_;
+	SharedPtr<Viewport> rttviewport_;
+	SharedPtr<Material> rttmaterial_;
+	SharedPtr<Texture2D> rttrendertexture_;
+	Material *healthmat_;
+
+	SharedPtr<Scene> overlayscene_;
+	SharedPtr<Node> overlaynode_;
+	SharedPtr<Viewport> overlayviewport_;
+
+	SharedPtr<UIElement> element_;
+	*/
+	Log::Write(LOG_INFO, "Stopping bubble");
 }

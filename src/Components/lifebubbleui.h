@@ -41,4 +41,5 @@ class LifeBubbleUI : public LogicComponent
 
 	virtual void DelayedStart() override;
 	virtual void Update(float dt) override;
+	virtual void Stop() override;
 };

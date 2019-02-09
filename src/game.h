@@ -29,9 +29,6 @@ class Game : public Application
 
 	void HandleUpdate(StringHash eventType, VariantMap &eventData);
 
-	SharedPtr<Scene> scene_;
-	SharedPtr<Node> test_;
-
 	std::vector<Node *> dudes_;
 
 	float x,z;

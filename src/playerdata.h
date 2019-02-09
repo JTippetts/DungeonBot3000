@@ -20,25 +20,6 @@ class PlayerData : public Object
 	public:
 	PlayerData(Context *context);
 
-	void SetPlayerNode(Node *n)
-	{
-		playernode_=n;
-	}
-	Node *GetPlayerNode()
-	{
-		return playernode_.Get();
-	}
-
-	Scene *GetCurrentScene()
-	{
-		return currentscene_;
-	}
-
-	void SetCurrentScene(Scene *scene)
-	{
-		currentscene_=scene;
-	}
-
 	void LoadItemModTable(const String &name);
 	ItemModTable &GetItemModTable(){return itemmodtable_;}
 
@@ -58,6 +39,9 @@ class PlayerData : public Object
 		return vitalsstats_;
 	}
 
+	Scene *GetCurrentScene();
+	Node *GetPlayerNode();
+
 	void LoadBaseStats(const String &name);
 	void LoadSkillStats(const String &name);
 
@@ -69,12 +53,9 @@ class PlayerData : public Object
 	void DropItem(const EquipmentItemDef &item, Vector3 dropperlocation, Vector3 location);
 
 	void NewPlayer();
-	void SpawnPlayer(Vector3 location);  // Spawn player into current scene
+	void SpawnPlayer(Scene *scene, Vector3 location);  // Spawn player into current scene
 
 	protected:
-	WeakPtr<Node> playernode_;
-	WeakPtr<Scene> currentscene_;
-
 	StatSet basestats_;
 	StatSetCollection vitalsstats_;
 	StatModifierHandle levelmodifier_;

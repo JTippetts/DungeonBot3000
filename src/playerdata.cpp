@@ -18,11 +18,21 @@
 #include "Components/dropitem.h"
 #include "Components/itemnametag.h"
 #include "Components/vitals.h"
+#include "gamestatehandler.h"
 
 PlayerData::PlayerData(Context *context) : Object(context)
 {
 }
 
+Scene *PlayerData::GetCurrentScene()
+{
+	auto handler=GetSubsystem<GameStateHandler>();
+	if(handler)
+	{
+		return handler->GetCurrentScene();
+	}
+	return nullptr;
+}
 
 void PlayerData::LoadItemModTable(const String &name)
 {
@@ -132,6 +142,16 @@ StatSetCollection PlayerData::GetStatSetCollection(EquipmentSlots slot, const st
 	return coll;
 }
 
+Node *PlayerData::GetPlayerNode()
+{
+	auto scene=GetCurrentScene();
+	if(scene)
+	{
+		return scene->GetChild("Dude", true);
+	}
+	return nullptr;
+}
+
 void PlayerData::EquipItem(const EquipmentItemDef &item, bool drop)
 {
 	if(item.slot_ < EqNumEquipmentSlots)
@@ -139,9 +159,12 @@ void PlayerData::EquipItem(const EquipmentItemDef &item, bool drop)
 		if(drop && equipment_[item.slot_].slot_!=EqNumEquipmentSlots)
 		{
 			// Drop currently equipped item
-			auto nav=currentscene_->GetComponent<DynamicNavigationMesh>();
-			//Vector3 pt=nav->GetRandomPointInCircle(playernode_->GetWorldPosition(), 0.8f);
-			DropItem(equipment_[item.slot_], playernode_->GetWorldPosition(), playernode_->GetWorldPosition());
+			auto nav=GetCurrentScene()->GetComponent<DynamicNavigationMesh>();
+			auto pn=GetPlayerNode();
+			if(pn)
+			{
+				DropItem(equipment_[item.slot_], pn->GetWorldPosition(), pn->GetWorldPosition());
+			}
 		}
 		equipment_[item.slot_]=item;
 		equipmentglobalstats_[item.slot_].Clear();
@@ -172,11 +195,11 @@ void PlayerData::EquipItem(const EquipmentItemDef &item, bool drop)
 
 void PlayerData::DropItem(const EquipmentItemDef &item, Vector3 dropperlocation, Vector3 location)
 {
-	if(!currentscene_) return;
+	if(!GetCurrentScene()) return;
 
 	//XMLFile *file=cache->GetResource<XMLFile>(item.dropobjectpath_);
 	//Node *n=scene_->InstantiateXML(file->GetRoot(), Vector3(0,0,0), Quaternion(0,Vector3(0,1,0)));
-	Node *n=currentscene_->CreateChild();
+	Node *n=GetCurrentScene()->CreateChild();
 
 	auto nametag = n->CreateComponent<ItemNameTag>();
 	if(nametag)
@@ -206,7 +229,7 @@ void PlayerData::DropItem(const EquipmentItemDef &item, Vector3 dropperlocation,
 		Log::Write(LOG_INFO, "Drop item not created.");
 	}
 
-	auto navmesh=currentscene_->GetComponent<DynamicNavigationMesh>();
+	auto navmesh=GetCurrentScene()->GetComponent<DynamicNavigationMesh>();
 	if(navmesh) location = navmesh->FindNearestPoint(location);
 
 	n->SetWorldPosition(location);
@@ -223,18 +246,18 @@ void PlayerData::NewPlayer()
 	EquipItem(EquipmentItemDef(EqBlade, IRNormal, "Starter Blade", "", "", {"StarterBladeImplicit"}), false);
 }
 
-void PlayerData::SpawnPlayer(Vector3 location)
+void PlayerData::SpawnPlayer(Scene *scene, Vector3 location)
 {
-	if(!currentscene_)
+	if(!scene)
 	{
 		Log::Write(LOG_ERROR, "Can not spawn player: no scene attached.");
 		return;
 	}
 
-	auto cache=currentscene_->GetSubsystem<ResourceCache>();
+	auto cache=scene->GetSubsystem<ResourceCache>();
 
 	XMLFile *file=cache->GetResource<XMLFile>("Objects/DungeonBot3000/object.xml");
-	Node *n=currentscene_->InstantiateXML(file->GetRoot(), Vector3(0,0,0), Quaternion(0,Vector3(0,1,0)));
+	Node *n=scene->InstantiateXML(file->GetRoot(), Vector3(0,0,0), Quaternion(0,Vector3(0,1,0)));
 	auto rb=n->GetComponent<AnimatedModel>()->GetSkeleton().GetBone("LBlade");
 	if(rb)
 	{
@@ -253,6 +276,4 @@ void PlayerData::SpawnPlayer(Vector3 location)
 		smd->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
 	}
 	n->SetWorldPosition(location);
-
-	SetPlayerNode(n);
 }

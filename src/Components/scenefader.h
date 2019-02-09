@@ -35,7 +35,7 @@ class SceneFader : public LogicComponent
 
 	protected:
 	virtual void Update(float dt) override;
-	virtual void Start() override;
+	void Setup();
 	float duration_, counter_;
 	States state_;
 	SharedPtr<BorderImage> quad_;
