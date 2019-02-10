@@ -9,12 +9,12 @@
 	<attribute name="Variables" />
 	<component type="AnimatedModel">
 		<attribute name="Model" value="Model;Objects/Mobs/Common/Models/huge-base.mdl" />
-		<attribute name="Material" value="Material;Objects/Mobs/Common/Materials/lightskin.xml" />
+		<attribute name="Material" value="Material;Objects/Mobs/Common/Materials/lightskin_highlight.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 	<component type="AnimatedModel">
 		<attribute name="Model" value="Model;Objects/Mobs/Common/Models/huge-blueshirt.mdl" />
-		<attribute name="Material" value="Material;Objects/Mobs/Common/Materials/redshirt.xml" />
+		<attribute name="Material" value="Material;Objects/Mobs/Common/Materials/redshirt_highlight.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 	<component type="AnimationController">

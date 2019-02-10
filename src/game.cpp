@@ -151,7 +151,7 @@ void Game::Start()
 	cursor->SetVisible(true);
 	cursor->SetPosition(ui->GetRoot()->GetWidth()/2, ui->GetRoot()->GetHeight()/2);
 
-	auto scene=CreateLevel(context_, "Areas/test", 1, 2);
+	auto scene=CreateLevel(context_, "Areas/test", 1, 0);
 	gamestate->SetState(scene);
 	auto nav=scene->GetComponent<DynamicNavigationMesh>();
 
@@ -278,7 +278,7 @@ void Game::HandleKeyUp(StringHash eventType, VariantMap& eventData)
 		auto gamestate = GetSubsystem<GameStateHandler>();
 		if(gamestate)
 		{
-			gamestate->SetState(CreateLevel(context_, "Areas/test", 1, 2));
+			gamestate->SetState(CreateLevel(context_, "Areas/test", 1, 0));
 		}
 	}
 }

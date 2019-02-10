@@ -46,7 +46,7 @@ CombatActionState *CASEnemyInactive::Update(CombatController *actor, float dt)
 	Vector3 dudepos=pl->GetWorldPosition();
 	Vector3 delta=dudepos-pos;
 
-	if(delta.Length() < 90)
+	if(delta.Length() < 110)
 	{
 		return actor->GetDerivedState<CASEnemyAI>();
 	}
@@ -192,7 +192,7 @@ CombatActionState *CASEnemyApproachTarget::Update(CombatController *actor, float
 	Vector3 dudepos=pl->GetWorldPosition();
 	Vector3 delta=dudepos-pos;
 
-	if(delta.Length() > 60)
+	if(delta.Length() > 110)
 	{
 		//return actor->GetState<CASEnemyIdle>();
 		return actor->GetState<CASEnemyInactive>();
@@ -297,7 +297,7 @@ CombatActionState *CASEnemyMovePosition::Update(CombatController *actor, float d
 	Vector3 pos=node->GetWorldPosition();
 	Vector3 delta=target_-pos;
 
-	if(delta.Length() > 60)
+	if(delta.Length() > 110)
 	{
 		//return actor->GetState<CASEnemyIdle>();
 		return actor->GetState<CASEnemyInactive>();

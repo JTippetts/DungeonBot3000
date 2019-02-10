@@ -124,7 +124,7 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 			if(f)
 			{
 				auto nd=scene->InstantiateJSON(f->GetRoot(), Vector3(y*200.0f + 100.0f, 0.0f, x*200.0f + 100.0f), Quaternion());
-				if(x==upx && y==upy)
+				if(x==upx && y==upy && previouslevel!=0)
 				{
 					auto up=nd->CreateChild();
 					auto md=up->CreateComponent<StaticModel>();

@@ -1,0 +1,10 @@
+<technique vs="LitSolidHighlight" ps="LitSolidHighlight" psdefines="DIFFMAP">
+    <pass name="base" />
+    <pass name="litbase" vsdefines="HIGHLIGHT" psdefines="AMBIENT HIGHLIGHT" />
+    <pass name="light" vsdefines="HIGHLIGHT" psdefines="HIGHLIGHT" depthtest="equal" depthwrite="false" blend="add" />
+    <pass name="prepass" vsdefines="HIGHLIGHT" psdefines="PREPASS HIGHLIGHT" />
+    <pass name="material" psdefines="MATERIAL" depthtest="equal" depthwrite="false" />
+    <pass name="deferred" vsdefines="HIGHLIGHT" psdefines="DEFERRED HIGHLIGHT" />
+    <pass name="depth" vs="Depth" ps="Depth" />
+    <pass name="shadow" vs="Shadow" ps="Shadow" />
+</technique>

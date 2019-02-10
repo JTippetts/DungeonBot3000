@@ -111,5 +111,7 @@ SharedPtr<Scene> rttscene_;
 
 	SharedPtr<UIElement> element_;
 	*/
+	rttscene_->Remove();
+	element_->Remove();
 	Log::Write(LOG_INFO, "Stopping bubble");
 }
