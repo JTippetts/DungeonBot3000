@@ -23,7 +23,6 @@ class CombatActionState : public Object
 	virtual CombatActionState *Update(CombatController *actor, float dt){return nullptr;};
 	virtual void HandleTrigger(CombatController *actor, String animname, unsigned int value){};
 	virtual bool HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt){return false;};
-	virtual bool IsLocking(){return false;}                   // Return true if the state can not be interrupted/changed
 };
 
 

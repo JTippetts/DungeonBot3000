@@ -221,8 +221,10 @@ void Game::Start()
 		{
 			vtls->SetLevel(10);
 		}
-	}
 
+		n->SetVar("hoverable", true);
+	}
+	Log::Write(LOG_INFO, String("hoverable hash:") + String(StringHash("hoverable")));
 }
 
 void Game::Stop()

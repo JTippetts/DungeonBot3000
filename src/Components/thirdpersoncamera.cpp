@@ -242,7 +242,8 @@ Ray ThirdPersonCamera::GetMouseRay()
 	if(input->IsMouseVisible()) mousepos=input->GetMousePosition();
 	else mousepos=context_->GetSubsystem<UI>()->GetCursorPosition();
 	Graphics *graphics=context_->GetSubsystem<Graphics>();
-	return camera_->GetScreenRay(mousepos.x_/graphics->GetWidth(), mousepos.y_/graphics->GetHeight());
+	Log::Write(LOG_INFO, String("Mouse ground: ") + String(mousepos.x_) + " " + String(mousepos.y_));
+	return camera_->GetScreenRay((float)mousepos.x_/(float)graphics->GetWidth(), (float)mousepos.y_/(float)graphics->GetHeight());
 }
 
 Ray ThirdPersonCamera::GetScreenRay(int mx, int my)

@@ -1,0 +1,19 @@
+{
+	"id": 16777217,
+	"attributes": {
+		"Is Enabled": true,
+		"Name": "",
+		"Tags": [],
+		"Position": "0 0 0",
+		"Rotation": "1 0 0 0",
+		"Scale": "1 1 1",
+		"Variables": {
+			"FF7300B6": {
+				"type": "Bool",
+				"value": false
+			}
+		}
+	},
+	"components": [],
+	"children": []
+}

@@ -16,6 +16,8 @@
 #include "Components/itemnametag.h"
 #include "Components/dropitem.h"
 #include "Components/scenefader.h"
+#include "Components/enemynameplate.h"
+#include "Components/hoverhandler.h"
 
 #include "Enemies/jbadams.h"
 #include "Enemies/khawk.h"
@@ -39,6 +41,8 @@ void RegisterCustomComponents(Context *context)
 	DropItemContainer::RegisterObject(context);
 	ItemNameTag::RegisterObject(context);
 	SceneFader::RegisterObject(context);
+	EnemyNameplate::RegisterObject(context);
+	HoverHandler::RegisterObject(context);
 
 	context->RegisterFactory<CASPlayerIdle>();
 	context->RegisterFactory<CASPlayerMove>();

@@ -46,6 +46,7 @@
 #include "maze2.h"
 #include "Components/scenefader.h"
 #include "playerdata.h"
+#include "Components/hoverhandler.h"
 
 using namespace Urho3D;
 
@@ -63,6 +64,7 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 	auto nav=scene->CreateComponent<DynamicNavigationMesh>();
 	scene->CreateComponent<Navigable>();
 	scene->CreateComponent<CrowdManager>();
+	scene->CreateComponent<HoverHandler>();
 	auto musicsource=scene->CreateComponent<SoundSource>();
 	musicsource->SetSoundType(SOUND_MUSIC);
 	auto music=cache->GetResource<Sound>("Music/Gravity Sound - Chase CC BY 4.0_0.ogg");

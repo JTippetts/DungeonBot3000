@@ -60,6 +60,7 @@ class ThirdPersonCamera : public LogicComponent
 	float CameraPick(Ray &ray, float followdist);
 
 	Vector2 WorldToScreen(const Vector3 &pt);
+	Node *TopLevelNode(Drawable *d, Scene *s);
 
 	protected:
 	void HandleSetCameraPosition(StringHash eventType, VariantMap &eventData);
@@ -74,8 +75,6 @@ class ThirdPersonCamera : public LogicComponent
 
 	void SpringFollow(float dt);
 	void SpringPosition(float dt);
-
-	Node *TopLevelNode(Drawable *d, Scene *s);
 
 	unsigned int cellsize_;
 	float camangle_, rotangle_;

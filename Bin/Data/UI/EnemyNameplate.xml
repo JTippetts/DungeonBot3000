@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<element>
+	<attribute name="Position" value="300 200" />
+	<attribute name="Size" value="256 92" />
+	<attribute name="Pivot" value="0 0" />
+	<attribute name="Layout Mode" value="Vertical" />
+	<attribute name="Layout Border" value="4 4 4 4" />
+	<element type="Text">
+		<attribute name="Name" value="Name" />
+		<attribute name="Pivot" value="0 0" />
+		<attribute name="Top Left Color" value="0.85 0.85 0.85 1" />
+		<attribute name="Top Right Color" value="0.85 0.85 0.85 1" />
+		<attribute name="Bottom Left Color" value="0.85 0.85 0.85 1" />
+		<attribute name="Bottom Right Color" value="0.85 0.85 0.85 1" />
+		<attribute name="Font" value="Font;Fonts/BlueHighway.ttf" />
+		<attribute name="Font Size" value="18" />
+		<attribute name="Text" value="Enemy Name" />
+		<attribute name="Text Alignment" value="Center" />
+	</element>
+	<element type="BorderImage">
+		<attribute name="Min Size" value="256 16" />
+		<attribute name="Max Size" value="256 16" />
+		<attribute name="Pivot" value="0 0" />
+		<attribute name="Color" value="0.25 0.25 0.25 1" />
+		<attribute name="Top Left Color" value="0.25 0.25 0.25 1" />
+		<attribute name="Top Right Color" value="0.25 0.25 0.25 1" />
+		<attribute name="Bottom Left Color" value="0.25 0.25 0.25 1" />
+		<attribute name="Bottom Right Color" value="0.25 0.25 0.25 1" />
+		<attribute name="Image Rect" value="86 92 87 93" />
+		<element type="BorderImage">
+			<attribute name="Name" value="LifeBar" />
+			<attribute name="Size" value="256 16" />
+			<attribute name="Max Size" value="256 16" />
+			<attribute name="Pivot" value="0 0" />
+			<attribute name="Color" value="1 0.25 0.25 1" />
+			<attribute name="Top Left Color" value="1 0.25 0.25 1" />
+			<attribute name="Top Right Color" value="1 0.25 0.25 1" />
+			<attribute name="Bottom Left Color" value="1 0.25 0.25 1" />
+			<attribute name="Bottom Right Color" value="1 0.25 0.25 1" />
+			<attribute name="Image Rect" value="86 92 87 93" />
+		</element>
+	</element>
+	<element>
+		<attribute name="Name" value="Modifiers" />
+		<attribute name="Pivot" value="0 0" />
+		<attribute name="Layout Mode" value="Vertical" />
+	</element>
+</element>

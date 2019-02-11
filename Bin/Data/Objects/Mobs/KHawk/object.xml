@@ -43,4 +43,8 @@
 	</component>
 	<component type="EnemyOnDeath" >
 	</component>
+	<component type="EnemyNameplate">
+		<attribute name="Name" value="Khawk" />
+		<attribute name="Name Color" value="0.25 1 0.25 1" />
+	</component>
 </node>
