@@ -7,4 +7,6 @@
 	"PhysicalAsElectrical": [["Flat", "0.5"]],
 	"MovementSpeed": [["Flat", "30.0"]],
 	"AttackSpeed": [["Flat", "0"], ["Mult", "IncreasedAttackSpeed"]],
+	"SpinAttackLevel": [["Flat", "1"]],
+	"LaserBeamLevel": [["Flat", "1"]],
 }

@@ -1,0 +1,7 @@
+<material>
+	<technique name="Techniques/DiffNormalHighlight.xml"/>
+    <texture unit="diffuse" name="Objects/Mobs/Common/Textures/greenshirt.png" />
+	<texture unit="normal" name="Objects/Mobs/Common/Textures/blueshirt_normal.png" />
+    <shadowcull value="cw" />
+	<parameter name="HighlightColor" value="0.5 1 0 0.5" />
+</material>

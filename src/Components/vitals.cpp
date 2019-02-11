@@ -10,7 +10,7 @@ void BaseVitals::RegisterObject(Context *context)
 
 }
 
-BaseVitals::BaseVitals(Context *context) : LogicComponent(context), currentlife_(0), maximumlife_(0), energy_(0)
+BaseVitals::BaseVitals(Context *context) : LogicComponent(context), currentlife_(0), maximumlife_(0)
 {
 	SetUpdateEventMask(USE_UPDATE);
 }
@@ -247,6 +247,17 @@ const StatSetCollection &PlayerVitals::GetVitalStats() const
 	return pd->GetVitalsStats();
 }
 
+void PlayerVitals::Update(float dt)
+{
+	BaseVitals::Update(dt);
+	auto vitalstats=GetVitalStats();
+	auto pd=GetSubsystem<PlayerData>();
+
+	double energygen=GetStatValue(vitalstats, "EnergyGen");
+	double energy=pd->GetEnergy();
+	energy += energygen * (double)dt;
+	pd->SetEnergy(energy);
+}
 ///////////////////
 
 void EnemyVitals::RegisterObject(Context *context)

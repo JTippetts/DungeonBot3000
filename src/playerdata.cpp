@@ -20,7 +20,7 @@
 #include "Components/vitals.h"
 #include "gamestatehandler.h"
 
-PlayerData::PlayerData(Context *context) : Object(context)
+PlayerData::PlayerData(Context *context) : Object(context), energy_(0), currentattack_(PASpinAttack)
 {
 }
 

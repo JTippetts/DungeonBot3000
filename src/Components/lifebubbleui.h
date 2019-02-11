@@ -14,6 +14,7 @@
 #include <Urho3D/Graphics/Material.h>
 #include <Urho3D/UI/Sprite.h>
 #include <Urho3D/UI/UIElement.h>
+#include <Urho3D/UI/Text.h>
 
 using namespace Urho3D;
 
@@ -38,6 +39,7 @@ class LifeBubbleUI : public LogicComponent
 	SharedPtr<Viewport> overlayviewport_;
 
 	SharedPtr<UIElement> element_;
+	SharedPtr<Text> energyelement_;
 
 	virtual void DelayedStart() override;
 	virtual void Update(float dt) override;

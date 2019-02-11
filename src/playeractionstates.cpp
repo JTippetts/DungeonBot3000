@@ -88,6 +88,7 @@ CombatActionState *CASPlayerIdle::Update(CombatController *actor, float dt)
 {
 	auto node=actor->GetNode();
 	auto input=node->GetSubsystem<Input>();
+	auto pd=node->GetSubsystem<PlayerData>();
 
 	// Check to see if we clicked on something
 	if(input->GetMouseButtonPress(MOUSEB_LEFT))
@@ -114,22 +115,33 @@ CombatActionState *CASPlayerIdle::Update(CombatController *actor, float dt)
 		}
 	}
 
-	if(input->GetMouseButtonDown(MOUSEB_RIGHT))
+	if(input->GetMouseButtonPress(MOUSEB_RIGHT))
 	{
-		// Do right button
-		//return nullptr;
 		//return actor->GetState<CASPlayerSpinAttack>();
-		return actor->GetState<CASPlayerLaserBeam>();
+		PlayerAttack a=pd->GetAttack();
+		switch(a)
+		{
+			case PASpinAttack:
+			{
+				auto stats=pd->GetStatSetCollection(EqNumEquipmentSlots, "SpinAttack");
+				double energycost=GetStatValue(stats, "EnergyCost");
+				double energy=pd->GetEnergy();
+				if(energy>=energycost) return actor->GetState<CASPlayerSpinAttack>();
+			} break;
+			case PALaserBeam:
+			{
+				auto stats=pd->GetStatSetCollection(EqNumEquipmentSlots, "LaserBeam");
+				double energycost=GetStatValue(stats, "EnergyCost");
+				double energy=pd->GetEnergy();
+				if(energy>=energycost) return actor->GetState<CASPlayerLaserBeam>();
+			} break;
+		};
+		//return actor->GetState<CASPlayerLaserBeam>();
 	}
 	else if(input->GetMouseButtonPress(MOUSEB_LEFT))
 	{
 		// Do walk
 		return actor->GetState<CASPlayerMove>();
-	}
-	else if(input->GetKeyDown(KEY_Q))
-	{
-		//return actor->GetState<CASPlayerLaserBeam>();
-		return actor->GetState<CASPlayerSpinAttack>();
 	}
 
 	return nullptr;
@@ -188,17 +200,32 @@ CombatActionState *CASPlayerMove::Update(CombatController *actor, float dt)
 {
 	auto node=actor->GetNode();
 	auto input=actor->GetSubsystem<Input>();
+	auto pd=actor->GetSubsystem<PlayerData>();
 
 	if(input->GetMouseButtonPress(MOUSEB_RIGHT))
 	{
 		//return actor->GetState<CASPlayerSpinAttack>();
-		return actor->GetState<CASPlayerLaserBeam>();
-	}
-	else if(input->GetKeyDown(KEY_Q))
-	{
+		PlayerAttack a=pd->GetAttack();
+		switch(a)
+		{
+			case PASpinAttack:
+			{
+				auto stats=pd->GetStatSetCollection(EqNumEquipmentSlots, "SpinAttack");
+				double energycost=GetStatValue(stats, "EnergyCost");
+				double energy=pd->GetEnergy();
+				if(energy>=energycost) return actor->GetState<CASPlayerSpinAttack>();
+			} break;
+			case PALaserBeam:
+			{
+				auto stats=pd->GetStatSetCollection(EqNumEquipmentSlots, "LaserBeam");
+				double energycost=GetStatValue(stats, "EnergyCost");
+				double energy=pd->GetEnergy();
+				if(energy>=energycost) return actor->GetState<CASPlayerLaserBeam>();
+			} break;
+		};
 		//return actor->GetState<CASPlayerLaserBeam>();
-		return actor->GetState<CASPlayerSpinAttack>();
 	}
+
 	else if(input->GetMouseButtonDown(MOUSEB_LEFT))
 	{
 		auto cam=node->GetScene()->GetChild("Camera")->GetComponent<ThirdPersonCamera>();
@@ -283,16 +310,30 @@ CombatActionState *CASPlayerLoot::Update(CombatController *actor, float dt)
 	auto node=actor->GetNode();
 	auto input=actor->GetSubsystem<Input>();
 	if(!item_) return actor->GetState<CASPlayerIdle>();
+	auto pd=actor->GetSubsystem<PlayerData>();
 
 	if(input->GetMouseButtonPress(MOUSEB_RIGHT))
 	{
 		//return actor->GetState<CASPlayerSpinAttack>();
-		return actor->GetState<CASPlayerLaserBeam>();
-	}
-	else if(input->GetKeyDown(KEY_Q))
-	{
+		PlayerAttack a=pd->GetAttack();
+		switch(a)
+		{
+			case PASpinAttack:
+			{
+				auto stats=pd->GetStatSetCollection(EqNumEquipmentSlots, "SpinAttack");
+				double energycost=GetStatValue(stats, "EnergyCost");
+				double energy=pd->GetEnergy();
+				if(energy>=energycost) return actor->GetState<CASPlayerSpinAttack>();
+			} break;
+			case PALaserBeam:
+			{
+				auto stats=pd->GetStatSetCollection(EqNumEquipmentSlots, "LaserBeam");
+				double energycost=GetStatValue(stats, "EnergyCost");
+				double energy=pd->GetEnergy();
+				if(energy>=energycost) return actor->GetState<CASPlayerLaserBeam>();
+			} break;
+		};
 		//return actor->GetState<CASPlayerLaserBeam>();
-		return actor->GetState<CASPlayerSpinAttack>();
 	}
 	else if(input->GetMouseButtonDown(MOUSEB_LEFT))
 	{
@@ -406,10 +447,25 @@ CombatActionState *CASPlayerSpinAttack::Update(CombatController *actor, float dt
 {
 	auto node=actor->GetNode();
 	auto input=actor->GetSubsystem<Input>();
+	auto pd=actor->GetSubsystem<PlayerData>();
 
-	//if(input->GetMouseButtonDown(MOUSEB_RIGHT))
-	if(input->GetKeyDown(KEY_Q))
+	if(input->GetMouseButtonDown(MOUSEB_RIGHT))
+	//if(input->GetKeyDown(KEY_Q))
 	{
+		double energy=pd->GetEnergy();
+		auto stats=pd->GetStatSetCollection(EqBlade, "SpinAttack");
+		double cost=GetStatValue(stats, "EnergyCost");
+
+		if(pd->GetAttack() != PASpinAttack || cost*dt>energy)
+		{
+			if(input->GetMouseButtonDown(MOUSEB_LEFT))
+			{
+				return actor->GetState<CASPlayerMove>();
+			}
+			else return actor->GetState<CASPlayerIdle>();
+		}
+		pd->SetEnergy(energy-cost*dt);
+
 		auto cam=node->GetScene()->GetChild("Camera")->GetComponent<ThirdPersonCamera>();
 		IntVector2 mousepos;
 		if(input->IsMouseVisible()) mousepos=input->GetMousePosition();
@@ -588,9 +644,9 @@ CombatActionState *CASPlayerLaserBeam::Update(CombatController *actor, float dt)
 	auto input = node->GetSubsystem<Input>();
 	auto scene = node->GetScene();
 	auto octree = scene->GetComponent<Octree>();
+	auto pd=actor->GetSubsystem<PlayerData>();
 
-	auto pd=node->GetSubsystem<PlayerData>();
-	StatSetCollection ssc=pd->GetStatSetCollection(EqNumEquipmentSlots, "LaserBeam");
+	StatSetCollection ssc=pd->GetStatSetCollection(EqTurret, "LaserBeam");
 	StatSet phases;
 	float interval=GetStatValue(ssc, "LaserBeamInterval");
 
@@ -604,6 +660,20 @@ CombatActionState *CASPlayerLaserBeam::Update(CombatController *actor, float dt)
 	//if(input->GetKeyDown(KEY_Q))
 	if(input->GetMouseButtonDown(MOUSEB_RIGHT))
 	{
+		double energy=pd->GetEnergy();
+		auto stats=pd->GetStatSetCollection(EqTurret, "LaserBeam");
+		double cost=GetStatValue(stats, "EnergyCost");
+
+		if(pd->GetAttack() != PALaserBeam || cost*dt>energy)
+		{
+			if(input->GetMouseButtonDown(MOUSEB_LEFT))
+			{
+				return actor->GetState<CASPlayerMove>();
+			}
+			else return actor->GetState<CASPlayerIdle>();
+		}
+		pd->SetEnergy(energy-cost*dt);
+
 		Vector3 endpos = GetEndPoint(node);
 
 		Vector3 delta = endpos - lastendpos_;

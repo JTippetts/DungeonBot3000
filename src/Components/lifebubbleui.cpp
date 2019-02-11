@@ -13,8 +13,13 @@
 #include <Urho3D/UI/UI.h>
 #include <Urho3D/Resource/XMLFile.h>
 #include <Urho3D/IO/Log.h>
+#include <Urho3D/UI/Font.h>
+#include <Urho3D/Input/Input.h>
 
 #include "vitals.h"
+#include "../playerdata.h"
+
+using namespace Urho3D;
 
 void LifeBubbleUI::RegisterObject(Context *context)
 {
@@ -82,6 +87,15 @@ void LifeBubbleUI::DelayedStart()
 	}
 	ui->GetRoot()->AddChild(element_);
 	element_->SetPosition(IntVector2(-38, graphics->GetHeight()-256+38));
+
+	auto pd=GetSubsystem<PlayerData>();
+	energyelement_=new Text(context_);
+	energyelement_->SetFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"));
+	energyelement_->SetFontSize(24);
+	energyelement_->SetText(String("Energy: ") + String((int)pd->GetEnergy()));
+	energyelement_->SetColor(Color(0.25,1.0,0.25));
+	energyelement_->SetPosition(IntVector2(0, graphics->GetHeight()-256+38-energyelement_->GetHeight()));
+	ui->GetRoot()->AddChild(energyelement_);
 }
 
 void LifeBubbleUI::Update(float dt)
@@ -93,6 +107,13 @@ void LifeBubbleUI::Update(float dt)
 
 		healthmat_->SetShaderParameter("Level", Variant(cl));
 	}
+
+	auto pd=GetSubsystem<PlayerData>();
+	energyelement_->SetText(String("Energy: ") + String((int)pd->GetEnergy()));
+
+	auto input=GetSubsystem<Input>();
+	if(input->GetKeyPress(KEY_Q)) pd->SetAttack(PASpinAttack);
+	else if(input->GetKeyPress(KEY_W)) pd->SetAttack(PALaserBeam);
 }
 
 void LifeBubbleUI::Stop()
@@ -113,5 +134,7 @@ SharedPtr<Scene> rttscene_;
 	*/
 	rttscene_->Remove();
 	element_->Remove();
+
+	energyelement_->Remove();
 	Log::Write(LOG_INFO, "Stopping bubble");
 }

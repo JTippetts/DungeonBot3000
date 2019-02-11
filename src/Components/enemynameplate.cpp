@@ -99,7 +99,6 @@ void EnemyNameplate::SetVisible(bool vis)
 
 void EnemyNameplate::HandleHover(StringHash eventType, VariantMap &eventData)
 {
-	Log::Write(LOG_INFO, "Hello");
 	SetVisible(true);
 }
 

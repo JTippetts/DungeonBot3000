@@ -52,7 +52,6 @@ class BaseVitals : public LogicComponent
 
 	protected:
 	double currentlife_, maximumlife_;
-	double energy_;
 
 	//std::unordered_map<unsigned int, BurnDoT> dots_;
 	std::list<BurnDoT> dots_;
@@ -75,7 +74,7 @@ class PlayerVitals : public BaseVitals
 	virtual const StatSetCollection &GetVitalStats() const override;
 
 	protected:
-	double energy_;
+	virtual void Update(float dt) override;
 };
 
 

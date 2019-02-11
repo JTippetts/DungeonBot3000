@@ -13,6 +13,12 @@
 
 using namespace Urho3D;
 
+enum PlayerAttack
+{
+	PASpinAttack,
+	PALaserBeam,
+};
+
 class PlayerData : public Object
 {
 	URHO3D_OBJECT(PlayerData, Object);
@@ -55,6 +61,12 @@ class PlayerData : public Object
 	void NewPlayer();
 	void SpawnPlayer(Scene *scene, Vector3 location);  // Spawn player into current scene
 
+	void SetEnergy(double e){energy_=e;}
+	double GetEnergy(){return energy_;}
+
+	PlayerAttack GetAttack(){return currentattack_;}
+	void SetAttack(PlayerAttack a){currentattack_=a;}
+
 	protected:
 	StatSet basestats_;
 	StatSetCollection vitalsstats_;
@@ -68,5 +80,8 @@ class PlayerData : public Object
 
 	ItemModTable itemmodtable_;
 	ItemModTiers itemmodtiers_;
+
+	double energy_;
+	PlayerAttack currentattack_;
 
 };
