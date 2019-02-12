@@ -46,6 +46,7 @@
 #include "Components/thirdpersoncamera.h"
 #include "Components/combatcontroller.h"
 #include "Components/vitals.h"
+#include "Components/enemynameplate.h"
 
 #include "playerdata.h"
 #include "itemnametagcontainer.h"
@@ -163,6 +164,60 @@ void Game::Start()
 		pd->DropItem(EquipmentItemDef(EqBlade, IRMagic, "Steel Blade", "", "", {"SteelBladeImplicit", "Invigorating", "InfernalBladeBurnImplicit", "Bloodsucking"}), Vector3(100,0,100), Vector3(102,0,102));
 	}
 
+	std::vector<String> moderators=
+	{
+		"nsmadsen",
+		"Tom Sloper",
+		"monalaw",
+		"riuthamas",
+		"IADaveMark",
+		"Hodgman",
+		"Kylotan",
+		"swiftcoder",
+		"frob",
+		"Promit",
+		"Brother Bob",
+		"MJP",
+		"hplus0603",
+		"JTippetts",
+		"SiCrane",
+		"All8Up",
+		"evolutional",
+		"fastcall22",
+		"Glass_Knife",
+		"grhodes_at_work",
+		"Machaira",
+		"MadKeithV",
+		"Obscure",
+		"rip-off",
+		"Shannon Barber",
+		"Washu",
+		"Wavinator",
+		"WitchLord"
+	};
+
+	std::vector<String> emeritus=
+	{
+		"Andrew Russell",
+		"ApochPiQ",
+		"dbaumgart",
+		"Evil Steve",
+		"Fruny",
+		"Gaiiden",
+		"johnhattan",
+		"jpetrie",
+		"JWalsh",
+		"LessBread",
+		"Michael Tanczos",
+		"Myopic Rhino",
+		"Oluseyi",
+		"pan narrans",
+		"Ravuya",
+		"Sneftel",
+		"TANSTAAFL",
+		"Zahlman"
+	};
+
 	for(unsigned int i=0; i<300; ++i)
 	{
 
@@ -195,6 +250,8 @@ void Game::Start()
 		{
 			xfile=cache->GetResource<XMLFile>("Objects/Mobs/Moderator/object.xml");
 			n=scene->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
+			auto np=n->GetComponent<EnemyNameplate>();
+			if(np) np->SetName(moderators[roll(0,moderators.size()-1)]);
 		}
 		else if(rl < 45)
 		{
@@ -208,6 +265,13 @@ void Game::Start()
 				smd->SetModel(cache->GetResource<Model>("Objects/Mobs/jbadams/Models/Hammer.mdl"));
 				smd->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
 			}
+		}
+		else if(rl < 55)
+		{
+			xfile=cache->GetResource<XMLFile>("Objects/Mobs/Emeritus/object.xml");
+			n=scene->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
+			auto np=n->GetComponent<EnemyNameplate>();
+			if(np) np->SetName(emeritus[roll(0,emeritus.size()-1)]);
 		}
 		else
 		{

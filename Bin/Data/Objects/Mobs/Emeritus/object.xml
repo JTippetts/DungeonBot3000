@@ -1,22 +1,22 @@
 <?xml version="1.0"?>
 <node>
 	<attribute name="Is Enabled" value="true" />
-	<attribute name="Name" value="User" />
+	<attribute name="Name" value="Emeritus" />
 	<attribute name="Tags" />
 	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
-	<attribute name="Scale" value="1.5 1.5 1.5" />
+	<attribute name="Scale" value="1.75 1.75 1.75" />
 	<attribute name="Variables">
 		<variant hash="FF7300B6" type="Bool" value="true" />
 	</attribute>
 	<component type="AnimatedModel">
 		<attribute name="Model" value="Model;Objects/Mobs/Common/Models/huge-base.mdl" />
-		<attribute name="Material" value="Material;Objects/Mobs/Common/Materials/lightskin_yellowhighlight.xml" />
+		<attribute name="Material" value="Material;Objects/Mobs/Common/Materials/lightskin_purplehighlight.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 	<component type="AnimatedModel">
 		<attribute name="Model" value="Model;Objects/Mobs/Common/Models/huge-blueshirt.mdl" />
-		<attribute name="Material" value="Material;Objects/Mobs/Common/Materials/redshirt_yellowhighlight.xml" />
+		<attribute name="Material" value="Material;Objects/Mobs/Common/Materials/purpleshirt_purplehighlight.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 	<component type="AnimationController">
@@ -30,13 +30,13 @@
 		<attribute name="Navigation Quality" value="High" />
 	</component>
 	<component type="CombatController">
-		<attribute name="Object Path" value="Objects/Mobs/Moderator" />
+		<attribute name="Object Path" value="Objects/Mobs/Emeritus" />
 		<attribute name="Animation Path" value="Objects/Mobs/Common" />
 		<attribute name="AI State" value="CASUserEnemyAI" />
 		<attribute name="Start State" value="CASEnemyInactive" />
 	</component>
 	<component type="EnemyVitals" >
-		<attribute name="Base Stats Filename" value="Objects/Mobs/Moderator/basestats.json" />
+		<attribute name="Base Stats Filename" value="Objects/Mobs/Emeritus/basestats.json" />
 	</component>
 	<component type="EnemyLifeBar" >
 		<attribute name="Offset" value="17.0" />
@@ -46,10 +46,10 @@
 	<component type="EnemyOnDeath" >
 	</component>
 	<component type="EnemyNameplate">
-		<attribute name="Name" value="Moderator" />
-		<attribute name="Name Color" value="1 0.25 0.25 1" />
+		<attribute name="Name" value="Emeritus" />
+		<attribute name="Name Color" value="1 0.25 1 1" />
 	</component>
 	<component type="EnemyModifiers">
-		<attribute name="Num Modifiers" value="2" />
+		<attribute name="Num Modifiers" value="3" />
 	</component>
 </node>

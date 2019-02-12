@@ -95,6 +95,8 @@ class EnemyVitals : public BaseVitals
 
 	virtual const StatSetCollection &GetVitalStats() const override {return basestatscollection_;}
 
+	StatSet &GetBaseStats(){return basestats_;}
+
 	protected:
 	StatSet basestats_;
 	StatSetCollection basestatscollection_;

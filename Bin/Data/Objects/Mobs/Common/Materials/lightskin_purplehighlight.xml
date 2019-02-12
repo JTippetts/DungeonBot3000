@@ -2,5 +2,5 @@
 	<technique name="Techniques/DiffHighLight.xml"/>
     <texture unit="diffuse" name="Objects/Mobs/Common/Textures/lightskin.png" />
     <shadowcull value="cw" />
-	<parameter name="HighlightColor" value="1 0.125 0.125 0.5" />
+	<parameter name="HighlightColor" value="1 0.125 1 0.5" />
 </material>

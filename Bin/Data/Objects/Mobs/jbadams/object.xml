@@ -47,4 +47,7 @@
 		<attribute name="Name" value="jbadams" />
 		<attribute name="Name Color" value="0.25 1 0.25 1" />
 	</component>
+	<component type="EnemyModifiers">
+		<attribute name="Num Modifiers" value="4" />
+	</component>
 </node>

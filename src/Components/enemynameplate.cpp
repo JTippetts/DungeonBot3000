@@ -7,6 +7,7 @@
 #include <Urho3D/Resource/XMLFile.h>
 #include <Urho3D/Graphics/Graphics.h>
 #include <Urho3D/IO/Log.h>
+#include <Urho3D/UI/Font.h>
 
 #include "vitals.h"
 
@@ -113,5 +114,24 @@ void EnemyNameplate::Stop()
 	{
 		element_->Remove();
 		element_.Reset();
+	}
+}
+
+void EnemyNameplate::AddMod(const String &name)
+{
+	if(element_)
+	{
+		auto cache=GetSubsystem<ResourceCache>();
+
+		auto mods=element_->GetChild("Modifiers", true);
+		if(mods)
+		{
+			auto txt=mods->CreateChild<Text>();
+			txt->SetFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"));
+			txt->SetFontSize(14);
+			txt->SetColor(Color(1,1,1));
+			txt->SetText(name);
+			txt->SetTextAlignment(HA_CENTER);
+		}
 	}
 }

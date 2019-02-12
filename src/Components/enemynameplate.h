@@ -27,6 +27,8 @@ class EnemyNameplate : public LogicComponent
 
 	void SetVisible(bool vis);
 
+	void AddMod(const String &name);
+
 	protected:
 	SharedPtr<UIElement> element_;
 	String name_;
