@@ -159,9 +159,10 @@ void Game::Start()
 	if(pd)
 	{
 		pd->NewPlayer();
+		auto pl=scene->GetChild("Dude");
 		//pd->SetCurrentScene(scene);
 		//pd->SpawnPlayer(Vector3(110,0,100));
-		pd->DropItem(EquipmentItemDef(EqBlade, IRMagic, "Steel Blade", "", "", {"SteelBladeImplicit", "Invigorating", "InfernalBladeBurnImplicit", "Bloodsucking"}), Vector3(100,0,100), Vector3(102,0,102));
+		pd->DropItem(EquipmentItemDef(EqBlade, IRMagic, "Steel Blade", "", "", {"SteelBladeImplicit", "Invigorating", "InfernalBladeBurnImplicit", "Bloodsucking"}), pl->GetPosition(), pl->GetPosition());
 	}
 
 	std::vector<String> moderators=
@@ -390,11 +391,8 @@ void Game::HandleUpdate(StringHash eventType, VariantMap &eventData)
 	if(input->IsMouseVisible()) mousepos=input->GetMousePosition();
 	else mousepos=ui->GetCursorPosition();
 
-	auto element = ui->GetElementAt(mousepos);
-	if(element)
-	{
-		while(element->GetParent() != ui->GetRoot()) element=element->GetParent();
-	}
+	auto it=GetSubsystem<ItemNameTagContainer>();
+	it->DoItemHover();
 }
 
 URHO3D_DEFINE_APPLICATION_MAIN(Game)

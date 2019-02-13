@@ -7,6 +7,8 @@
 #include <Urho3D/Scene/Node.h>
 #include <Urho3D/Scene/Scene.h>
 
+#include <Urho3D/UI/UIElement.h>
+
 #include "Components/itemnametag.h"
 #include <vector>
 
@@ -27,4 +29,5 @@ class ItemNameTagContainer : public Object
 
 	protected:
 	std::vector<WeakPtr<ItemNameTag>> tags_;
+	SharedPtr<UIElement> itemdesc_, equippeddesc_;
 };

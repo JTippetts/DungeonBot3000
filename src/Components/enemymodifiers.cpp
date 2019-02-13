@@ -1,6 +1,8 @@
 #include "enemymodifiers.h"
 #include "enemynameplate.h"
 #include "vitals.h"
+#include <random>
+#include <algorithm>
 
 int roll(int low, int high);
 
@@ -31,9 +33,12 @@ void EnemyModifiers::DelayedStart()
 	auto vitals=node_->GetComponent<EnemyVitals>();
 	StatSet &stats=vitals->GetBaseStats();
 
+	std::vector<unsigned int> mods={0,1,2,3,4,5,6,7};
+	std::random_shuffle(mods.begin(), mods.end());
+
 	for(unsigned int c=0; c<nummodifiers_; ++c)
 	{
-		int mod=roll(0,7);
+		int mod=mods[c];
 
 		switch(mod)
 		{
@@ -45,8 +50,8 @@ void EnemyModifiers::DelayedStart()
 			case 1: // Berserk
 			{
 				nameplate->AddMod("Berserk");
-				stats.AddMod("MovementSpeed", StatModifier::SCALE, "1.5");
-				stats.AddMod("AttackSpeed", StatModifier::SCALE, "1.5");
+				stats.AddMod("MovementSpeed", StatModifier::SCALE, "1.0");
+				stats.AddMod("AttackSpeed", StatModifier::SCALE, "1.0");
 			} break;
 			case 2: // Regen life
 			{
@@ -77,7 +82,7 @@ void EnemyModifiers::DelayedStart()
 			} break;
 			case 7: // Leech
 			{
-				nameplate->AddMod("Leeches");
+				nameplate->AddMod("Leeches Life");
 				stats.AddMod("Leech", StatModifier::FLAT, "0.5");
 			} break;
 		};

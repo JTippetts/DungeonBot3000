@@ -233,6 +233,7 @@ void PlayerData::DropItem(const EquipmentItemDef &item, Vector3 dropperlocation,
 	if(navmesh) location = navmesh->FindNearestPoint(location);
 
 	n->SetWorldPosition(location);
+	Log::Write(LOG_INFO, String("Dropped item at ") + String(location.x_) + ", " + String(location.z_));
 }
 
 void PlayerData::NewPlayer()
