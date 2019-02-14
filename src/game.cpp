@@ -104,7 +104,7 @@ double rolld(double low, double high)
 }
 
 Game::Game(Context* context) :
-    Application(context), x(0), z(0)
+    Application(context)
 {
 }
 
@@ -154,65 +154,10 @@ void Game::Start()
 
 	auto scene=CreateLevel(context_, "Areas/test", 1, 0);
 	gamestate->SetState(scene);
-	auto nav=scene->GetComponent<DynamicNavigationMesh>();
-
 	if(pd)
 	{
 		pd->NewPlayer();
 		pd->SetDungeonLevel(1);
-	}
-
-
-	for(unsigned int i=0; i<100; ++i)
-	{
-
-		Vector3 pos;
-		do
-		{
-			pos=nav->GetRandomPoint(); //nav->MoveAlongSurface(Vector3(0,0,0), Vector3(x,0,z));
-		} while(pos.y_ > 0.5);
-		//Log::Write(LOG_INFO, String(pos.y_));
-		pos.y_=0;
-		XMLFile *xfile;
-		auto rl=rollf(0,100);
-
-		Node *n;
-		if(rl < 5)
-		{
-			xfile=cache->GetResource<XMLFile>("Objects/Mobs/KHawk/object.xml");
-			n=scene->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
-
-		}
-		else if(rl < 40)
-		{
-			xfile=cache->GetResource<XMLFile>("Objects/Mobs/Moderator/object.xml");
-			n=scene->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
-		}
-		else if(rl < 45)
-		{
-			xfile=cache->GetResource<XMLFile>("Objects/Mobs/jbadams/object.xml");
-			n=scene->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
-
-		}
-		else if(rl < 55)
-		{
-			xfile=cache->GetResource<XMLFile>("Objects/Mobs/Emeritus/object.xml");
-			n=scene->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
-		}
-		else
-		{
-			xfile=cache->GetResource<XMLFile>("Objects/Mobs/User/object.xml");
-			n=scene->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
-		}
-
-
-		auto vtls=n->GetComponent<EnemyVitals>();
-		if(vtls)
-		{
-			vtls->SetLevel(10);
-		}
-
-		n->SetVar("hoverable", true);
 	}
 	Log::Write(LOG_INFO, String("hoverable hash:") + String(StringHash("hoverable")));
 }

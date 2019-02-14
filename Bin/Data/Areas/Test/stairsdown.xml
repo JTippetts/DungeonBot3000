@@ -9,8 +9,11 @@
 	<attribute name="Variables" />
 
 	<component type="StaticModel">
-		<attribute name="Model" value="Model;Objects/Mobs/KHawk/Models/RocketLauncher.mdl" />
-		<attribute name="Material" value="Material;Materials/white.xml" />
+		<attribute name="Model" value="Model;Areas/Test/Models/StairsDown.mdl" />
+		<attribute name="Material" value="Material;Areas/Test/wallmaterial.xml" />
 		<attribute name="Cast Shadows" value="true" />
+	</component>
+	<component type="LevelChanger">
+		<attribute name="Radius" value="8" />
 	</component>
 </node>

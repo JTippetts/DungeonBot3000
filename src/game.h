@@ -28,9 +28,5 @@ class Game : public Application
 	void HandlePostRenderUpdate(StringHash eventType, VariantMap &eventData);
 
 	void HandleUpdate(StringHash eventType, VariantMap &eventData);
-
-	std::vector<Node *> dudes_;
-
-	float x,z;
 };
 

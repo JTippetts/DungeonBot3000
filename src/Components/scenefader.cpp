@@ -38,10 +38,10 @@ void SceneFader::Update(float dt)
 		{
 			// Fully faded in, send event and exit
 			VariantMap vm;
-			SendEvent(StringHash("FadedIn"), vm);
 			SetFadeState(FadedIn);
 			quad_->Remove();
 			quad_.Reset();
+			SendEvent(StringHash("FadedIn"), vm);
 			return;
 		}
 		float opacity=1.0f-counter_/duration_;
@@ -55,10 +55,10 @@ void SceneFader::Update(float dt)
 		{
 			// Fully faded out
 			VariantMap vm;
-			SendEvent(StringHash("FadedOut"),vm);
 			SetFadeState(FadedOut);
 			quad_->Remove();
 			quad_.Reset();
+			SendEvent(StringHash("FadedOut"),vm);
 			return;
 		}
 		float opacity=counter_/duration_;

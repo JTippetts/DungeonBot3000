@@ -22,4 +22,5 @@ class GameStateHandler : public Object
 	SharedPtr<Scene> currentscene_, nextscene_, lastscene_;
 
 	void HandleFadedOut(StringHash eventType, VariantMap &eventData);
+	void HandleEndFrame(StringHash eventType, VariantMap &eventData);
 };

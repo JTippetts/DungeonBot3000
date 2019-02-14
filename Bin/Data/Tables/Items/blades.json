@@ -9,7 +9,7 @@
 
 	{
 		"Name": "Steel Blade",
-		"MinLevel": 8,
+		"MinLevel": 4,
 		"Weight": 5,
 		"Fixed": ["SteelBladeImplicit"],
 		"Random": ["PhysicalDamageLocalTiers", "LifeRegenTiers", "EnergyGenTiers", "LifeTiers", "LifeLeechTiers"]

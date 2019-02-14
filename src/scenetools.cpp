@@ -48,10 +48,12 @@
 #include "playerdata.h"
 #include "Components/hoverhandler.h"
 #include "Components/levelchanger.h"
+#include "Components/vitals.h"
 
 using namespace Urho3D;
 
 int roll(int low, int high);
+float rollf(float, float);
 
 Node *SpawnObject(Scene* scene, const String &name, Vector3 pos, Quaternion rot)
 {
@@ -71,7 +73,7 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 {
 	auto cache=context->GetSubsystem<ResourceCache>();
 
-	unsigned int w=6,h=6;
+	unsigned int w=2,h=2;
 
 	SharedPtr<Scene> scene(new Scene(context));
 	scene->CreateComponent<Octree>();
@@ -118,6 +120,13 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 		downy=roll(0,h-1);
 	} while(downx==upx && downy==upy);
 
+	unsigned int bossx, bossy;
+	do
+	{
+		bossx=roll(0,w-1);
+		bossy=roll(0,h-1);
+	} while((bossx==downx && bossy==downy) || (bossx==upx && bossy==upy));
+
 	for(unsigned int x=0; x<maze.GetCellWidth(); ++x)
 	{
 		for(unsigned int y=0; y<maze.GetCellHeight(); ++y)
@@ -143,26 +152,14 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 				auto nd=scene->InstantiateJSON(f->GetRoot(), Vector3(y*200.0f + 100.0f, 0.0f, x*200.0f + 100.0f), Quaternion());
 				if(x==upx && y==upy && level!=1)
 				{
-					auto up=nd->CreateChild();
-					auto md=up->CreateComponent<StaticModel>();
-					md->SetModel(cache->GetResource<Model>(levelpath + "/Models/StairsUp.mdl"));
-					md->SetMaterial(cache->GetResource<Material>(levelpath + "/wallmaterial.xml"));
-					md->SetCastShadows(true);
-
-					auto changer=up->CreateComponent<LevelChanger>();
-					changer->SetRadius(8.0f);
+					auto up=SpawnObject(scene, levelpath+"/stairsup.xml", nd->GetWorldPosition());
+					auto changer=up->GetComponent<LevelChanger>();
 					changer->SetDestination(level-1);
 				}
 				else if(x==downx && y==downy && level != 10)
 				{
-					auto dn=nd->CreateChild();
-					auto md=dn->CreateComponent<StaticModel>();
-					md->SetModel(cache->GetResource<Model>(levelpath + "/Models/StairsDown.mdl"));
-					md->SetMaterial(cache->GetResource<Material>(levelpath + "/wallmaterial.xml"));
-					md->SetCastShadows(true);
-
-					auto changer=dn->CreateComponent<LevelChanger>();
-					changer->SetRadius(8.0f);
+					auto dn=SpawnObject(scene, levelpath+"/stairsdown.xml", nd->GetWorldPosition());
+					auto changer=dn->GetComponent<LevelChanger>();
 					changer->SetDestination(level+1);
 				}
 			}
@@ -170,6 +167,86 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 	}
 
 	nav->Build();
+
+	for(unsigned int x=0; x<maze.GetCellWidth(); ++x)
+	{
+		for(unsigned int y=0; y<maze.GetCellHeight(); ++y)
+		{
+			if (!(x==downx && y==downy) && !(x==upx && y==upy))
+			{
+				// Spawn a group of mobs
+				Vector3 roomcenter(y*200.0f+100.0f, 0, x*200.0f+100.0f);
+				Vector3 extents(50,0,50);
+				int rl;
+				rl=roll(1,100);
+				if(x==bossx && y==bossy)
+				{
+					if(level==10)
+					{
+						// Spawn KHAwk and jbadams
+						Vector3 pt=nav->FindNearestPoint(roomcenter+Vector3(rollf(-100.0f, 100.0f), 0.0f, rollf(-100.0f, 100.0f)), extents);
+						pt=nav->MoveAlongSurface(roomcenter, pt);
+						auto n=SpawnObject(scene, "Objects/Mobs/KHawk/object.xml", pt);
+						if(n)
+						{
+							n->GetComponent<EnemyVitals>()->SetLevel(level);
+							n->SetVar("hoverable", true);
+						}
+						pt=nav->FindNearestPoint(roomcenter+Vector3(rollf(-100.0f, 100.0f), 0.0f, rollf(-100.0f, 100.0f)), extents);
+						pt=nav->MoveAlongSurface(roomcenter, pt);
+						n=SpawnObject(scene, "Objects/Mobs/jbadams/object.xml", pt);
+						if(n)
+						{
+							n->GetComponent<EnemyVitals>()->SetLevel(level);
+							n->SetVar("hoverable", true);
+						}
+					}
+					else
+					{
+						// Spawn an emeritus
+						Vector3 pt=nav->FindNearestPoint(roomcenter+Vector3(rollf(-100.0f, 100.0f), 0.0f, rollf(-100.0f, 100.0f)), extents);
+						pt=nav->MoveAlongSurface(roomcenter, pt);
+						auto n=SpawnObject(scene, "Objects/Mobs/Emeritus/object.xml", pt);
+						if(n)
+						{
+							n->GetComponent<EnemyVitals>()->SetLevel(level);
+							n->SetVar("hoverable", true);
+						}
+					}
+				}
+
+				if(rl < 50)
+				{
+					// Spawn some moderators
+					for(int nm = 0; nm<roll(1,3); ++nm)
+					{
+						Vector3 pt=nav->FindNearestPoint(roomcenter+Vector3(rollf(-100.0f, 100.0f), 0.0f, rollf(-100.0f, 100.0f)), extents);
+						pt=nav->MoveAlongSurface(roomcenter, pt);
+						auto n=SpawnObject(scene, "Objects/Mobs/Moderator/object.xml", pt);
+						if(n)
+						{
+							n->GetComponent<EnemyVitals>()->SetLevel(level);
+							n->SetVar("hoverable", true);
+						}
+					}
+				}
+
+				int numusers=roll(10,45);
+				for(int c=0; c<numusers; ++c)
+				{
+					Vector3 pt=nav->FindNearestPoint(roomcenter+Vector3(rollf(-100.0f, 100.0f), 0.0f, rollf(-100.0f, 100.0f)), extents);
+					pt=nav->MoveAlongSurface(roomcenter, pt);
+					auto n=SpawnObject(scene, "Objects/Mobs/User/object.xml", pt);
+					if(n)
+					{
+						n->GetComponent<EnemyVitals>()->SetLevel(level);
+						n->SetVar("hoverable", true);
+					}
+				}
+
+			}
+		}
+	}
 
 	auto fader=scene->CreateComponent<SceneFader>();
 	if(fader)
