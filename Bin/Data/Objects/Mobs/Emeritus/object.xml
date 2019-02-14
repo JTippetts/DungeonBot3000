@@ -52,4 +52,11 @@
 	<component type="EnemyModifiers">
 		<attribute name="Num Modifiers" value="3" />
 	</component>
+	<component type="LootDrop" >
+		<attribute name="Max Items" value="4" />
+		<attribute name="Drop Chance" value="70" />
+	</component>
+	<component type="MobNamer">
+		<attribute name="Class" value="Emeritus" />
+	</component>
 </node>

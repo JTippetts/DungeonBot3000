@@ -46,6 +46,23 @@ class CASPlayerLoot : public CombatActionState
 	WeakPtr<Node> item_;
 };
 
+class CASPlayerStairs : public CombatActionState
+{
+	URHO3D_OBJECT(CASPlayerStairs, CombatActionState);
+	public:
+	CASPlayerStairs(Context *context);
+
+	void SetStairsNode(Node *n){stairs_=n;};
+
+	virtual void Start(CombatController *actor) override;
+	virtual void End(CombatController *actor) override;
+	virtual CombatActionState *Update(CombatController *actor, float dt) override;
+	virtual bool HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt) override;
+
+	protected:
+	WeakPtr<Node> stairs_;
+};
+
 class CASPlayerSpinAttack : public CombatActionState
 {
 	URHO3D_OBJECT(CASPlayerSpinAttack, CombatActionState);

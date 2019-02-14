@@ -72,6 +72,9 @@ class PlayerData : public Object
 
 	bool GenerateRandomItem(EquipmentItemDef &item, EquipmentSlots slot, ItemRarity rarity, int level);
 
+	unsigned int GetDungeonLevel(){return dungeonlevel_;}
+	void SetDungeonLevel(unsigned int l){dungeonlevel_=l;}
+
 	protected:
 	StatSet basestats_;
 	StatSetCollection vitalsstats_;
@@ -90,5 +93,5 @@ class PlayerData : public Object
 
 	double energy_;
 	PlayerAttack currentattack_;
-
+	unsigned int dungeonlevel_;
 };

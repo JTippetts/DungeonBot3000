@@ -26,6 +26,7 @@
 #include "playeractionstates.h"
 #include "itemnametagcontainer.h"
 #include "Components/dropitem.h"
+#include "Components/levelchanger.h"
 
 Node *TopLevelNode(Drawable *d, Scene *s)
 {
@@ -140,6 +141,30 @@ CombatActionState *CASPlayerIdle::Update(CombatController *actor, float dt)
 	}
 	else if(input->GetMouseButtonPress(MOUSEB_LEFT))
 	{
+		// Look for stairs
+		auto cam=node->GetScene()->GetChild("Camera")->GetComponent<ThirdPersonCamera>();
+		auto ray=cam->GetMouseRay();
+		auto octree=node->GetScene()->GetComponent<Octree>();
+		auto scene=node->GetScene();
+
+		PODVector<RayQueryResult> result;
+		result.Clear();
+		RayOctreeQuery query(result, ray, RAY_TRIANGLE, 300.0f, DRAWABLE_GEOMETRY);
+		octree->Raycast(query);
+		if(result.Size()>0)
+		{
+			for(unsigned int c=0; c<result.Size(); ++c)
+			{
+				Node *n = result[c].drawable_->GetNode();
+				if(n && n->GetComponent<LevelChanger>()!=nullptr)
+				{
+					CASPlayerStairs *stairs = actor->GetState<CASPlayerStairs>();
+					stairs->SetStairsNode(n);
+					Log::Write(LOG_INFO, "Obtained stairs.");
+					return stairs;
+				}
+			}
+		}
 		// Do walk
 		return actor->GetState<CASPlayerMove>();
 	}
@@ -396,6 +421,122 @@ bool CASPlayerLoot::HandleAgentReposition(CombatController *actor, Vector3 veloc
 	return false;
 }
 
+
+//////////// Use Stairs
+CASPlayerStairs::CASPlayerStairs(Context *context) : CombatActionState(context)
+{
+}
+
+void CASPlayerStairs::Start(CombatController *actor)
+{
+	auto node=actor->GetNode();
+	if(node)
+	{
+		auto ac=node->GetComponent<AnimationController>();
+		if(ac)
+		{
+			ac->Play(actor->GetAnimPath() + "/Models/Walk.ani", 0, true, 0.1f);
+		}
+	}
+}
+
+void CASPlayerStairs::End(CombatController *actor)
+{
+	auto node=actor->GetNode();
+	if(node)
+	{
+		auto ac=node->GetComponent<AnimationController>();
+		if(ac)
+		{
+			ac->Stop(actor->GetAnimPath() + "/Models/Walk.ani");
+		}
+
+		auto ca=node->GetComponent<CrowdAgent>();
+		if(ca)
+		{
+			ca->SetTargetPosition(node->GetWorldPosition());
+		}
+	}
+}
+
+CombatActionState *CASPlayerStairs::Update(CombatController *actor, float dt)
+{
+	auto node=actor->GetNode();
+	auto input=actor->GetSubsystem<Input>();
+	if(!stairs_) return actor->GetState<CASPlayerIdle>();
+	auto pd=actor->GetSubsystem<PlayerData>();
+	auto changer=stairs_->GetComponent<LevelChanger>();
+	if(!changer) return actor->GetState<CASPlayerIdle>();
+
+	auto delta=stairs_->GetWorldPosition()-node->GetWorldPosition();
+	float len=delta.Length();
+	if(len <= changer->GetRadius())
+	{
+		// Change levels
+		changer->Use();
+		return actor->GetState<CASPlayerIdle>();
+	}
+
+	if(input->GetMouseButtonPress(MOUSEB_RIGHT))
+	{
+		//return actor->GetState<CASPlayerSpinAttack>();
+		PlayerAttack a=pd->GetAttack();
+		switch(a)
+		{
+			case PASpinAttack:
+			{
+				auto stats=pd->GetStatSetCollection(EqNumEquipmentSlots, "SpinAttack");
+				double energycost=GetStatValue(stats, "EnergyCost");
+				double energy=pd->GetEnergy();
+				if(energy>=energycost) return actor->GetState<CASPlayerSpinAttack>();
+			} break;
+			case PALaserBeam:
+			{
+				auto stats=pd->GetStatSetCollection(EqNumEquipmentSlots, "LaserBeam");
+				double energycost=GetStatValue(stats, "EnergyCost");
+				double energy=pd->GetEnergy();
+				if(energy>=energycost) return actor->GetState<CASPlayerLaserBeam>();
+			} break;
+		};
+		//return actor->GetState<CASPlayerLaserBeam>();
+	}
+	else if(input->GetMouseButtonDown(MOUSEB_LEFT))
+	{
+		Vector3 ground=stairs_->GetWorldPosition();
+
+		auto nav=node->GetScene()->GetComponent<DynamicNavigationMesh>();
+		auto pd=node->GetSubsystem<PlayerData>();
+		auto ca=node->GetComponent<CrowdAgent>();
+
+		StatSetCollection ssc=pd->GetStatSetCollection(EqNumEquipmentSlots, "");
+		double movespeed=GetStatValue(ssc, "MovementSpeed");
+		ca->SetMaxSpeed(movespeed);
+		//Vector3 gp=nav->FindNearestPoint(Vector3(ground.x_,0,ground.y_), Vector3(10,10,10));
+		ca->SetTargetPosition(ground);
+
+		return nullptr;
+	}
+	else
+	{
+		auto ca=node->GetComponent<CrowdAgent>();
+		if(ca)
+		{
+			Vector3 vel=ca->GetActualVelocity();
+			if(vel.Length() < ca->GetRadius() + changer->GetRadius())
+			{
+				changer->Use();
+				return actor->GetState<CASPlayerIdle>();
+			}
+		}
+	}
+
+	return nullptr;
+}
+
+bool CASPlayerStairs::HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt)
+{
+	return false;
+}
 
 ////////////// SpinAttack
 CASPlayerSpinAttack::CASPlayerSpinAttack(Context *context) : CombatActionState(context)

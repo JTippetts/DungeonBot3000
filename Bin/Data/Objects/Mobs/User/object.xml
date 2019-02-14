@@ -43,6 +43,10 @@
 	</component>
 	<component type="EnemyOnDeath" >
 	</component>
+	<component type="EnemyNameplate">
+		<attribute name="Name" value="User" />
+		<attribute name="Name Color" value="1 1 1 1" />
+	</component>
 	<component type="LootDrop" >
 		<attribute name="Max Items" value="1" />
 		<attribute name="Drop Chance" value="50" />

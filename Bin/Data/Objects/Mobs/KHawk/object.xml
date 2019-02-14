@@ -50,4 +50,12 @@
 	<component type="EnemyModifiers">
 		<attribute name="Num Modifiers" value="4" />
 	</component>
+	<component type="LootDrop" >
+		<attribute name="Max Items" value="5" />
+		<attribute name="Drop Chance" value="100" />
+	</component>
+	<component type="WeaponEquipper">
+		<attribute name="Bone Name" value="weapon_r" />
+		<attribute name="Object Name" value="Objects/Mobs/KHawk/RocketLauncher.xml" />
+	</component>
 </node>

@@ -188,7 +188,6 @@ void BaseVitals::ApplyDamageList(BaseVitals *attackervitals, const StatSetCollec
 			{
 				DamageValue ref(i.type_, i.value_ * reflect);
 				reflected.push_back(ref);
-				Log::Write(LOG_INFO, String("Reflecting: ") + String(ref.value_) + " " + String(DamageNames[i.type_].c_str()));
 			}
 		}
 

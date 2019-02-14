@@ -20,6 +20,9 @@
 #include "Components/hoverhandler.h"
 #include "Components/enemymodifiers.h"
 #include "Components/lootdrop.h"
+#include "Components/levelchanger.h"
+#include "Components/weaponequipper.h"
+#include "Components/mobnamer.h"
 
 #include "Enemies/jbadams.h"
 #include "Enemies/khawk.h"
@@ -47,12 +50,16 @@ void RegisterCustomComponents(Context *context)
 	HoverHandler::RegisterObject(context);
 	EnemyModifiers::RegisterObject(context);
 	LootDrop::RegisterObject(context);
+	LevelChanger::RegisterObject(context);
+	WeaponEquipper::RegisterObject(context);
+	MobNamer::RegisterObject(context);
 
 	context->RegisterFactory<CASPlayerIdle>();
 	context->RegisterFactory<CASPlayerMove>();
 	context->RegisterFactory<CASPlayerSpinAttack>();
 	context->RegisterFactory<CASPlayerLaserBeam>();
 	context->RegisterFactory<CASPlayerLoot>();
+	context->RegisterFactory<CASPlayerStairs>();
 
 	context->RegisterFactory<CASEnemyInactive>();
 	context->RegisterFactory<CASEnemyIdle>();

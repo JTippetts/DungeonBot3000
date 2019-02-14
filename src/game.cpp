@@ -159,71 +159,9 @@ void Game::Start()
 	if(pd)
 	{
 		pd->NewPlayer();
-		auto pl=scene->GetChild("Dude");
-		//pd->SetCurrentScene(scene);
-		//pd->SpawnPlayer(Vector3(110,0,100));
-		pd->DropItem(EquipmentItemDef(EqBlade, IRMagic, "Steel Blade", "", "", {"SteelBladeImplicit", "Invigorating", "InfernalBladeBurnImplicit", "Bloodsucking", "Overcharging"}), pl->GetPosition(), pl->GetPosition());
-
-		for(unsigned int c=0; c<10; ++c)
-		{
-			EquipmentItemDef def;
-			if(pd->GenerateRandomItem(def, EqBlade, IRRare, 10)) pd->DropItem(def, pl->GetPosition(), pl->GetPosition()+Vector3(rollf(-45.0,45.0), 0, rollf(-45.0,45.0)));
-		}
+		pd->SetDungeonLevel(1);
 	}
 
-	std::vector<String> moderators=
-	{
-		"nsmadsen",
-		"Tom Sloper",
-		"monalaw",
-		"riuthamas",
-		"IADaveMark",
-		"Hodgman",
-		"Kylotan",
-		"swiftcoder",
-		"frob",
-		"Promit",
-		"Brother Bob",
-		"MJP",
-		"hplus0603",
-		"JTippetts",
-		"SiCrane",
-		"All8Up",
-		"evolutional",
-		"fastcall22",
-		"Glass_Knife",
-		"grhodes_at_work",
-		"Machaira",
-		"MadKeithV",
-		"Obscure",
-		"rip-off",
-		"Shannon Barber",
-		"Washu",
-		"Wavinator",
-		"WitchLord"
-	};
-
-	std::vector<String> emeritus=
-	{
-		"Andrew Russell",
-		"ApochPiQ",
-		"dbaumgart",
-		"Evil Steve",
-		"Fruny",
-		"Gaiiden",
-		"johnhattan",
-		"jpetrie",
-		"JWalsh",
-		"LessBread",
-		"Michael Tanczos",
-		"Myopic Rhino",
-		"Oluseyi",
-		"pan narrans",
-		"Ravuya",
-		"Sneftel",
-		"TANSTAAFL",
-		"Zahlman"
-	};
 
 	for(unsigned int i=0; i<100; ++i)
 	{
@@ -237,48 +175,29 @@ void Game::Start()
 		pos.y_=0;
 		XMLFile *xfile;
 		auto rl=rollf(0,100);
-		//if(rl < 30) xfile=cache->GetResource<XMLFile>("Objects/Mobs/jbadams/object.xml");
+
 		Node *n;
 		if(rl < 5)
 		{
 			xfile=cache->GetResource<XMLFile>("Objects/Mobs/KHawk/object.xml");
 			n=scene->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
-			auto rb=n->GetComponent<AnimatedModel>()->GetSkeleton().GetBone("weapon_r");
-			if(rb)
-			{
-				Node *bl=rb->node_->CreateChild();
-				auto smd=bl->CreateComponent<StaticModel>();
-				//smd->SetModel(cache->GetResource<Model>("Objects/Mobs/jbadams/Models/Hammer.mdl"));
-				smd->SetModel(cache->GetResource<Model>("Objects/Mobs/KHawk/Models/RocketLauncher.mdl"));
-				smd->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
-			}
+
 		}
 		else if(rl < 40)
 		{
 			xfile=cache->GetResource<XMLFile>("Objects/Mobs/Moderator/object.xml");
 			n=scene->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
-			auto np=n->GetComponent<EnemyNameplate>();
-			if(np) np->SetName(moderators[roll(0,moderators.size()-1)]);
 		}
 		else if(rl < 45)
 		{
 			xfile=cache->GetResource<XMLFile>("Objects/Mobs/jbadams/object.xml");
 			n=scene->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
-			auto rb=n->GetComponent<AnimatedModel>()->GetSkeleton().GetBone("weapon_r");
-			if(rb)
-			{
-				Node *bl=rb->node_->CreateChild();
-				auto smd=bl->CreateComponent<StaticModel>();
-				smd->SetModel(cache->GetResource<Model>("Objects/Mobs/jbadams/Models/Hammer.mdl"));
-				smd->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
-			}
+
 		}
 		else if(rl < 55)
 		{
 			xfile=cache->GetResource<XMLFile>("Objects/Mobs/Emeritus/object.xml");
 			n=scene->InstantiateXML(xfile->GetRoot(), pos, Quaternion(0,Vector3(0,1,0)));
-			auto np=n->GetComponent<EnemyNameplate>();
-			if(np) np->SetName(emeritus[roll(0,emeritus.size()-1)]);
 		}
 		else
 		{

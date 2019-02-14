@@ -47,10 +47,25 @@
 #include "Components/scenefader.h"
 #include "playerdata.h"
 #include "Components/hoverhandler.h"
+#include "Components/levelchanger.h"
 
 using namespace Urho3D;
 
 int roll(int low, int high);
+
+Node *SpawnObject(Scene* scene, const String &name, Vector3 pos, Quaternion rot)
+{
+	if(!scene) return nullptr;
+
+	auto cache=scene->GetSubsystem<ResourceCache>();
+	auto xfile=cache->GetResource<XMLFile>(name);
+	if(!xfile)
+	{
+		Log::Write(LOG_ERROR, String("Unable to instantiate object ") + name);
+		return nullptr;
+	}
+	return scene->InstantiateXML(xfile->GetRoot(), pos, rot);
+}
 
 SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int level, unsigned int previouslevel)
 {
@@ -126,21 +141,29 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 			if(f)
 			{
 				auto nd=scene->InstantiateJSON(f->GetRoot(), Vector3(y*200.0f + 100.0f, 0.0f, x*200.0f + 100.0f), Quaternion());
-				if(x==upx && y==upy && previouslevel!=0)
+				if(x==upx && y==upy && level!=1)
 				{
 					auto up=nd->CreateChild();
 					auto md=up->CreateComponent<StaticModel>();
 					md->SetModel(cache->GetResource<Model>(levelpath + "/Models/StairsUp.mdl"));
 					md->SetMaterial(cache->GetResource<Material>(levelpath + "/wallmaterial.xml"));
 					md->SetCastShadows(true);
+
+					auto changer=up->CreateComponent<LevelChanger>();
+					changer->SetRadius(8.0f);
+					changer->SetDestination(level-1);
 				}
-				else if(x==downx && y==downy)
+				else if(x==downx && y==downy && level != 10)
 				{
-					auto up=nd->CreateChild();
-					auto md=up->CreateComponent<StaticModel>();
+					auto dn=nd->CreateChild();
+					auto md=dn->CreateComponent<StaticModel>();
 					md->SetModel(cache->GetResource<Model>(levelpath + "/Models/StairsDown.mdl"));
 					md->SetMaterial(cache->GetResource<Material>(levelpath + "/wallmaterial.xml"));
 					md->SetCastShadows(true);
+
+					auto changer=dn->CreateComponent<LevelChanger>();
+					changer->SetRadius(8.0f);
+					changer->SetDestination(level+1);
 				}
 			}
 		}

@@ -31,8 +31,13 @@ void LootDrop::HandleLifeDepleted(StringHash eventType, VariantMap &eventData)
 		auto pd=GetSubsystem<PlayerData>();
 		for(int c=0; c<numdrops; c++)
 		{
+			int rr=roll(1,100);
+			ItemRarity ir=IRNormal;
+			if(rr<4) ir=IRUnique;
+			else if(rr<14) ir=IRRare;
+			else if(rr<64) ir=IRMagic;
 			EquipmentItemDef def;
-			if(pd->GenerateRandomItem(def, EqBlade, IRRare, 10)) pd->DropItem(def, node_->GetPosition(), node_->GetPosition()+Vector3(rollf(-5.0,5.0), 0, rollf(-5.0,5.0)));
+			if(pd->GenerateRandomItem(def, EqBlade, ir, pd->GetDungeonLevel())) pd->DropItem(def, node_->GetPosition(), node_->GetPosition()+Vector3(rollf(-5.0,5.0), 0, rollf(-5.0,5.0)));
 		}
 	}
 }
