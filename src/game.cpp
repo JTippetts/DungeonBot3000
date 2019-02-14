@@ -225,7 +225,7 @@ void Game::Start()
 		"Zahlman"
 	};
 
-	for(unsigned int i=0; i<300; ++i)
+	for(unsigned int i=0; i<100; ++i)
 	{
 
 		Vector3 pos;

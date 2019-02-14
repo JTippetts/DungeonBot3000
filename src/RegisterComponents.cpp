@@ -19,6 +19,7 @@
 #include "Components/enemynameplate.h"
 #include "Components/hoverhandler.h"
 #include "Components/enemymodifiers.h"
+#include "Components/lootdrop.h"
 
 #include "Enemies/jbadams.h"
 #include "Enemies/khawk.h"
@@ -45,6 +46,7 @@ void RegisterCustomComponents(Context *context)
 	EnemyNameplate::RegisterObject(context);
 	HoverHandler::RegisterObject(context);
 	EnemyModifiers::RegisterObject(context);
+	LootDrop::RegisterObject(context);
 
 	context->RegisterFactory<CASPlayerIdle>();
 	context->RegisterFactory<CASPlayerMove>();
