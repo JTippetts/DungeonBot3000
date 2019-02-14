@@ -27,8 +27,17 @@
 		"Weighting": 2,
 		"Tables": [
 			{"Level": 1, "Mods": ["Leeching"]},
-			{"Level": 5, "Mods": ["Leeching", "Draining"]},
-			{"Level": 10, "Mods": ["Leeching", "Draining", "Bloodsucking"]},
+			{"Level": 5, "Mods": ["Draining","Leeching"]},
+			{"Level": 10, "Mods": ["Bloodsucking", "Draining","Leeching"]},
 		]
 	},
+	"LifeTiers": {
+		"Weighting": 2,
+		"Tables": [
+			{"Level": 1, "Mods": ["Vital"]},
+			{"Level": 5, "Mods": ["Healthy","Vital"]},
+			{"Level": 10, "Mods": ["Hale", "Healthy","Vital"]},
+		]
+	},
+
 }

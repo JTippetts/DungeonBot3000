@@ -95,3 +95,25 @@ class ItemModTiers
 	ItemModTierTableMap map_;
 };
 
+//Class to hold an entire set of base classes for an equipment slot category (blades, turrets, etc...)
+
+struct ItemClassEntry
+{
+	String name_;
+	int minlevel_;
+	double weight_;
+	std::vector<String> fixed_;
+	std::vector<String> random_;
+};
+
+class ItemClass
+{
+	public:
+	ItemClass(){}
+
+	void LoadJSON(const JSONValue &json);
+	ItemClassEntry *Choose(int level);
+
+	protected:
+	std::vector<ItemClassEntry> entries_;
+};

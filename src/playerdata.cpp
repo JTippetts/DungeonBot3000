@@ -20,6 +20,10 @@
 #include "Components/vitals.h"
 #include "gamestatehandler.h"
 
+int roll(int,int);
+float rollf(float,float);
+double rolld(double,double);
+
 PlayerData::PlayerData(Context *context) : Object(context), energy_(0), currentattack_(PASpinAttack)
 {
 }
@@ -63,6 +67,18 @@ void PlayerData::LoadBaseStats(const String &name)
 		basestats_.Clear();
 		basestats_.LoadJSON(file->GetRoot());
 		levelmodifier_ = basestats_.AddMod("Level", StatModifier::FLAT, "1");
+	}
+}
+
+void PlayerData::LoadItemClass(EquipmentSlots slot, const String name)
+{
+	if(slot>=EqNumEquipmentSlots) return;
+
+	ResourceCache *cache=context_->GetSubsystem<ResourceCache>();
+	JSONFile *file = cache->GetResource<JSONFile>(name);
+	if(file)
+	{
+		itemclasses_[slot].LoadJSON(file->GetRoot());
 	}
 }
 
@@ -243,6 +259,7 @@ void PlayerData::NewPlayer()
 	LoadItemModTiers("Tables/Items/itemmodtiers.json");
 	LoadBaseStats("Tables/Player/base.json");
 	LoadSkillStats("Tables/Skills/skillstats.json");
+	LoadItemClass(EqBlade, "Tables/Items/blades.json");
 
 	EquipItem(EquipmentItemDef(EqBlade, IRNormal, "Starter Blade", "", "", {"StarterBladeImplicit"}), false);
 }
@@ -277,4 +294,43 @@ void PlayerData::SpawnPlayer(Scene *scene, Vector3 location)
 		smd->SetMaterial(cache->GetResource<Material>("Materials/white.xml"));
 	}
 	n->SetWorldPosition(location);
+}
+
+bool PlayerData::GenerateRandomItem(EquipmentItemDef &item, EquipmentSlots slot, ItemRarity rarity, int level)
+{
+	if(rarity==IRUnique) rarity=IRRare;   // TODO: Implement uniques
+	item.rarity_=rarity;
+	item.slot_=slot;
+
+	auto cls=GetItemClass(slot);
+	if(!cls) return false;
+
+	ItemClassEntry *entry=cls->Choose(level);
+	if(!entry) return false;
+
+	item.name_=entry->name_;
+	item.itemmods_.clear();
+	for(auto i : entry->fixed_) item.itemmods_.push_back(i);
+
+	if(rarity==IRNormal) return true;
+
+	unsigned int nummods=0;
+	if(rarity==IRMagic) nummods=roll(1,2);
+	else nummods=roll(3,6);
+
+	// Clamp num mods to the number of possible choices in the item entry's random category.
+	// Populate a vector with all of the possible choices and shuffle it, then draw N choices.
+	nummods=std::min(nummods, (unsigned int)entry->random_.size());
+	std::vector<unsigned int> choices;
+	for(unsigned int c=0; c<entry->random_.size(); ++c) choices.push_back(c);
+	std::random_shuffle(choices.begin(), choices.end());
+
+	for(unsigned int c=0; c<nummods; ++c)
+	{
+		String tiergroup=entry->random_[choices[c]];
+		String mod=itemmodtiers_.Choose(tiergroup, level);
+		Log::Write(LOG_INFO, String("Chose random mod ") + mod);
+		item.itemmods_.push_back(mod);
+	}
+	return true;
 }

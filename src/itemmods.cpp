@@ -252,3 +252,101 @@ String ItemModTiers::Choose(const std::string &which, int level)
 		return String("");
 	}
 }
+
+void ItemClass::LoadJSON(const JSONValue &json)
+{
+	entries_.clear();
+	if(json.IsArray())
+	{
+		const JSONArray &arr=json.GetArray();
+		for(unsigned int cl=0; cl<arr.Size(); ++cl)
+		{
+			const JSONValue &tableentry=arr[cl];
+			if(tableentry.IsObject())
+			{
+				const JSONObject &entryobject=tableentry.GetObject();
+				ItemClassEntry entry;
+				entry.name_ = GetStringFromJSONObject("Name", entryobject);
+				entry.minlevel_ = (int)GetDoubleFromJSONObject("MinLevel", entryobject);
+				entry.weight_ = GetDoubleFromJSONObject("Weight", entryobject);
+
+				const JSONValue *fixed=entryobject[String("Fixed")];
+				if(fixed)
+				{
+					if(fixed->IsArray())
+					{
+						const JSONArray fixarr=fixed->GetArray();
+						for(unsigned int f=0; f<fixarr.Size(); ++f)
+						{
+							entry.fixed_.push_back(fixarr[f].GetString());
+						}
+					}
+					else
+					{
+						Log::Write(LOG_ERROR, "Fixed modifiers must be an array.");
+					}
+				}
+
+				const JSONValue *random=entryobject[String("Random")];
+				if(random)
+				{
+					if(random->IsArray())
+					{
+						const JSONArray fixarr=random->GetArray();
+						for(unsigned int f=0; f<fixarr.Size(); ++f)
+						{
+							entry.random_.push_back(fixarr[f].GetString());
+						}
+					}
+					else
+					{
+						Log::Write(LOG_ERROR, "Random modifiers must be an array.");
+					}
+				}
+
+				entries_.push_back(entry);
+			}
+			else
+			{
+				Log::Write(LOG_ERROR, "ItemClass entry must be object.");
+			}
+		}
+	}
+	else
+	{
+		Log::Write(LOG_ERROR, "ItemClass file must be an array.");
+	}
+}
+
+ItemClassEntry *ItemClass::Choose(int level)
+{
+	// Iterate and add options into a list
+	std::vector<ItemClassEntry *> options;
+	std::vector<double> weights;
+	double totalweight=0.0;
+
+	for(unsigned int c=0; c<entries_.size(); ++c)
+	{
+		ItemClassEntry *e = &entries_[c];
+		if(e->minlevel_<=level)
+		{
+			options.push_back(e);
+			totalweight+=e->weight_;
+			weights.push_back(totalweight);
+
+		}
+	}
+
+	for(unsigned int c=0; c<weights.size(); ++c)
+	{
+		weights[c] /= totalweight;
+	}
+
+	double rl=rolld(0.0, 1.0);
+	for(unsigned int c=0; c<weights.size(); ++c)
+	{
+		if(rl < weights[c]) return options[c];
+	}
+
+	return nullptr;
+}

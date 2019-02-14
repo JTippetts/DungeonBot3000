@@ -162,7 +162,13 @@ void Game::Start()
 		auto pl=scene->GetChild("Dude");
 		//pd->SetCurrentScene(scene);
 		//pd->SpawnPlayer(Vector3(110,0,100));
-		pd->DropItem(EquipmentItemDef(EqBlade, IRMagic, "Steel Blade", "", "", {"SteelBladeImplicit", "Invigorating", "InfernalBladeBurnImplicit", "Bloodsucking"}), pl->GetPosition(), pl->GetPosition());
+		pd->DropItem(EquipmentItemDef(EqBlade, IRMagic, "Steel Blade", "", "", {"SteelBladeImplicit", "Invigorating", "InfernalBladeBurnImplicit", "Bloodsucking", "Overcharging"}), pl->GetPosition(), pl->GetPosition());
+
+		for(unsigned int c=0; c<10; ++c)
+		{
+			EquipmentItemDef def;
+			if(pd->GenerateRandomItem(def, EqBlade, IRRare, 10)) pd->DropItem(def, pl->GetPosition(), pl->GetPosition()+Vector3(rollf(-45.0,45.0), 0, rollf(-45.0,45.0)));
+		}
 	}
 
 	std::vector<String> moderators=

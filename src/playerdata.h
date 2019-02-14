@@ -32,6 +32,9 @@ class PlayerData : public Object
 	void LoadItemModTiers(const String &name);
 	ItemModTiers &GetItemModTiers(){return itemmodtiers_;}
 
+	void LoadItemClass(EquipmentSlots slot, const String name);
+	ItemClass *GetItemClass(EquipmentSlots slot){return (slot<EqNumEquipmentSlots) ? &itemclasses_[slot] : nullptr;}
+
 	//StatSetCollection &GetStatSetCollection(int eqslot);
 
 	StatSetCollection &GetVitalsStats()  // Get the stat set collection pertinent to vitals.
@@ -67,6 +70,8 @@ class PlayerData : public Object
 	PlayerAttack GetAttack(){return currentattack_;}
 	void SetAttack(PlayerAttack a){currentattack_=a;}
 
+	bool GenerateRandomItem(EquipmentItemDef &item, EquipmentSlots slot, ItemRarity rarity, int level);
+
 	protected:
 	StatSet basestats_;
 	StatSetCollection vitalsstats_;
@@ -76,10 +81,12 @@ class PlayerData : public Object
 	StatSet equipmentglobalstats_[EqNumEquipmentSlots];
 	StatSet equipmentlocalstats_[EqNumEquipmentSlots];
 
+
 	std::unordered_map<std::string, StatSet> skillstats_;
 
 	ItemModTable itemmodtable_;
 	ItemModTiers itemmodtiers_;
+	ItemClass itemclasses_[EqNumEquipmentSlots];
 
 	double energy_;
 	PlayerAttack currentattack_;

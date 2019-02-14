@@ -11,16 +11,28 @@
 		"LifeRegen": [["Flat", "0.15"]]
 	}],
 
+	"Vital": ["Global", "Increase maximum life by 10.", {
+		"MaximumLife": [["Flat", "10"]]
+	}],
+
+	"Healthy": ["Global", "Increase maximum life by 20.", {
+		"MaximumLife": [["Flat", "20"]]
+	}],
+
+	"Hale": ["Global", "Increase maximum life by 40.", {
+		"MaximumLife": [["Flat", "40"]]
+	}],
+
 	"Energizing":["Global", "Increase energy generation by 5%.", {
-		"EnergyGen": [["Flat", "0.05"]]
+		"EnergyGen": [["Mult", "0.05"]]
 	}],
 
-	"Galvanizing":["Global", "Increase energy generation by 10%.", {
-		"EnergyGen": [["Flat", "0.10"]]
+	"Galvanizing":["Global", "Increase energy generation by 15%.", {
+		"EnergyGen": [["Mult", "0.15"]]
 	}],
 
-	"Overcharging":["Global", "Increase energy generation by 15%.", {
-		"EnergyGen": [["Flat", "0.10"]]
+	"Overcharging":["Global", "Increase energy generation by 30%.", {
+		"EnergyGen": [["Mult", "0.30"]]
 	}],
 
 	"Cruel":["Local", "Increase physical damage by 10 to 15.", {
