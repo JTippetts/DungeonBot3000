@@ -96,6 +96,10 @@ void LifeBubbleUI::DelayedStart()
 	energyelement_->SetColor(Color(0.25,1.0,0.25));
 	energyelement_->SetPosition(IntVector2(0, graphics->GetHeight()-256+38-energyelement_->GetHeight()));
 	ui->GetRoot()->AddChild(energyelement_);
+
+	help_=ui->LoadLayout(cache->GetResource<XMLFile>("UI/Help.xml"));
+	ui->GetRoot()->AddChild(help_);
+	help_->SetPosition(IntVector2(graphics->GetWidth()-help_->GetWidth(), graphics->GetHeight()-help_->GetHeight()));
 }
 
 void LifeBubbleUI::Update(float dt)
@@ -139,5 +143,6 @@ SharedPtr<Scene> rttscene_;
 	element_->Remove();
 
 	energyelement_->Remove();
+	help_->Remove();
 	Log::Write(LOG_INFO, "Stopping bubble");
 }

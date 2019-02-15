@@ -75,6 +75,7 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 	auto cache=context->GetSubsystem<ResourceCache>();
 
 	unsigned int w=3,h=3;
+	float size=200.0f;
 
 	SharedPtr<Scene> scene(new Scene(context));
 	scene->CreateComponent<Octree>();
@@ -143,14 +144,16 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 			}
 			else
 			{
-				if(x==downx && y==downy) path = levelpath + String("/tiledown") + String(p) + "_B.json";
+				if(x==downx && y==downy && level!=10) path = levelpath + String("/tiledown") + String(p) + "_B.json";
 				else path = levelpath + String("/tile") + String(p) + "_B.json";
 			}
 
 			auto f=cache->GetResource<JSONFile>(path);
 			if(f)
 			{
-				auto nd=scene->InstantiateJSON(f->GetRoot(), Vector3(y*200.0f + 100.0f, 0.0f, x*200.0f + 100.0f), Quaternion());
+				auto nd=scene->InstantiateJSON(f->GetRoot(), Vector3(y*size + size*0.5f, 0.0f, x*size + size*0.5f), Quaternion());
+				nd->SetScale(Vector3(size/200.0f, size/200.0f, size/200.0f));
+
 				if(x==upx && y==upy && level!=1)
 				{
 					auto up=SpawnObject(scene, levelpath+"/stairsup.xml", nd->GetWorldPosition());
@@ -176,7 +179,7 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 			if (!(x==downx && y==downy) && !(x==upx && y==upy))
 			{
 				// Spawn a group of mobs
-				Vector3 roomcenter(y*200.0f+100.0f, 0, x*200.0f+100.0f);
+				Vector3 roomcenter(y*size+size*0.5f, 0, x*size+size*0.5f);
 				Vector3 extents(50,0,50);
 				int rl;
 				rl=roll(1,100);
@@ -185,7 +188,7 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 					if(level==10)
 					{
 						// Spawn KHAwk and jbadams
-						Vector3 pt=nav->FindNearestPoint(roomcenter+Vector3(rollf(-100.0f, 100.0f), 0.0f, rollf(-100.0f, 100.0f)), extents);
+						Vector3 pt=nav->FindNearestPoint(roomcenter+Vector3(rollf(-size*0.5f, size*0.5f), 0.0f, rollf(-size*0.5f, size*0.5f)), extents);
 						pt=nav->MoveAlongSurface(roomcenter, pt);
 						auto n=SpawnObject(scene, "Objects/Mobs/KHawk/object.xml", pt);
 						if(n)
@@ -193,7 +196,7 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 							n->GetComponent<EnemyVitals>()->SetLevel(level);
 							n->SetVar("hoverable", true);
 						}
-						pt=nav->FindNearestPoint(roomcenter+Vector3(rollf(-100.0f, 100.0f), 0.0f, rollf(-100.0f, 100.0f)), extents);
+						pt=nav->FindNearestPoint(roomcenter+Vector3(rollf(-size*0.5f, size*0.5f), 0.0f, rollf(-size*0.5f, size*0.5f)), extents);
 						pt=nav->MoveAlongSurface(roomcenter, pt);
 						n=SpawnObject(scene, "Objects/Mobs/jbadams/object.xml", pt);
 						if(n)
@@ -205,7 +208,7 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 					else
 					{
 						// Spawn an emeritus
-						Vector3 pt=nav->FindNearestPoint(roomcenter+Vector3(rollf(-100.0f, 100.0f), 0.0f, rollf(-100.0f, 100.0f)), extents);
+						Vector3 pt=nav->FindNearestPoint(roomcenter+Vector3(rollf(-size*0.5f, size*0.5f), 0.0f, rollf(-size*0.5f, size*0.5f)), extents);
 						pt=nav->MoveAlongSurface(roomcenter, pt);
 						auto n=SpawnObject(scene, "Objects/Mobs/Emeritus/object.xml", pt);
 						if(n)
@@ -221,7 +224,7 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 					// Spawn some moderators
 					for(int nm = 0; nm<roll(1,3); ++nm)
 					{
-						Vector3 pt=nav->FindNearestPoint(roomcenter+Vector3(rollf(-100.0f, 100.0f), 0.0f, rollf(-100.0f, 100.0f)), extents);
+						Vector3 pt=nav->FindNearestPoint(roomcenter+Vector3(rollf(-size*0.5f, size*0.5f), 0.0f, rollf(-size*0.5f, size*0.5f)), extents);
 						pt=nav->MoveAlongSurface(roomcenter, pt);
 						auto n=SpawnObject(scene, "Objects/Mobs/Moderator/object.xml", pt);
 						if(n)
@@ -232,10 +235,10 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 					}
 				}
 
-				int numusers=roll(4*level,10*level);
+				int numusers=roll(8*level,12*level);
 				for(int c=0; c<numusers; ++c)
 				{
-					Vector3 pt=nav->FindNearestPoint(roomcenter+Vector3(rollf(-100.0f, 100.0f), 0.0f, rollf(-100.0f, 100.0f)), extents);
+					Vector3 pt=nav->FindNearestPoint(roomcenter+Vector3(rollf(-size*0.5f, size*0.5f), 0.0f, rollf(-size*0.5f, size*0.5f)), extents);
 					pt=nav->MoveAlongSurface(roomcenter, pt);
 					auto n=SpawnObject(scene, "Objects/Mobs/User/object.xml", pt);
 					if(n)
@@ -262,15 +265,15 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 		if(level < previouslevel)
 		{
 			// Spawn at down stairs
-			pd->SpawnPlayer(scene, Vector3((float)downy * 200.0f + 110.0f, 0.0f, (float)downx * 200.0f + 100.0f));
+			pd->SpawnPlayer(scene, Vector3((float)downy * size + (size*0.5f+10.0f), 0.0f, (float)downx * size + size*0.5f));
 		}
 		else if(level > previouslevel)
 		{
-			pd->SpawnPlayer(scene, Vector3((float)upy * 200.0f + 110.0f, 0.0f, (float)upx * 200.0f + 100.0f));
+			pd->SpawnPlayer(scene, Vector3((float)upy * size + (size*0.5f+10.0f), 0.0f, (float)upx * size + size*0.5f));
 		}
 		else
 		{
-			pd->SpawnPlayer(scene, Vector3((float)upy * 200.0f + 110.0f, 0.0f, (float)upx * 200.0f + 100.0f));
+			pd->SpawnPlayer(scene, Vector3((float)upy * size + (size*0.5f+10.0f), 0.0f, (float)upx * size + size*0.5f));
 		}
 	}
 

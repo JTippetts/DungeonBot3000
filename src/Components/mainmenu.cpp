@@ -4,6 +4,7 @@
 #include <Urho3D/Resource/ResourceCache.h>
 #include <Urho3D/Resource/XMLFile.h>
 #include <Urho3D/Graphics/Graphics.h>
+#include <Urho3D/Engine/Engine.h>
 
 #include "../gamestatehandler.h"
 #include "../scenetools.h"
@@ -24,7 +25,7 @@ void MainMenu::HandlePlay(StringHash eventType, VariantMap &eventData)
 	auto pd=GetSubsystem<PlayerData>();
 	auto gamestate=GetSubsystem<GameStateHandler>();
 
-	auto scene=CreateLevel(context_, "Areas/test", 1, 0);
+	auto scene=CreateLevel(context_, "Areas/Test", 1, 0);
 	gamestate->SetState(scene);
 	pd->NewPlayer();
 	pd->SetDungeonLevel(1);
@@ -32,8 +33,10 @@ void MainMenu::HandlePlay(StringHash eventType, VariantMap &eventData)
 	element_->SetVisible(false);
 }
 
-void MainMenu::HandleAbout(StringHash eventType, VariantMap &eventData)
+void MainMenu::HandleExit(StringHash eventType, VariantMap &eventData)
 {
+	auto engine=GetSubsystem<Engine>();
+	if(engine) engine->Exit();
 }
 
 void MainMenu::Update(float dt)
@@ -47,13 +50,14 @@ void MainMenu::DelayedStart()
 	auto graphics=GetSubsystem<Graphics>();
 
 	element_ = ui->LoadLayout(cache->GetResource<XMLFile>("UI/MainMenu.xml"));
-	element_->SetPosition(IntVector2(graphics->GetWidth()/2 - element_->GetWidth()/2, graphics->GetHeight()/2));
+	element_->SetPosition(IntVector2(graphics->GetWidth()/2 - element_->GetWidth()/2, graphics->GetHeight()/2-element_->GetHeight()/2));
 	element_->SetVisible(true);
 	ui->GetRoot()->AddChild(element_);
 
 	element_->SetStyleAuto(cache->GetResource<XMLFile>("UI/DefaultStyle.xml"));
 
 	SubscribeToEvent(element_->GetChild("Play", true), StringHash("Pressed"), URHO3D_HANDLER(MainMenu, HandlePlay));
+	SubscribeToEvent(element_->GetChild("Exit", true), StringHash("Pressed"), URHO3D_HANDLER(MainMenu, HandleExit));
 }
 
 void MainMenu::Stop()

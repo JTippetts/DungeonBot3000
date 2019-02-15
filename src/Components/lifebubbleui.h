@@ -40,6 +40,7 @@ class LifeBubbleUI : public LogicComponent
 
 	SharedPtr<UIElement> element_;
 	SharedPtr<Text> energyelement_;
+	SharedPtr<UIElement> help_;
 
 	virtual void DelayedStart() override;
 	virtual void Update(float dt) override;

@@ -29,6 +29,6 @@
 		<attribute name="Text" value="100/100" />
 		<attribute name="Text Alignment" value="Center" />
 		<attribute name="Font" value="Font;Fonts/Anonymous Pro.ttf" />
-		<attribute name="Font Size" value="16" />
+		<attribute name="Font Size" value="24" />
 	</element>
 </element>

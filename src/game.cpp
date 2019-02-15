@@ -153,7 +153,7 @@ void Game::Start()
 	cursor->SetPosition(ui->GetRoot()->GetWidth()/2, ui->GetRoot()->GetHeight()/2);
 
 	#if 0
-	auto scene=CreateLevel(context_, "Areas/test", 1, 0);
+	auto scene=CreateLevel(context_, "Areas/Test", 1, 0);
 	gamestate->SetState(scene);
 	if(pd)
 	{

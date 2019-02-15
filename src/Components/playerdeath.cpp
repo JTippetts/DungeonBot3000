@@ -51,7 +51,7 @@ void PlayerDeath::HandleRespawn(StringHash eventType, VariantMap &eventData)
 	auto gamestate=GetSubsystem<GameStateHandler>();
 
 	element_->SetVisible(false);
-	auto scene=CreateLevel(context_, "Areas/test", 1, 0);
+	auto scene=CreateLevel(context_, "Areas/Test", 1, 0);
 	gamestate->SetState(scene);
 	pd->NewPlayer();
 	pd->SetDungeonLevel(1);

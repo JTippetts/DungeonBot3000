@@ -21,7 +21,7 @@ class MainMenu : public LogicComponent
 	SharedPtr<UIElement> element_;
 
 	void HandlePlay(StringHash eventType, VariantMap &eventData);
-	void HandleAbout(StringHash eventType, VariantMap &eventData);
+	void HandleExit(StringHash eventType, VariantMap &eventData);
 	virtual void Update(float dt) override;
 	virtual void DelayedStart() override;
 	virtual void Stop() override;
