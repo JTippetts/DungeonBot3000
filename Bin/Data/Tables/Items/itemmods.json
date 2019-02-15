@@ -63,15 +63,42 @@
 	}],
 
 	"Burning": ["Global", "Increase Fire damage by 20%.", {
-		"FireDamate": [["Mult", "0.2"]]
+		"FireDamage": [["Mult", "0.2"]]
 	}],
 
 	"Torching": ["Global", "Increase Fire damage by 40%.", {
-		"FireDamate": [["Mult", "0.4"]]
+		"FireDamage": [["Mult", "0.4"]]
 	}],
 
 	"Incinerating": ["Global", "Increase Fire damage by 40%.", {
-		"FireDamate": [["Mult", "0.4"]]
+		"FireDamage": [["Mult", "0.4"]]
+	}],
+
+	"Insulating": ["Global", "Decrease Fire and Burn damage taken by 10%.", {
+		"FireDamageTaken": [["Mult", "-0.1"]],
+		"BurnDamageTaken": [["Mult", "-0.1"]]
+	}],
+
+	"Fireproof": ["Global", "Decrease Fire and Burn damage taken by 15%.", {
+		"FireDamageTaken": [["Mult", "-0.15"]],
+		"BurnDamageTaken": [["Mult", "-0.15"]]
+	}],
+
+	"Flameproof": ["Global", "Decrease Fire and Burn damage taken by 20%.", {
+		"FireDamageTaken": [["Mult", "-0.2"]],
+		"BurnDamageTaken": [["Mult", "-0.2"]]
+	}],
+
+	"QuickAttacks" : ["Local", "Increase attack speed with this weapon by 10%.", {
+		"AttackSpeed": [["Mult", "0.1"]]
+	}],
+
+	"SpeedyAttacks" : ["Local", "Increase attack speed with this weapon by 20%.", {
+		"AttackSpeed": [["Mult", "0.2"]]
+	}],
+
+	"RapidAttacks" : ["Local", "Increase attack speed with this weapon by 40%.", {
+		"AttackSpeed": [["Mult", "0.4"]]
 	}],
 
 	"Fiery": ["Local", "Convert 50% of physical damage to fire.", {

@@ -12,6 +12,7 @@
 #include <Urho3D/Scene/LogicComponent.h>
 #include <Urho3D/Graphics/ParticleEmitter.h>
 #include <Urho3D/Graphics/ParticleEffect.h>
+#include <Urho3D/Graphics/StaticModel.h>
 
 using namespace Urho3D;
 
@@ -24,7 +25,10 @@ class BurnIndicator : public LogicComponent
 
 	protected:
 	virtual void DelayedStart() override;
+	virtual void Update(float dt) override;
 	void HandleBurnPresent(StringHash eventType, VariantMap &eventData);
+	void HandleHealsPresent(StringHash eventType, VariantMap &eventData);
 
-	SharedPtr<ParticleEmitter> emitter_;
+	ParticleEmitter *emitter_;
+	Node *ring_;
 };

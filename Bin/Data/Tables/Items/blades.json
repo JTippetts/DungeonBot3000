@@ -4,7 +4,7 @@
 		"MinLevel": 1,
 		"Weight": 10,
 		"Fixed": ["AluminumBladeImplicit"],
-		"Random": ["PhysicalDamageLocalTiers", "LifeRegenTiers", "EnergyGenTiers", "LifeTiers", "LifeLeechTiers"]
+		"Random": ["PhysicalDamageLocalTiers", "LifeRegenTiers", "EnergyGenTiers", "LifeTiers", "LifeLeechTiers", "AttackSpeedLocalTiers"]
 	},
 
 	{
@@ -12,14 +12,14 @@
 		"MinLevel": 4,
 		"Weight": 5,
 		"Fixed": ["SteelBladeImplicit"],
-		"Random": ["PhysicalDamageLocalTiers", "LifeRegenTiers", "EnergyGenTiers", "LifeTiers", "LifeLeechTiers"]
+		"Random": ["PhysicalDamageLocalTiers", "LifeRegenTiers", "EnergyGenTiers", "LifeTiers", "LifeLeechTiers", "AttackSpeedLocalTiers"]
 	},
 
 	{
 		"Name": "Infernal Blade",
 		"MinLevel": 8,
 		"Weight": 2,
-		"Fixed": ["InfernalBladePhysicalImplicit", "InfernalBladeBurnImplicit", "Barbarous", "Fiery", "Infernal", "Overcharging"],
-		"Random": ["PhysicalDamageLocalTiers", "LifeRegenTiers", "EnergyGenTiers", "LifeTiers", "LifeLeechTiers"]
+		"Fixed": ["InfernalBladePhysicalImplicit", "InfernalBladeBurnImplicit", "Fiery", "Infernal"],
+		"Random": ["PhysicalDamageLocalTiers", "LifeRegenTiers", "EnergyGenTiers", "LifeTiers", "LifeLeechTiers", "AttackSpeedLocalTiers"]
 	},
 ]

@@ -1,0 +1,5 @@
+<material>
+    <technique name="Techniques/laserbeam.xml" />
+    <texture unit="diffuse" name="Effects/heals.png" />
+	<parameter name="MatDiffColor" value="0.2 0.5 1.5 1" />
+</material>

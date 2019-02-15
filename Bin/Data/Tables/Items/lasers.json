@@ -4,7 +4,7 @@
 		"MinLevel": 1,
 		"Weight": 10,
 		"Fixed": ["SmallLaserImplicit"],
-		"Random": ["FireDamageTiers", "LifeRegenTiers", "EnergyGenTiers", "LifeTiers", "LifeLeechTiers"]
+		"Random": ["FireDamageTiers", "LifeRegenTiers", "EnergyGenTiers", "LifeTiers", "LifeLeechTiers", "AttackSpeedLocalTiers"]
 	},
 
 	{
@@ -12,7 +12,7 @@
 		"MinLevel": 4,
 		"Weight": 5,
 		"Fixed": ["MediumLaserImplicit"],
-		"Random": ["FireDamageTiers", "LifeRegenTiers", "EnergyGenTiers", "LifeTiers", "LifeLeechTiers"]
+		"Random": ["FireDamageTiers", "LifeRegenTiers", "EnergyGenTiers", "LifeTiers", "LifeLeechTiers", "AttackSpeedLocalTiers"]
 	},
 
 	{
@@ -20,6 +20,6 @@
 		"MinLevel": 8,
 		"Weight": 2,
 		"Fixed": ["LargeLaserImplicit"],
-		"Random": ["FireDamageTiers", "LifeRegenTiers", "EnergyGenTiers", "LifeTiers", "LifeLeechTiers"]
+		"Random": ["FireDamageTiers", "LifeRegenTiers", "EnergyGenTiers", "LifeTiers", "LifeLeechTiers", "AttackSpeedLocalTiers"]
 	},
 ]

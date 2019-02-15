@@ -48,4 +48,22 @@
 			{"Level": 8, "Mods": ["Incinerating", "Torching","Burning"]},
 		]
 	},
+
+	"FireResistTiers": {
+		"Weighting": 2,
+		"Tables": [
+			{"Level": 1, "Mods": ["Insulating"]},
+			{"Level": 4, "Mods": ["Fireproof","Insulating"]},
+			{"Level": 8, "Mods": ["Flameproof", "Fireproof","Insulating"]},
+		]
+	},
+
+	"AttackSpeedLocalTiers": {
+		"Weighting": 2,
+		"Tables": [
+			{"Level": 1, "Mods": ["QuickAttacks"]},
+			{"Level": 4, "Mods": ["SpeedyAttacks","QuickAttacks"]},
+			{"Level": 8, "Mods": ["RapidAttacks", "SpeedyAttacks","QuickAttacks"]},
+		]
+	},
 }

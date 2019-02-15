@@ -104,7 +104,7 @@ void BaseVitals::ApplyHoT(double h, double ttl)
 
 void BaseVitals::UpdateHoTs(float dt)
 {
-	static StringHash LifeRegen("LifeRegen");
+	static StringHash LifeRegen("LifeRegen"), HealsPresent("HealsPresent"), Count("Count");
 	// First do life regen tick
 	auto vitalstats=GetVitalStats();
 	double regen=GetStatValue(vitalstats, "LifeRegen")*dt;
@@ -142,6 +142,10 @@ void BaseVitals::UpdateHoTs(float dt)
 		if(erase) i=hots_.erase(i);
 		else ++i;
 	}
+
+	unsigned int numhots=hots_.size();
+	vm[Count]=numhots;
+	node_->SendEvent(HealsPresent, vm);
 }
 
 void BaseVitals::ApplyDamageList(BaseVitals *attackervitals, const StatSetCollection &attackerstats, const DamageValueList &dmg, bool reflectable)
