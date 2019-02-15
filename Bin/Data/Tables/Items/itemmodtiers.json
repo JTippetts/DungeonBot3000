@@ -40,4 +40,12 @@
 		]
 	},
 
+	"FireDamageTiers": {
+		"Weighting": 2,
+		"Tables": [
+			{"Level": 1, "Mods": ["Burning"]},
+			{"Level": 4, "Mods": ["Torching","Burning"]},
+			{"Level": 8, "Mods": ["Incinerating", "Torching","Burning"]},
+		]
+	},
 }

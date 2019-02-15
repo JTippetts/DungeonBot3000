@@ -36,8 +36,13 @@ void LootDrop::HandleLifeDepleted(StringHash eventType, VariantMap &eventData)
 			if(rr<4) ir=IRUnique;
 			else if(rr<14) ir=IRRare;
 			else if(rr<64) ir=IRMagic;
+
+			int rt=roll(1,100);
+			EquipmentSlots slot=EqBlade;
+			if(rt<50) slot=EqTurret;
+
 			EquipmentItemDef def;
-			if(pd->GenerateRandomItem(def, EqBlade, ir, pd->GetDungeonLevel())) pd->DropItem(def, node_->GetPosition(), node_->GetPosition()+Vector3(rollf(-5.0,5.0), 0, rollf(-5.0,5.0)));
+			if(pd->GenerateRandomItem(def, slot, ir, pd->GetDungeonLevel())) pd->DropItem(def, node_->GetPosition(), node_->GetPosition()+Vector3(rollf(-5.0,5.0), 0, rollf(-5.0,5.0)));
 		}
 	}
 }

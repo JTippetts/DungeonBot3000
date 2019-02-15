@@ -62,6 +62,18 @@
 		"Leech": [["Flat", "0.5"]],
 	}],
 
+	"Burning": ["Global", "Increase Fire damage by 20%.", {
+		"FireDamate": [["Mult", "0.2"]]
+	}],
+
+	"Torching": ["Global", "Increase Fire damage by 40%.", {
+		"FireDamate": [["Mult", "0.4"]]
+	}],
+
+	"Incinerating": ["Global", "Increase Fire damage by 40%.", {
+		"FireDamate": [["Mult", "0.4"]]
+	}],
+
 	"Fiery": ["Local", "Convert 50% of physical damage to fire.", {
 		"PhysicalAsFire": [["Flat", "0.5"]]
 	}],
@@ -93,5 +105,25 @@
 	"InfernalBladeBurnImplicit":["Implicit", "Fire Damage: 20 to 50", {
 		"BurnLow": [["Flat", "20"]],
 		"BurnHigh": [["Flat", "50"]]
+	}],
+
+	"StarterLaserImplicit":["Implicit", "Fire Damage: 2 to 4", {
+		"FireLow": [["Flat", "2"]],
+		"FireHigh": [["Flat", "4"]]
+	}],
+
+	"SmallLaserImplicit":["Implicit", "Fire Damage: 3 to 6", {
+		"FireLow": [["Flat", "3"]],
+		"FireHigh": [["Flat", "6"]]
+	}],
+
+	"MediumLaserImplicit":["Implicit", "Fire Damage: 4 to 8", {
+		"FireLow": [["Flat", "4"]],
+		"FireHigh": [["Flat", "8"]]
+	}],
+
+	"LargeLaserImplicit":["Implicit", "Fire Damage: 8 to 16", {
+		"FireLow": [["Flat", "8"]],
+		"FireHigh": [["Flat", "16"]]
 	}],
 }

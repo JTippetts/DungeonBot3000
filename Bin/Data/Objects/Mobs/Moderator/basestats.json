@@ -1,10 +1,10 @@
 {
-	"MaximumLife": [["Flat", "150+Level*5"]],
+	"MaximumLife": [["Flat", "250+Level*5"]],
 	"LifeRegen": [["Flat", "0.05"]],
 	"MovementSpeed": [["Flat", "30.0"]],
 	"AttackSpeed": [["Flat", "2.0"], ["Mult", "IncreasedAttackSpeed"]],
-	"PhysicalLow": [["Flat", "6+Level*1"]],
-	"PhysicalHigh": [["Flat", "12+Level*2"]],
-	"BurnLow": [["Flat", "5+Level*1"]],
-	"BurnHigh": [["Flat", "10+Level*2"]],
+	"PhysicalLow": [["Flat", "6+Level*4"]],
+	"PhysicalHigh": [["Flat", "12+Level*6"]],
+	"BurnLow": [["Flat", "5+Level*2"]],
+	"BurnHigh": [["Flat", "10+Level*3"]],
 }

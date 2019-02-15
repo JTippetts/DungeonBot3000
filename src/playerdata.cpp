@@ -260,8 +260,10 @@ void PlayerData::NewPlayer()
 	LoadBaseStats("Tables/Player/base.json");
 	LoadSkillStats("Tables/Skills/skillstats.json");
 	LoadItemClass(EqBlade, "Tables/Items/blades.json");
+	LoadItemClass(EqTurret, "Tables/Items/lasers.json");
 
 	EquipItem(EquipmentItemDef(EqBlade, IRNormal, "Starter Blade", "", "", {"StarterBladeImplicit"}), false);
+	EquipItem(EquipmentItemDef(EqTurret, IRNormal, "Starter Laser", "", "", {"StarterLaserImplicit"}), false);
 }
 
 void PlayerData::SpawnPlayer(Scene *scene, Vector3 location)

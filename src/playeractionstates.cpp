@@ -124,14 +124,14 @@ CombatActionState *CASPlayerIdle::Update(CombatController *actor, float dt)
 		{
 			case PASpinAttack:
 			{
-				auto stats=pd->GetStatSetCollection(EqNumEquipmentSlots, "SpinAttack");
+				auto stats=pd->GetStatSetCollection(EqBlade, "SpinAttack");
 				double energycost=GetStatValue(stats, "EnergyCost");
 				double energy=pd->GetEnergy();
 				if(energy>=energycost) return actor->GetState<CASPlayerSpinAttack>();
 			} break;
 			case PALaserBeam:
 			{
-				auto stats=pd->GetStatSetCollection(EqNumEquipmentSlots, "LaserBeam");
+				auto stats=pd->GetStatSetCollection(EqTurret, "LaserBeam");
 				double energycost=GetStatValue(stats, "EnergyCost");
 				double energy=pd->GetEnergy();
 				if(energy>=energycost) return actor->GetState<CASPlayerLaserBeam>();
@@ -235,14 +235,14 @@ CombatActionState *CASPlayerMove::Update(CombatController *actor, float dt)
 		{
 			case PASpinAttack:
 			{
-				auto stats=pd->GetStatSetCollection(EqNumEquipmentSlots, "SpinAttack");
+				auto stats=pd->GetStatSetCollection(EqBlade, "SpinAttack");
 				double energycost=GetStatValue(stats, "EnergyCost");
 				double energy=pd->GetEnergy();
 				if(energy>=energycost) return actor->GetState<CASPlayerSpinAttack>();
 			} break;
 			case PALaserBeam:
 			{
-				auto stats=pd->GetStatSetCollection(EqNumEquipmentSlots, "LaserBeam");
+				auto stats=pd->GetStatSetCollection(EqTurret, "LaserBeam");
 				double energycost=GetStatValue(stats, "EnergyCost");
 				double energy=pd->GetEnergy();
 				if(energy>=energycost) return actor->GetState<CASPlayerLaserBeam>();
@@ -345,14 +345,14 @@ CombatActionState *CASPlayerLoot::Update(CombatController *actor, float dt)
 		{
 			case PASpinAttack:
 			{
-				auto stats=pd->GetStatSetCollection(EqNumEquipmentSlots, "SpinAttack");
+				auto stats=pd->GetStatSetCollection(EqBlade, "SpinAttack");
 				double energycost=GetStatValue(stats, "EnergyCost");
 				double energy=pd->GetEnergy();
 				if(energy>=energycost) return actor->GetState<CASPlayerSpinAttack>();
 			} break;
 			case PALaserBeam:
 			{
-				auto stats=pd->GetStatSetCollection(EqNumEquipmentSlots, "LaserBeam");
+				auto stats=pd->GetStatSetCollection(EqTurret, "LaserBeam");
 				double energycost=GetStatValue(stats, "EnergyCost");
 				double energy=pd->GetEnergy();
 				if(energy>=energycost) return actor->GetState<CASPlayerLaserBeam>();
@@ -485,14 +485,14 @@ CombatActionState *CASPlayerStairs::Update(CombatController *actor, float dt)
 		{
 			case PASpinAttack:
 			{
-				auto stats=pd->GetStatSetCollection(EqNumEquipmentSlots, "SpinAttack");
+				auto stats=pd->GetStatSetCollection(EqBlade, "SpinAttack");
 				double energycost=GetStatValue(stats, "EnergyCost");
 				double energy=pd->GetEnergy();
 				if(energy>=energycost) return actor->GetState<CASPlayerSpinAttack>();
 			} break;
 			case PALaserBeam:
 			{
-				auto stats=pd->GetStatSetCollection(EqNumEquipmentSlots, "LaserBeam");
+				auto stats=pd->GetStatSetCollection(EqTurret, "LaserBeam");
 				double energycost=GetStatValue(stats, "EnergyCost");
 				double energy=pd->GetEnergy();
 				if(energy>=energycost) return actor->GetState<CASPlayerLaserBeam>();

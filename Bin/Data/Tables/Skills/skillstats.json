@@ -8,8 +8,8 @@
 	},
 
 	"LaserBeam": {
-		"FireLow": [["Flat", "2+LaserBeamLevel*5"], ["Scale", "LaserBeamPhase*0.2"]],
-		"FireHigh": [["Flat", "3+LaserBeamLevel*8"], ["Scale", "LaserBeamPhase*0.2"]],
+		"FireLow": [["Scale", "LaserBeamPhase*0.2"]],
+		"FireHigh": [["Scale", "LaserBeamPhase*0.2"]],
 		"FireAsExtraBurn": [["Flat", "1.0"]],
 		"MaxLaserBeamPhases": [["Flat", "8"]],
 		"LaserBeamInterval": [["Flat", "0.125*(1.0-IncreasedAttackSpeed)"]],
