@@ -49,6 +49,6 @@
 	</component>
 	<component type="LootDrop" >
 		<attribute name="Max Items" value="1" />
-		<attribute name="Drop Chance" value="50" />
+		<attribute name="Drop Chance" value="20" />
 	</component>
 </node>

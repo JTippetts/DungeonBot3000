@@ -71,6 +71,11 @@ class PlayerData : public Object
 	void SetAttack(PlayerAttack a){currentattack_=a;}
 
 	bool GenerateRandomItem(EquipmentItemDef &item, EquipmentSlots slot, ItemRarity rarity, int level);
+	EquipmentItemDef *GetEquipmentSlot(EquipmentSlots slot)
+	{
+		if(slot==EqNumEquipmentSlots) return nullptr;
+		return &equipment_[slot];
+	}
 
 	unsigned int GetDungeonLevel(){return dungeonlevel_;}
 	void SetDungeonLevel(unsigned int l){dungeonlevel_=l;}

@@ -39,10 +39,10 @@ enum ItemRarity
 struct EquipmentItemDef
 {
 	EquipmentItemDef() : slot_(EqNumEquipmentSlots){}
-	EquipmentItemDef(int slot, ItemRarity rarity, String name, String dropobject, String object, const std::vector<String> &mods) : slot_(slot), rarity_(rarity), name_(name),
+	EquipmentItemDef(EquipmentSlots slot, ItemRarity rarity, String name, String dropobject, String object, const std::vector<String> &mods) : slot_(slot), rarity_(rarity), name_(name),
 		dropobjectpath_(dropobject), objectpath_(object), itemmods_(mods){}
 
-	int slot_;                    // Slot type
+	EquipmentSlots slot_;                    // Slot type
 	ItemRarity rarity_;
 	String name_;
 	String dropobjectpath_;

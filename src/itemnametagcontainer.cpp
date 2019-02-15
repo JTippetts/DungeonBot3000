@@ -51,6 +51,7 @@ void ItemNameTagContainer::DoItemHover()
 	if(!tag)
 	{
 		if(itemdesc_) itemdesc_->SetVisible(false);
+		if(equippeddesc_) equippeddesc_->SetVisible(false);
 		return;
 	}
 
@@ -72,6 +73,14 @@ void ItemNameTagContainer::DoItemHover()
 		ui->GetRoot()->AddChild(itemdesc_);
 	}
 
+	if(!equippeddesc_)
+	{
+		equippeddesc_=ui->LoadLayout(cache->GetResource<XMLFile>("UI/ItemDescriptionBox.xml"));
+		ui->GetRoot()->AddChild(equippeddesc_);
+		Text *title=dynamic_cast<Text *>(equippeddesc_->GetChild("Title", true));
+		if(title) title->SetText("Equipped Item");
+	}
+
 	String eqslot;
 	switch(def.slot_)
 	{
@@ -87,7 +96,7 @@ void ItemNameTagContainer::DoItemHover()
 	auto modlist=itemdesc_->GetChild("ModList", true);
 	modlist->RemoveAllChildren();
 
-	auto AddItem=[modlist, cache](const String &item)
+	auto AddItem=[cache](const String &item, UIElement *modlist)
 	{
 		auto txt = modlist->CreateChild<Text>();
 		txt->SetTextAlignment(HA_CENTER);
@@ -96,17 +105,36 @@ void ItemNameTagContainer::DoItemHover()
 		txt->SetText(item);
 	};
 
-	AddItem(eqslot);
+	AddItem(eqslot,modlist);
 
 	for(auto md : def.itemmods_)
 	{
 		auto entry = modtable.GetMod(md);
 		if(entry)
 		{
-			AddItem(entry->desc_);
+			AddItem(entry->desc_,modlist);
 		}
 	}
 
 	itemdesc_->SetPosition(IntVector2(graphics->GetWidth()-itemdesc_->GetWidth(), graphics->GetHeight()/2 - itemdesc_->GetHeight()/2));
 	itemdesc_->SetVisible(true);
+
+	// Equipped item
+	EquipmentItemDef *eqdef=pd->GetEquipmentSlot(def.slot_);
+	if(eqdef)
+	{
+		modlist=equippeddesc_->GetChild("ModList", true);
+		modlist->RemoveAllChildren();
+		AddItem(eqslot,modlist);
+		for(auto md : eqdef->itemmods_)
+		{
+			auto entry = modtable.GetMod(md);
+			if(entry)
+			{
+				AddItem(entry->desc_,modlist);
+			}
+		}
+		equippeddesc_->SetPosition(IntVector2(0, graphics->GetHeight()/2 - equippeddesc_->GetHeight()/2));
+		equippeddesc_->SetVisible(true);
+	}
 }

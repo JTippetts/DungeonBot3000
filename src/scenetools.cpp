@@ -73,7 +73,7 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 {
 	auto cache=context->GetSubsystem<ResourceCache>();
 
-	unsigned int w=2,h=2;
+	unsigned int w=3,h=3;
 
 	SharedPtr<Scene> scene(new Scene(context));
 	scene->CreateComponent<Octree>();
