@@ -16,4 +16,19 @@
 		<attribute name="Image Rect" value="0 0 256 256" />
 		<attribute name="Blend Mode" value="alpha" />
 	</element>
+	<element type="Text">
+		<attribute name="Name" value="Health" />
+		<attribute name="Size" value="256 15" />
+		<attribute name="Min Size" value="256 15" />
+		<attribute name="Max Size" value="256 15" />
+		<attribute name="Pivot" value="0 0" />
+		<attribute name="Top Left Color" value="0.85 0.85 0.85 1" />
+		<attribute name="Top Right Color" value="0.85 0.85 0.85 1" />
+		<attribute name="Bottom Left Color" value="0.85 0.85 0.85 1" />
+		<attribute name="Bottom Right Color" value="0.85 0.85 0.85 1" />
+		<attribute name="Text" value="100/100" />
+		<attribute name="Text Alignment" value="Center" />
+		<attribute name="Font" value="Font;Fonts/Anonymous Pro.ttf" />
+		<attribute name="Font Size" value="16" />
+	</element>
 </element>

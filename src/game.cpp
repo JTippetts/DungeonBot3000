@@ -152,6 +152,7 @@ void Game::Start()
 	cursor->SetVisible(true);
 	cursor->SetPosition(ui->GetRoot()->GetWidth()/2, ui->GetRoot()->GetHeight()/2);
 
+	#if 0
 	auto scene=CreateLevel(context_, "Areas/test", 1, 0);
 	gamestate->SetState(scene);
 	if(pd)
@@ -159,6 +160,10 @@ void Game::Start()
 		pd->NewPlayer();
 		pd->SetDungeonLevel(1);
 	}
+	#else
+	auto scene=CreateMainMenu(context_);
+	gamestate->SetState(scene);
+	#endif
 	Log::Write(LOG_INFO, String("hoverable hash:") + String(StringHash("hoverable")));
 }
 

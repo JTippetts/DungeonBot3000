@@ -1,4 +1,5 @@
 Build/
+BuildVS/
 Bin/*.png
 Bin/*.dll
 Bin/*.chm

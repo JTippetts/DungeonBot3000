@@ -104,8 +104,11 @@ void LifeBubbleUI::Update(float dt)
 	if(vitals)
 	{
 		float cl=(float)vitals->GetCurrentLife() / (float)vitals->GetMaximumLife();
-
 		healthmat_->SetShaderParameter("Level", Variant(cl));
+		Text *health=dynamic_cast<Text*>(element_->GetChild("Health", true));
+		health->SetText(String((int)vitals->GetCurrentLife()) + "/" + String((int)vitals->GetMaximumLife()));
+		Color col = Color(1.0,0.5,0.5).Lerp(Color(0.5,0.5,1.0), cl);
+		health->SetColor(col);
 	}
 
 	auto pd=GetSubsystem<PlayerData>();

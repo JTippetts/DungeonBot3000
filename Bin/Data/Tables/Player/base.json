@@ -1,10 +1,7 @@
 {
-	"MaximumLife": [["Flat", "15000+Level*5"]],
-	"Energy": [["Flat", "100"]],
+	"MaximumLife": [["Flat", "100+Level*5"]],
 	"LifeRegen": [["Flat", "0.01"]],
 	"EnergyGen": [["Flat", "1"]],
-	"IncreasedHealingTaken": [["Flat", "0.25"]],
-	"PhysicalAsElectrical": [["Flat", "0.5"]],
 	"MovementSpeed": [["Flat", "30.0"]],
 	"AttackSpeed": [["Flat", "0"], ["Mult", "IncreasedAttackSpeed"]],
 	"SpinAttackLevel": [["Flat", "1"]],

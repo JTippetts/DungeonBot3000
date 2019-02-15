@@ -2,6 +2,7 @@
 #include "jsonutil.h"
 #include <stack>
 #include <string>
+#include <vector>
 #include <functional>
 #include <Urho3D/IO/Log.h>
 #include <Urho3D/Container/Str.h>
@@ -366,16 +367,17 @@ double EvaluateStatMod(const StatSetCollection &stats, const StatModifier &mod)
 			if(fi != modfuncs.end())
 			{
 				auto &fn = (*fi).second;
-				const int numargs=fn.numargs_;
+				int numargs=fn.numargs_;
 				if(numargs>0)
 				{
-					double ar[numargs];
+					//double ar[numargs];
+					std::vector<double> ar(numargs);
 					for(unsigned int m=0; m<numargs; ++m)
 					{
 						ar[(numargs-1)-m]=stk.top();
 						stk.pop();
 					}
-					stk.push(fn.func_(ar,numargs));
+					stk.push(fn.func_(&ar[0],numargs));
 				}
 				else
 				{

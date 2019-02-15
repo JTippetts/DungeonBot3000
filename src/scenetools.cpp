@@ -49,6 +49,7 @@
 #include "Components/hoverhandler.h"
 #include "Components/levelchanger.h"
 #include "Components/vitals.h"
+#include "Components/mainmenu.h"
 
 using namespace Urho3D;
 
@@ -274,5 +275,39 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 	}
 
 	scene->SetUpdateEnabled(false);
+	return scene;
+}
+
+
+SharedPtr<Scene> CreateMainMenu(Context *context)
+{
+	auto cache=context->GetSubsystem<ResourceCache>();
+
+	unsigned int w=3,h=3;
+
+	SharedPtr<Scene> scene(new Scene(context));
+	scene->CreateComponent<Octree>();
+	auto musicsource=scene->CreateComponent<SoundSource>();
+	musicsource->SetSoundType(SOUND_MUSIC);
+	auto music=cache->GetResource<Sound>("Music/Gravity Sound - Chase CC BY 4.0_0.ogg");
+	if(music)
+	{
+		music->SetLooped(true);
+		musicsource->Play(music);
+	}
+	auto audio=context->GetSubsystem<Audio>();
+	if(audio)
+	{
+		audio->SetMasterGain(SOUND_MUSIC, 0.5);
+	}
+
+	auto mm=scene->CreateComponent<MainMenu>();
+
+	auto fader=scene->CreateComponent<SceneFader>();
+	if(fader)
+	{
+		fader->SetFadeDuration(0.5);
+		fader->SetFadeState(SceneFader::FadingIn);
+	}
 	return scene;
 }
