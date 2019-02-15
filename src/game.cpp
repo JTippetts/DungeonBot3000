@@ -215,14 +215,6 @@ void Game::HandleKeyUp(StringHash eventType, VariantMap& eventData)
            engine_->Exit();
         }
     }
-	else if (key == KEY_N)
-	{
-		auto gamestate = GetSubsystem<GameStateHandler>();
-		if(gamestate)
-		{
-			gamestate->SetState(CreateLevel(context_, "Areas/test", 1, 0));
-		}
-	}
 }
 
 void Game::HandleKeyDown(StringHash eventType, VariantMap& eventData)

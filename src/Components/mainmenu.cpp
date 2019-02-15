@@ -54,7 +54,6 @@ void MainMenu::DelayedStart()
 	element_->SetStyleAuto(cache->GetResource<XMLFile>("UI/DefaultStyle.xml"));
 
 	SubscribeToEvent(element_->GetChild("Play", true), StringHash("Pressed"), URHO3D_HANDLER(MainMenu, HandlePlay));
-	SubscribeToEvent(element_->GetChild("About",true), StringHash("Pressed"), URHO3D_HANDLER(MainMenu, HandleAbout));
 }
 
 void MainMenu::Stop()

@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<element type="Window">
+	<attribute name="Position" value="960 540" />
+	<attribute name="Size" value="238 144" />
+	<attribute name="Pivot" value="0 0" />
+	<attribute name="Layout Mode" value="Vertical" />
+	<attribute name="Image Rect" value="48 0 64 16" />
+	<attribute name="Border" value="4 4 4 4" />
+	<attribute name="Resize Border" value="8 8 8 8" />
+	<attribute name="Texture" value="Texture2D;Textures/UI.png" />
+	<element type="Text">
+		<attribute name="Pivot" value="0 0" />
+		<attribute name="Top Left Color" value="0.85 0.85 0.85 1" />
+		<attribute name="Top Right Color" value="0.85 0.85 0.85 1" />
+		<attribute name="Bottom Left Color" value="0.85 0.85 0.85 1" />
+		<attribute name="Bottom Right Color" value="0.85 0.85 0.85 1" />
+		<attribute name="Font Size" value="24" />
+		<attribute name="Text" value="You Have Died" />
+		<attribute name="Text Alignment" value="Center" />
+		<attribute name="Font" value="Font;Fonts/Anonymous Pro.ttf" />
+	</element>
+	<element>
+		<attribute name="Min Size" value="0 12" />
+		<attribute name="Max Size" value="2147483647 12" />
+		<attribute name="Pivot" value="0 0" />
+	</element>
+	<element type="Button">
+		<attribute name="Name" value="Respawn" />
+		<attribute name="Pivot" value="0 0" />
+		<attribute name="Layout Mode" value="Horizontal" />
+		<attribute name="Image Rect" value="16 0 32 16" />
+		<attribute name="Border" value="4 4 4 4" />
+		<attribute name="Hover Image Offset" value="0 16" />
+		<attribute name="Pressed Image Offset" value="16 0" />
+		<attribute name="Pressed Child Offset" value="-1 1" />
+		<attribute name="Texture" value="Texture2D;Textures/UI.png" />
+		<element type="Text">
+			<attribute name="Pivot" value="0 0" />
+			<attribute name="Top Left Color" value="0.85 0.85 0.85 1" />
+			<attribute name="Top Right Color" value="0.85 0.85 0.85 1" />
+			<attribute name="Bottom Left Color" value="0.85 0.85 0.85 1" />
+			<attribute name="Bottom Right Color" value="0.85 0.85 0.85 1" />
+			<attribute name="Font Size" value="24" />
+			<attribute name="Text" value="Respawn" />
+			<attribute name="Text Alignment" value="Center" />
+			<attribute name="Font" value="Font;Fonts/Anonymous Pro.ttf" />
+		</element>
+	</element>
+	<element type="Button">
+		<attribute name="Name" value="Return" />
+		<attribute name="Pivot" value="0 0" />
+		<attribute name="Layout Mode" value="Horizontal" />
+		<attribute name="Image Rect" value="16 0 32 16" />
+		<attribute name="Border" value="4 4 4 4" />
+		<attribute name="Hover Image Offset" value="0 16" />
+		<attribute name="Pressed Image Offset" value="16 0" />
+		<attribute name="Pressed Child Offset" value="-1 1" />
+		<attribute name="Texture" value="Texture2D;Textures/UI.png" />
+		<element type="Text">
+			<attribute name="Pivot" value="0 0" />
+			<attribute name="Top Left Color" value="0.85 0.85 0.85 1" />
+			<attribute name="Top Right Color" value="0.85 0.85 0.85 1" />
+			<attribute name="Bottom Left Color" value="0.85 0.85 0.85 1" />
+			<attribute name="Bottom Right Color" value="0.85 0.85 0.85 1" />
+			<attribute name="Font Size" value="24" />
+			<attribute name="Text" value="Return to Menu" />
+			<attribute name="Text Alignment" value="Center" />
+			<attribute name="Font" value="Font;Fonts/Anonymous Pro.ttf" />
+		</element>
+	</element>
+	<element type="Button">
+		<attribute name="Name" value="Exit" />
+		<attribute name="Pivot" value="0 0" />
+		<attribute name="Layout Mode" value="Horizontal" />
+		<attribute name="Image Rect" value="16 0 32 16" />
+		<attribute name="Border" value="4 4 4 4" />
+		<attribute name="Hover Image Offset" value="0 16" />
+		<attribute name="Pressed Image Offset" value="16 0" />
+		<attribute name="Pressed Child Offset" value="-1 1" />
+		<attribute name="Texture" value="Texture2D;Textures/UI.png" />
+		<element type="Text">
+			<attribute name="Pivot" value="0 0" />
+			<attribute name="Top Left Color" value="0.85 0.85 0.85 1" />
+			<attribute name="Top Right Color" value="0.85 0.85 0.85 1" />
+			<attribute name="Bottom Left Color" value="0.85 0.85 0.85 1" />
+			<attribute name="Bottom Right Color" value="0.85 0.85 0.85 1" />
+			<attribute name="Font Size" value="24" />
+			<attribute name="Text" value="Exit Game" />
+			<attribute name="Text Alignment" value="Center" />
+			<attribute name="Font" value="Font;Fonts/Anonymous Pro.ttf" />
+		</element>
+	</element>
+</element>

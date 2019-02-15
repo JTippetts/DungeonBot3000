@@ -24,6 +24,7 @@
 #include "Components/weaponequipper.h"
 #include "Components/mobnamer.h"
 #include "Components/mainmenu.h"
+#include "Components/playerdeath.h"
 
 #include "Enemies/jbadams.h"
 #include "Enemies/khawk.h"
@@ -55,6 +56,7 @@ void RegisterCustomComponents(Context *context)
 	WeaponEquipper::RegisterObject(context);
 	MobNamer::RegisterObject(context);
 	MainMenu::RegisterObject(context);
+	PlayerDeath::RegisterObject(context);
 
 	context->RegisterFactory<CASPlayerIdle>();
 	context->RegisterFactory<CASPlayerMove>();

@@ -232,7 +232,7 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 					}
 				}
 
-				int numusers=roll(10,45);
+				int numusers=roll(4*level,10*level);
 				for(int c=0; c<numusers; ++c)
 				{
 					Vector3 pt=nav->FindNearestPoint(roomcenter+Vector3(rollf(-100.0f, 100.0f), 0.0f, rollf(-100.0f, 100.0f)), extents);

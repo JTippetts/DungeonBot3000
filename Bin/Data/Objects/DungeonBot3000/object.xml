@@ -48,6 +48,7 @@
 	</component>
 	<component type="BurnIndicator" >
 	</component>
+	<component type="PlayerDeath" />
 	<node >
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="" />

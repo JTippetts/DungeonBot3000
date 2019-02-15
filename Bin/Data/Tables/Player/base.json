@@ -1,9 +1,9 @@
 {
-	"MaximumLife": [["Flat", "100+Level*5"]],
+	"MaximumLife": [["Flat", "100+Level*10"]],
 	"LifeRegen": [["Flat", "0.01"]],
 	"EnergyGen": [["Flat", "1"]],
 	"MovementSpeed": [["Flat", "30.0"]],
 	"AttackSpeed": [["Flat", "0"], ["Mult", "IncreasedAttackSpeed"]],
-	"SpinAttackLevel": [["Flat", "1"]],
-	"LaserBeamLevel": [["Flat", "1"]],
+	"SpinAttackLevel": [["Flat", "1*Level"]],
+	"LaserBeamLevel": [["Flat", "1*Level"]],
 }
