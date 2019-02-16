@@ -40,9 +40,87 @@ Node *TopLevelNode(Drawable *d, Scene *s)
 	return n;
 }
 
+//// Base for player states
+CASPlayerBase::CASPlayerBase(Context *context) : CombatActionState(context)
+{
+}
+
+CombatActionState *CASPlayerBase::CheckInputs(CombatController *actor)
+{
+	auto input=GetSubsystem<Input>();
+	auto node=actor->GetNode();
+	auto pd=GetSubsystem<PlayerData>();
+
+	if(input->GetMouseButtonPress(MOUSEB_LEFT))
+	{
+		auto nametags=GetSubsystem<ItemNameTagContainer>();
+		if(nametags)
+		{
+			auto nametag=nametags->GetHoveredTag();
+			if(nametag)
+			{
+				auto loot=actor->GetState<CASPlayerLoot>();
+				loot->SetItem(nametag->GetNode());
+				Log::Write(LOG_INFO, "Looting...");
+				return loot;
+			}
+		}
+	}
+
+	if(input->GetMouseButtonPress(MOUSEB_RIGHT))
+	{
+		PlayerAttack a=pd->GetAttack();
+		switch(a)
+		{
+			case PASpinAttack:
+			{
+				auto stats=pd->GetStatSetCollection(EqBlade, "SpinAttack");
+				double energycost=GetStatValue(stats, "EnergyCost");
+				double energy=pd->GetEnergy();
+				if(energy>=energycost) return actor->GetState<CASPlayerSpinAttack>();
+			} break;
+			case PALaserBeam:
+			{
+				auto stats=pd->GetStatSetCollection(EqTurret, "LaserBeam");
+				double energycost=GetStatValue(stats, "EnergyCost");
+				double energy=pd->GetEnergy();
+				if(energy>=energycost) return actor->GetState<CASPlayerLaserBeam>();
+			} break;
+		};
+	}
+	else if(input->GetMouseButtonPress(MOUSEB_LEFT))
+	{
+		// Look for stairs
+		auto cam=node->GetScene()->GetChild("Camera")->GetComponent<ThirdPersonCamera>();
+		auto ray=cam->GetMouseRay();
+		auto octree=node->GetScene()->GetComponent<Octree>();
+		auto scene=node->GetScene();
+
+		PODVector<RayQueryResult> result;
+		result.Clear();
+		RayOctreeQuery query(result, ray, RAY_TRIANGLE, 300.0f, DRAWABLE_GEOMETRY);
+		octree->Raycast(query);
+		if(result.Size()>0)
+		{
+			for(unsigned int c=0; c<result.Size(); ++c)
+			{
+				Node *n = result[c].drawable_->GetNode();
+				if(n && n->GetComponent<LevelChanger>()!=nullptr)
+				{
+					CASPlayerStairs *stairs = actor->GetState<CASPlayerStairs>();
+					stairs->SetStairsNode(n);
+					return stairs;
+				}
+			}
+		}
+		// Do walk
+		return actor->GetState<CASPlayerMove>();
+	}
+	return nullptr;
+}
 
 /////// Idle
-CASPlayerIdle::CASPlayerIdle(Context *context) : CombatActionState(context)
+CASPlayerIdle::CASPlayerIdle(Context *context) : CASPlayerBase(context)
 {
 }
 
@@ -92,84 +170,7 @@ CombatActionState *CASPlayerIdle::Update(CombatController *actor, float dt)
 	auto pd=node->GetSubsystem<PlayerData>();
 
 	// Check to see if we clicked on something
-	if(input->GetMouseButtonPress(MOUSEB_LEFT))
-	{
-		auto nametags=GetSubsystem<ItemNameTagContainer>();
-		if(nametags)
-		{
-			auto nametag=nametags->GetHoveredTag();
-			if(nametag)
-			{
-				auto loot=actor->GetState<CASPlayerLoot>();
-				loot->SetItem(nametag->GetNode());
-				Log::Write(LOG_INFO, "Looting...");
-				return loot;
-			}
-			else
-			{
-				Log::Write(LOG_INFO, "No tag");
-			}
-		}
-		else
-		{
-			Log::Write(LOG_INFO, "Could not get name tag container");
-		}
-	}
-
-	if(input->GetMouseButtonPress(MOUSEB_RIGHT))
-	{
-		//return actor->GetState<CASPlayerSpinAttack>();
-		PlayerAttack a=pd->GetAttack();
-		switch(a)
-		{
-			case PASpinAttack:
-			{
-				auto stats=pd->GetStatSetCollection(EqBlade, "SpinAttack");
-				double energycost=GetStatValue(stats, "EnergyCost");
-				double energy=pd->GetEnergy();
-				if(energy>=energycost) return actor->GetState<CASPlayerSpinAttack>();
-			} break;
-			case PALaserBeam:
-			{
-				auto stats=pd->GetStatSetCollection(EqTurret, "LaserBeam");
-				double energycost=GetStatValue(stats, "EnergyCost");
-				double energy=pd->GetEnergy();
-				if(energy>=energycost) return actor->GetState<CASPlayerLaserBeam>();
-			} break;
-		};
-		//return actor->GetState<CASPlayerLaserBeam>();
-	}
-	else if(input->GetMouseButtonPress(MOUSEB_LEFT))
-	{
-		// Look for stairs
-		auto cam=node->GetScene()->GetChild("Camera")->GetComponent<ThirdPersonCamera>();
-		auto ray=cam->GetMouseRay();
-		auto octree=node->GetScene()->GetComponent<Octree>();
-		auto scene=node->GetScene();
-
-		PODVector<RayQueryResult> result;
-		result.Clear();
-		RayOctreeQuery query(result, ray, RAY_TRIANGLE, 300.0f, DRAWABLE_GEOMETRY);
-		octree->Raycast(query);
-		if(result.Size()>0)
-		{
-			for(unsigned int c=0; c<result.Size(); ++c)
-			{
-				Node *n = result[c].drawable_->GetNode();
-				if(n && n->GetComponent<LevelChanger>()!=nullptr)
-				{
-					CASPlayerStairs *stairs = actor->GetState<CASPlayerStairs>();
-					stairs->SetStairsNode(n);
-					Log::Write(LOG_INFO, "Obtained stairs.");
-					return stairs;
-				}
-			}
-		}
-		// Do walk
-		return actor->GetState<CASPlayerMove>();
-	}
-
-	return nullptr;
+	return CheckInputs(actor);
 }
 
 bool CASPlayerIdle::HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt)
@@ -185,7 +186,7 @@ bool CASPlayerIdle::HandleAgentReposition(CombatController *actor, Vector3 veloc
 }
 
 ////// PlayerMove
-CASPlayerMove::CASPlayerMove(Context *context) : CombatActionState(context)
+CASPlayerMove::CASPlayerMove(Context *context) : CASPlayerBase(context)
 {
 }
 
@@ -227,7 +228,7 @@ CombatActionState *CASPlayerMove::Update(CombatController *actor, float dt)
 	auto input=actor->GetSubsystem<Input>();
 	auto pd=actor->GetSubsystem<PlayerData>();
 
-	if(input->GetMouseButtonPress(MOUSEB_RIGHT))
+	/*if(input->GetMouseButtonPress(MOUSEB_RIGHT))
 	{
 		//return actor->GetState<CASPlayerSpinAttack>();
 		PlayerAttack a=pd->GetAttack();
@@ -249,8 +250,12 @@ CombatActionState *CASPlayerMove::Update(CombatController *actor, float dt)
 			} break;
 		};
 		//return actor->GetState<CASPlayerLaserBeam>();
+	}*/
+	auto ci=CheckInputs(actor);
+	if(ci && ci!=this)
+	{
+		return ci;
 	}
-
 	else if(input->GetMouseButtonDown(MOUSEB_LEFT))
 	{
 		auto cam=node->GetScene()->GetChild("Camera")->GetComponent<ThirdPersonCamera>();
@@ -294,7 +299,7 @@ bool CASPlayerMove::HandleAgentReposition(CombatController *actor, Vector3 veloc
 
 
 /////////// Loot
-CASPlayerLoot::CASPlayerLoot(Context *context) : CombatActionState(context)
+CASPlayerLoot::CASPlayerLoot(Context *context) : CASPlayerBase(context)
 {
 }
 
@@ -337,7 +342,7 @@ CombatActionState *CASPlayerLoot::Update(CombatController *actor, float dt)
 	if(!item_) return actor->GetState<CASPlayerIdle>();
 	auto pd=actor->GetSubsystem<PlayerData>();
 
-	if(input->GetMouseButtonPress(MOUSEB_RIGHT))
+	/*if(input->GetMouseButtonPress(MOUSEB_RIGHT))
 	{
 		//return actor->GetState<CASPlayerSpinAttack>();
 		PlayerAttack a=pd->GetAttack();
@@ -359,6 +364,11 @@ CombatActionState *CASPlayerLoot::Update(CombatController *actor, float dt)
 			} break;
 		};
 		//return actor->GetState<CASPlayerLaserBeam>();
+	}*/
+	auto ci=CheckInputs(actor);
+	if(ci)
+	{
+		return ci;
 	}
 	else if(input->GetMouseButtonDown(MOUSEB_LEFT))
 	{
@@ -423,7 +433,7 @@ bool CASPlayerLoot::HandleAgentReposition(CombatController *actor, Vector3 veloc
 
 
 //////////// Use Stairs
-CASPlayerStairs::CASPlayerStairs(Context *context) : CombatActionState(context)
+CASPlayerStairs::CASPlayerStairs(Context *context) : CASPlayerBase(context)
 {
 }
 
@@ -467,40 +477,23 @@ CombatActionState *CASPlayerStairs::Update(CombatController *actor, float dt)
 	auto pd=actor->GetSubsystem<PlayerData>();
 	auto changer=stairs_->GetComponent<LevelChanger>();
 	if(!changer) return actor->GetState<CASPlayerIdle>();
+	auto ca=node->GetComponent<CrowdAgent>();
 
 	auto delta=stairs_->GetWorldPosition()-node->GetWorldPosition();
 	float len=delta.Length();
-	if(len <= changer->GetRadius())
+	if(len <= changer->GetRadius() + ca->GetRadius())
 	{
 		// Change levels
 		changer->Use();
 		return actor->GetState<CASPlayerIdle>();
 	}
 
-	if(input->GetMouseButtonPress(MOUSEB_RIGHT))
+	auto ci=CheckInputs(actor);
+	if(ci)
 	{
-		//return actor->GetState<CASPlayerSpinAttack>();
-		PlayerAttack a=pd->GetAttack();
-		switch(a)
-		{
-			case PASpinAttack:
-			{
-				auto stats=pd->GetStatSetCollection(EqBlade, "SpinAttack");
-				double energycost=GetStatValue(stats, "EnergyCost");
-				double energy=pd->GetEnergy();
-				if(energy>=energycost) return actor->GetState<CASPlayerSpinAttack>();
-			} break;
-			case PALaserBeam:
-			{
-				auto stats=pd->GetStatSetCollection(EqTurret, "LaserBeam");
-				double energycost=GetStatValue(stats, "EnergyCost");
-				double energy=pd->GetEnergy();
-				if(energy>=energycost) return actor->GetState<CASPlayerLaserBeam>();
-			} break;
-		};
-		//return actor->GetState<CASPlayerLaserBeam>();
+		return ci;
 	}
-	else if(input->GetMouseButtonDown(MOUSEB_LEFT))
+	else
 	{
 		Vector3 ground=stairs_->GetWorldPosition();
 
@@ -511,23 +504,10 @@ CombatActionState *CASPlayerStairs::Update(CombatController *actor, float dt)
 		StatSetCollection ssc=pd->GetStatSetCollection(EqNumEquipmentSlots, "");
 		double movespeed=GetStatValue(ssc, "MovementSpeed");
 		ca->SetMaxSpeed(movespeed);
-		//Vector3 gp=nav->FindNearestPoint(Vector3(ground.x_,0,ground.y_), Vector3(10,10,10));
+		ground=nav->FindNearestPoint(ground, Vector3(40,2,40));
 		ca->SetTargetPosition(ground);
 
 		return nullptr;
-	}
-	else
-	{
-		auto ca=node->GetComponent<CrowdAgent>();
-		if(ca)
-		{
-			Vector3 vel=ca->GetActualVelocity();
-			if(vel.Length() < ca->GetRadius() + changer->GetRadius())
-			{
-				changer->Use();
-				return actor->GetState<CASPlayerIdle>();
-			}
-		}
 	}
 
 	return nullptr;
@@ -539,7 +519,7 @@ bool CASPlayerStairs::HandleAgentReposition(CombatController *actor, Vector3 vel
 }
 
 ////////////// SpinAttack
-CASPlayerSpinAttack::CASPlayerSpinAttack(Context *context) : CombatActionState(context)
+CASPlayerSpinAttack::CASPlayerSpinAttack(Context *context) : CASPlayerBase(context)
 {
 }
 
@@ -685,7 +665,7 @@ void CASPlayerSpinAttack::HandleTrigger(CombatController *actor, String animname
 }
 
 //////// Friggin laser beams
-CASPlayerLaserBeam::CASPlayerLaserBeam(Context *context) : CombatActionState(context)
+CASPlayerLaserBeam::CASPlayerLaserBeam(Context *context) : CASPlayerBase(context)
 {
 }
 

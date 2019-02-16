@@ -3,9 +3,20 @@
 #include "combatactionstates.h"
 
 // Player action states
-class CASPlayerIdle : public CombatActionState
+
+class CASPlayerBase : public CombatActionState
 {
-	URHO3D_OBJECT(CASPlayerIdle, CombatActionState);
+	URHO3D_OBJECT(CASPlayerBase, CombatActionState);
+	public:
+	CASPlayerBase(Context *context);
+
+	CombatActionState *CheckInputs(CombatController *actor);
+
+};
+
+class CASPlayerIdle : public CASPlayerBase
+{
+	URHO3D_OBJECT(CASPlayerIdle, CASPlayerBase);
 	public:
 	CASPlayerIdle(Context *context);
 	virtual void End(CombatController *actor) override;
@@ -14,9 +25,9 @@ class CASPlayerIdle : public CombatActionState
 	virtual bool HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt) override;
 };
 
-class CASPlayerMove : public CombatActionState
+class CASPlayerMove : public CASPlayerBase
 {
-	URHO3D_OBJECT(CASPlayerMove, CombatActionState);
+	URHO3D_OBJECT(CASPlayerMove, CASPlayerBase);
 	public:
 	CASPlayerMove(Context *context);
 
@@ -26,9 +37,9 @@ class CASPlayerMove : public CombatActionState
 	virtual bool HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt) override;
 };
 
-class CASPlayerLoot : public CombatActionState
+class CASPlayerLoot : public CASPlayerBase
 {
-	URHO3D_OBJECT(CASPlayerLoot, CombatActionState);
+	URHO3D_OBJECT(CASPlayerLoot, CASPlayerBase);
 	public:
 	CASPlayerLoot(Context *context);
 
@@ -46,9 +57,9 @@ class CASPlayerLoot : public CombatActionState
 	WeakPtr<Node> item_;
 };
 
-class CASPlayerStairs : public CombatActionState
+class CASPlayerStairs : public CASPlayerBase
 {
-	URHO3D_OBJECT(CASPlayerStairs, CombatActionState);
+	URHO3D_OBJECT(CASPlayerStairs, CASPlayerBase);
 	public:
 	CASPlayerStairs(Context *context);
 
@@ -63,9 +74,9 @@ class CASPlayerStairs : public CombatActionState
 	WeakPtr<Node> stairs_;
 };
 
-class CASPlayerSpinAttack : public CombatActionState
+class CASPlayerSpinAttack : public CASPlayerBase
 {
-	URHO3D_OBJECT(CASPlayerSpinAttack, CombatActionState);
+	URHO3D_OBJECT(CASPlayerSpinAttack, CASPlayerBase);
 	public:
 	CASPlayerSpinAttack(Context *context);
 
@@ -75,9 +86,9 @@ class CASPlayerSpinAttack : public CombatActionState
 	virtual void HandleTrigger(CombatController *actor, String animname, unsigned int value) override;
 };
 
-class CASPlayerLaserBeam : public CombatActionState
+class CASPlayerLaserBeam : public CASPlayerBase
 {
-	URHO3D_OBJECT(CASPlayerLaserBeam, CombatActionState);
+	URHO3D_OBJECT(CASPlayerLaserBeam, CASPlayerBase);
 	public:
 	CASPlayerLaserBeam(Context *context);
 	virtual void Start(CombatController *actor) override;

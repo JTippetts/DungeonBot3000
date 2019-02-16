@@ -1,5 +1,5 @@
 {
-	"MaximumLife": [["Flat", "100+Level*10"]],
+	"MaximumLife": [["Flat", "10000+Level*10"]],
 	"LifeRegen": [["Flat", "0.01"]],
 	"EnergyGen": [["Flat", "1"]],
 	"MovementSpeed": [["Flat", "30.0"]],

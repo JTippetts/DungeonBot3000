@@ -100,6 +100,14 @@ void LifeBubbleUI::DelayedStart()
 	help_=ui->LoadLayout(cache->GetResource<XMLFile>("UI/Help.xml"));
 	ui->GetRoot()->AddChild(help_);
 	help_->SetPosition(IntVector2(graphics->GetWidth()-help_->GetWidth(), graphics->GetHeight()-help_->GetHeight()));
+
+	levelelement_=new Text(context_);
+	levelelement_->SetFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"));
+	levelelement_->SetFontSize(24);
+	levelelement_->SetText(String("Dungeon Level ") + String((int)pd->GetDungeonLevel()));
+	levelelement_->SetColor(Color(0.25,1.0,0.75));
+	levelelement_->SetPosition(IntVector2(0, 0));
+	ui->GetRoot()->AddChild(levelelement_);
 }
 
 void LifeBubbleUI::Update(float dt)
@@ -144,5 +152,6 @@ SharedPtr<Scene> rttscene_;
 
 	energyelement_->Remove();
 	help_->Remove();
+	levelelement_->Remove();
 	Log::Write(LOG_INFO, "Stopping bubble");
 }

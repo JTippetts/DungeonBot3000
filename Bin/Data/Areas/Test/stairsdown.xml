@@ -14,6 +14,6 @@
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 	<component type="LevelChanger">
-		<attribute name="Radius" value="8" />
+		<attribute name="Radius" value="16" />
 	</component>
 </node>
