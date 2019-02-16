@@ -25,8 +25,9 @@ void MainMenu::HandlePlay(StringHash eventType, VariantMap &eventData)
 	auto pd=GetSubsystem<PlayerData>();
 	auto gamestate=GetSubsystem<GameStateHandler>();
 
-	auto scene=CreateLevel(context_, "Areas/Test", 1, 0);
-	gamestate->SetState(scene);
+	//auto scene=CreateLevel(context_, "Areas/Test", 1, 0);
+	//gamestate->SetState(scene);
+	gamestate->SwitchToLevel(1,0);
 	pd->NewPlayer();
 	pd->SetDungeonLevel(1);
 

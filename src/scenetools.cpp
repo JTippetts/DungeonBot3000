@@ -252,12 +252,12 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 		}
 	}
 
-	auto fader=scene->CreateComponent<SceneFader>();
+	/*auto fader=scene->CreateComponent<SceneFader>();
 	if(fader)
 	{
 		fader->SetFadeDuration(0.5);
 		fader->SetFadeState(SceneFader::FadingIn);
-	}
+	}*/
 
 	auto pd=scene->GetSubsystem<PlayerData>();
 	if(pd)
@@ -277,7 +277,7 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 		}
 	}
 
-	scene->SetUpdateEnabled(false);
+	//scene->SetUpdateEnabled(false);
 	return scene;
 }
 
@@ -306,11 +306,11 @@ SharedPtr<Scene> CreateMainMenu(Context *context)
 
 	auto mm=scene->CreateComponent<MainMenu>();
 
-	auto fader=scene->CreateComponent<SceneFader>();
+	/*auto fader=scene->CreateComponent<SceneFader>();
 	if(fader)
 	{
 		fader->SetFadeDuration(0.5);
 		fader->SetFadeState(SceneFader::FadingIn);
-	}
+	}*/
 	return scene;
 }

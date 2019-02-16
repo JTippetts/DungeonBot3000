@@ -161,8 +161,9 @@ void Game::Start()
 		pd->SetDungeonLevel(1);
 	}
 	#else
-	auto scene=CreateMainMenu(context_);
-	gamestate->SetState(scene);
+	//auto scene=CreateMainMenu(context_);
+	//gamestate->SetState(scene);
+	gamestate->SwitchToMenu();
 	#endif
 	Log::Write(LOG_INFO, String("hoverable hash:") + String(StringHash("hoverable")));
 }

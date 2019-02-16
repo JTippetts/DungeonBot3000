@@ -70,7 +70,6 @@ CombatActionState *CASPlayerBase::CheckInputs(CombatController *actor)
 			{
 				auto loot=actor->GetState<CASPlayerLoot>();
 				loot->SetItem(nametag->GetNode());
-				Log::Write(LOG_INFO, "Looting...");
 				return loot;
 			}
 		}
@@ -265,29 +264,7 @@ CombatActionState *CASPlayerMove::Update(CombatController *actor, float dt)
 	auto input=actor->GetSubsystem<Input>();
 	auto pd=actor->GetSubsystem<PlayerData>();
 
-	/*if(input->GetMouseButtonPress(MOUSEB_RIGHT))
-	{
-		//return actor->GetState<CASPlayerSpinAttack>();
-		PlayerAttack a=pd->GetAttack();
-		switch(a)
-		{
-			case PASpinAttack:
-			{
-				auto stats=pd->GetStatSetCollection(EqBlade, "SpinAttack");
-				double energycost=GetStatValue(stats, "EnergyCost");
-				double energy=pd->GetEnergy();
-				if(energy>=energycost) return actor->GetState<CASPlayerSpinAttack>();
-			} break;
-			case PALaserBeam:
-			{
-				auto stats=pd->GetStatSetCollection(EqTurret, "LaserBeam");
-				double energycost=GetStatValue(stats, "EnergyCost");
-				double energy=pd->GetEnergy();
-				if(energy>=energycost) return actor->GetState<CASPlayerLaserBeam>();
-			} break;
-		};
-		//return actor->GetState<CASPlayerLaserBeam>();
-	}*/
+
 	auto ci=CheckInputs(actor);
 	if(ci && ci!=this)
 	{
@@ -295,6 +272,14 @@ CombatActionState *CASPlayerMove::Update(CombatController *actor, float dt)
 	}
 	else if(input->GetMouseButtonDown(MOUSEB_LEFT))
 	{
+		auto vitals=node->GetComponent<PlayerVitals>();
+		if(vitals)
+		{
+			if(vitals->GetCurrentLife()<=0)
+			{
+				return actor->GetState<CASPlayerDead>();
+			}
+		}
 		auto cam=node->GetScene()->GetChild("Camera")->GetComponent<ThirdPersonCamera>();
 		IntVector2 mousepos;
 		if(input->IsMouseVisible()) mousepos=input->GetMousePosition();
@@ -315,6 +300,14 @@ CombatActionState *CASPlayerMove::Update(CombatController *actor, float dt)
 	}
 	else
 	{
+		auto vitals=node->GetComponent<PlayerVitals>();
+		if(vitals)
+		{
+			if(vitals->GetCurrentLife()<=0)
+			{
+				return actor->GetState<CASPlayerDead>();
+			}
+		}
 		auto ca=node->GetComponent<CrowdAgent>();
 		if(ca)
 		{
@@ -379,29 +372,7 @@ CombatActionState *CASPlayerLoot::Update(CombatController *actor, float dt)
 	if(!item_) return actor->GetState<CASPlayerIdle>();
 	auto pd=actor->GetSubsystem<PlayerData>();
 
-	/*if(input->GetMouseButtonPress(MOUSEB_RIGHT))
-	{
-		//return actor->GetState<CASPlayerSpinAttack>();
-		PlayerAttack a=pd->GetAttack();
-		switch(a)
-		{
-			case PASpinAttack:
-			{
-				auto stats=pd->GetStatSetCollection(EqBlade, "SpinAttack");
-				double energycost=GetStatValue(stats, "EnergyCost");
-				double energy=pd->GetEnergy();
-				if(energy>=energycost) return actor->GetState<CASPlayerSpinAttack>();
-			} break;
-			case PALaserBeam:
-			{
-				auto stats=pd->GetStatSetCollection(EqTurret, "LaserBeam");
-				double energycost=GetStatValue(stats, "EnergyCost");
-				double energy=pd->GetEnergy();
-				if(energy>=energycost) return actor->GetState<CASPlayerLaserBeam>();
-			} break;
-		};
-		//return actor->GetState<CASPlayerLaserBeam>();
-	}*/
+
 	auto ci=CheckInputs(actor);
 	if(ci)
 	{
@@ -416,11 +387,9 @@ CombatActionState *CASPlayerLoot::Update(CombatController *actor, float dt)
 		auto ca=node->GetComponent<CrowdAgent>();
 
 		Vector3 delta=ground-node->GetWorldPosition();
-		Log::Write(LOG_INFO, String("Distance to loot: ") + String(delta.Length()));
 		if(delta.Length() < ca->GetRadius())
 		{
 			// At item, loot it
-			Log::Write(LOG_INFO, "Loot!!");
 			auto itemdrop = item_->GetComponent<DropItemContainer>();
 			if(itemdrop)
 			{
@@ -447,7 +416,6 @@ CombatActionState *CASPlayerLoot::Update(CombatController *actor, float dt)
 			Vector3 vel=ca->GetActualVelocity();
 			if(vel.Length() < ca->GetRadius())
 			{
-				Log::Write(LOG_INFO, "Loot it now!!!");
 				auto itemdrop = item_->GetComponent<DropItemContainer>();
 				if(itemdrop)
 				{
@@ -515,6 +483,15 @@ CombatActionState *CASPlayerStairs::Update(CombatController *actor, float dt)
 	auto changer=stairs_->GetComponent<LevelChanger>();
 	if(!changer) return actor->GetState<CASPlayerIdle>();
 	auto ca=node->GetComponent<CrowdAgent>();
+
+	auto vitals=node->GetComponent<PlayerVitals>();
+	if(vitals)
+	{
+		if(vitals->GetCurrentLife()<=0)
+		{
+			return actor->GetState<CASPlayerDead>();
+		}
+	}
 
 	auto delta=stairs_->GetWorldPosition()-node->GetWorldPosition();
 	float len=delta.Length();
@@ -584,7 +561,6 @@ void CASPlayerSpinAttack::Start(CombatController *actor)
 		if (snd_)
 		{
 
-			Log::Write(LOG_INFO, String("Sound freq: ") + String(snd_->GetFrequency()) + String("16: ") + String(snd_->IsSixteenBit()) + String(" stereo:") + String(snd_->IsStereo()));
 			snd_->SetLooped(true);
 			swing_->Play(snd_);
 			swing_->SetGain(0.75f);
@@ -735,7 +711,6 @@ CASPlayerLaserBeam::CASPlayerLaserBeam(Context *context) : CASPlayerBase(context
 
 void CASPlayerLaserBeam::Start(CombatController *actor)
 {
-	Log::Write(LOG_INFO, "Start laserbeam");
 	auto node = actor->GetNode();
 	auto ac = node->GetComponent<AnimationController>();
 	auto scene = node->GetScene();
@@ -865,9 +840,6 @@ CombatActionState *CASPlayerLaserBeam::Update(CombatController *actor, float dt)
 	ssc.push_back(&phases);
 	phase_ += dt;
 
-	//Log::Write(LOG_INFO, String("Phase: ") + String(p) + " Interval: " + String(interval));
-
-	//if(input->GetKeyDown(KEY_Q))
 	if(input->GetMouseButtonDown(MOUSEB_RIGHT))
 	{
 		double energy=pd->GetEnergy();

@@ -356,12 +356,10 @@ void CASEnemyKick::Start(CombatController *actor)
 		auto ac=node->GetComponent<AnimationController>();
 		if(ac)
 		{
-			//Log::Write(LOG_INFO, "1");
 			ac->Play(actor->GetAnimPath() + "/Models/Kick.ani", 0, false, 0.1f);
 			auto vitals=node->GetComponent<EnemyVitals>();
 			if(vitals)
 			{
-				//Log::Write(LOG_INFO, "2");
 				auto ssc=vitals->GetVitalStats();
 				float attackspeed=std::max(0.01, GetStatValue(ssc, "AttackSpeed"));
 				ac->SetSpeed(actor->GetAnimPath() + "/Models/Kick.ani", attackspeed);
@@ -486,7 +484,6 @@ void CASEnemyAttack::Start(CombatController *actor)
 				StatSetCollection ssc=vitals->GetVitalStats();
 				ssc.push_back(&attackstats_);
 				float attackspeed=std::max(0.01, GetStatValue(ssc, "AttackSpeed"));
-				Log::Write(LOG_INFO, String("Attack speed: ") + String(attackspeed));
 				ac->SetSpeed(actor->GetAnimPath() + animation_, attackspeed);
 			}
 		}
@@ -609,7 +606,6 @@ void CASEnemyAttackPosition::Start(CombatController *actor)
 				StatSetCollection ssc=vitals->GetVitalStats();
 				ssc.push_back(&attackstats_);
 				float attackspeed=std::max(0.01, GetStatValue(ssc, "AttackSpeed"));
-				Log::Write(LOG_INFO, String("Attack speed: ") + String(attackspeed));
 				ac->SetSpeed(actor->GetAnimPath() + animation_, attackspeed);
 			}
 		}

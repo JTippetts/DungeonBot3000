@@ -96,12 +96,10 @@ void CASKHawkEnemyShootFire::Start(CombatController *actor)
 		auto ac=node->GetComponent<AnimationController>();
 		if(ac)
 		{
-			//Log::Write(LOG_INFO, "1");
 			ac->Play(actor->GetAnimPath() + "/Models/Launch.ani", 0, true, 0.1f);
 
 			if(vitals)
 			{
-				//Log::Write(LOG_INFO, "2");
 				float attackspeed=std::max(0.01, GetStatValue(stats_, "AttackSpeed"));
 				ac->SetSpeed(actor->GetAnimPath() + "/Models/Launch.ani", attackspeed);
 			}

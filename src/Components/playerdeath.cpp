@@ -46,8 +46,9 @@ void PlayerDeath::HandleRespawn(StringHash eventType, VariantMap &eventData)
 
 	element_->SetVisible(false);
 	unsigned int level=pd->GetDungeonLevel();
-	auto scene=CreateLevel(context_, "Areas/Test", level, level-1);
-	gamestate->SetState(scene);
+	//auto scene=CreateLevel(context_, "Areas/Test", level, level-1);
+	//gamestate->SetState(scene);
+	gamestate->SwitchToLevel(level, level-1);
 	//pd->SetDungeonLevel(1);
 
 }
@@ -56,8 +57,9 @@ void PlayerDeath::HandleReturn(StringHash eventType, VariantMap &eventData)
 {
 	auto gamestate=GetSubsystem<GameStateHandler>();
 
-	auto scene=CreateMainMenu(context_);
-	gamestate->SetState(scene);
+	//auto scene=CreateMainMenu(context_);
+	//gamestate->SetState(scene);
+	gamestate->SwitchToMenu();
 	element_->SetVisible(false);
 }
 

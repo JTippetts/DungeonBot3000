@@ -23,6 +23,7 @@ void LevelChanger::Use()
 	auto gsh=GetSubsystem<GameStateHandler>();
 
 	Log::Write(LOG_INFO, String("Changing from level ") + String(pd->GetDungeonLevel()) + " to " + String(destination_));
-	gsh->SetState(CreateLevel(context_, "Areas/test", destination_, pd->GetDungeonLevel()));
+	//gsh->SetState(CreateLevel(context_, "Areas/test", destination_, pd->GetDungeonLevel()));
+	gsh->SwitchToLevel(destination_, pd->GetDungeonLevel());
 	pd->SetDungeonLevel(destination_);
 }

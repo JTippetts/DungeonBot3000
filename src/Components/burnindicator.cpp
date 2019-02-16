@@ -62,7 +62,6 @@ void BurnIndicator::HandleHealsPresent(StringHash eventType, VariantMap &eventDa
 	unsigned int count=eventData[Count].GetUInt();
 	if(count>0)
 	{
-		Log::Write(LOG_INFO, String("Num heals: ") + String(count));
 		ring_->GetComponent<StaticModel>()->SetEnabled(true);
 	}
 	else ring_->GetComponent<StaticModel>()->SetEnabled(false);
