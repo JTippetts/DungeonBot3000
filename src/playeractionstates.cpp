@@ -51,6 +51,15 @@ CombatActionState *CASPlayerBase::CheckInputs(CombatController *actor)
 	auto node=actor->GetNode();
 	auto pd=GetSubsystem<PlayerData>();
 
+	/*auto vitals=node->GetComponent<PlayerVitals>();
+	if(vitals)
+	{
+		if(vitals->GetCurrentLife()<=0)
+		{
+			return actor->GetState<CASPlayerDead>();
+		}
+	}*/
+
 	if(input->GetMouseButtonPress(MOUSEB_LEFT))
 	{
 		auto nametags=GetSubsystem<ItemNameTagContainer>();
@@ -119,6 +128,25 @@ CombatActionState *CASPlayerBase::CheckInputs(CombatController *actor)
 	return nullptr;
 }
 
+
+//////// Dead
+CASPlayerDead::CASPlayerDead(Context *context) : CASPlayerBase(context)
+{
+}
+
+void CASPlayerDead::End(CombatController *actor)
+{
+}
+
+void CASPlayerDead::Start(CombatController *actor)
+{
+}
+
+CombatActionState *CASPlayerDead::Update(CombatController *actor, float dt)
+{
+	return nullptr;
+}
+
 /////// Idle
 CASPlayerIdle::CASPlayerIdle(Context *context) : CASPlayerBase(context)
 {
@@ -170,7 +198,16 @@ CombatActionState *CASPlayerIdle::Update(CombatController *actor, float dt)
 	auto pd=node->GetSubsystem<PlayerData>();
 
 	// Check to see if we clicked on something
+	auto vitals=node->GetComponent<PlayerVitals>();
+	if(vitals)
+	{
+		if(vitals->GetCurrentLife()<=0)
+		{
+			return actor->GetState<CASPlayerDead>();
+		}
+	}
 	return CheckInputs(actor);
+
 }
 
 bool CASPlayerIdle::HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt)
@@ -540,6 +577,18 @@ void CASPlayerSpinAttack::Start(CombatController *actor)
 		{
 			ca->SetNavigationPushiness(NAVIGATIONPUSHINESS_HIGH);
 		}
+		auto cache=GetSubsystem<ResourceCache>();
+		snd_= cache->GetResource<Sound>("Sound/swing2.ogg");
+		swing_ = node->GetScene()->CreateComponent<SoundSource>();
+
+		if (snd_)
+		{
+
+			Log::Write(LOG_INFO, String("Sound freq: ") + String(snd_->GetFrequency()) + String("16: ") + String(snd_->IsSixteenBit()) + String(" stereo:") + String(snd_->IsStereo()));
+			snd_->SetLooped(true);
+			swing_->Play(snd_);
+			swing_->SetGain(0.75f);
+		}
 	}
 }
 
@@ -561,6 +610,12 @@ void CASPlayerSpinAttack::End(CombatController *actor)
 			ca->SetNavigationPushiness(NAVIGATIONPUSHINESS_MEDIUM);
 			ca->SetTargetPosition(node->GetWorldPosition());
 		}
+		if(swing_)
+		{
+			swing_->Remove();
+			swing_=nullptr;
+		}
+		if(snd_) snd_.Reset();
 	}
 }
 
@@ -569,6 +624,15 @@ CombatActionState *CASPlayerSpinAttack::Update(CombatController *actor, float dt
 	auto node=actor->GetNode();
 	auto input=actor->GetSubsystem<Input>();
 	auto pd=actor->GetSubsystem<PlayerData>();
+
+	auto vitals=node->GetComponent<PlayerVitals>();
+	if(vitals)
+	{
+		if(vitals->GetCurrentLife()<=0)
+		{
+			return actor->GetState<CASPlayerDead>();
+		}
+	}
 
 	if(input->GetMouseButtonDown(MOUSEB_RIGHT))
 	//if(input->GetKeyDown(KEY_Q))
@@ -650,14 +714,14 @@ void CASPlayerSpinAttack::HandleTrigger(CombatController *actor, String animname
 					vtls->ApplyDamageList(myvitals,ssc,dmg);
 				}
 
-				auto* sound = cache->GetResource<Sound>("Sound/PlayerFistHit.wav");
+				auto* sound = cache->GetResource<Sound>("Sound/sword-unsheathe5.ogg");
 
 				if (sound)
 				{
 					auto* soundSource = node->GetScene()->CreateComponent<SoundSource>();
 					soundSource->SetAutoRemoveMode(REMOVE_COMPONENT);
 					soundSource->Play(sound);
-					soundSource->SetGain(0.75f);
+					soundSource->SetGain(0.5f);
 				}
 			}
 		}
@@ -671,6 +735,7 @@ CASPlayerLaserBeam::CASPlayerLaserBeam(Context *context) : CASPlayerBase(context
 
 void CASPlayerLaserBeam::Start(CombatController *actor)
 {
+	Log::Write(LOG_INFO, "Start laserbeam");
 	auto node = actor->GetNode();
 	auto ac = node->GetComponent<AnimationController>();
 	auto scene = node->GetScene();
@@ -709,6 +774,15 @@ void CASPlayerLaserBeam::Start(CombatController *actor)
 	lastendpos_ = endpos_ = GetEndPoint(node);
 	timetopulse_=0;
 	phase_=0;
+
+	auto *swing = cache->GetResource<Sound>("Sound/Spell_03.ogg");
+	if (swing)
+	{
+		swing->SetLooped(true);
+		swing_ = node->GetScene()->CreateComponent<SoundSource>();
+		swing_->Play(swing);
+		swing_->SetGain(0.75f);
+	}
 }
 
 void CASPlayerLaserBeam::End(CombatController *actor)
@@ -722,6 +796,12 @@ void CASPlayerLaserBeam::End(CombatController *actor)
 
 	endburst_->Remove();
 	beam_->Remove();
+
+	if(swing_)
+	{
+		swing_->Remove();
+		swing_=nullptr;
+	}
 }
 
 Vector3 CASPlayerLaserBeam::GetEndPoint(Node *node)
@@ -766,6 +846,15 @@ CombatActionState *CASPlayerLaserBeam::Update(CombatController *actor, float dt)
 	auto scene = node->GetScene();
 	auto octree = scene->GetComponent<Octree>();
 	auto pd=actor->GetSubsystem<PlayerData>();
+
+	auto vitals=node->GetComponent<PlayerVitals>();
+	if(vitals)
+	{
+		if(vitals->GetCurrentLife()<=0)
+		{
+			return actor->GetState<CASPlayerDead>();
+		}
+	}
 
 	StatSetCollection ssc=pd->GetStatSetCollection(EqTurret, "LaserBeam");
 	StatSet phases;

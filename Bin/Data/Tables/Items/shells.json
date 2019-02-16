@@ -1,0 +1,25 @@
+[
+	{
+		"Name": "Aluminum Shell",
+		"MinLevel": 1,
+		"Weight": 10,
+		"Fixed": ["AluminumShellGlobal"],
+		"Random": ["LifeRegenTiers", "EnergyGenTiers", "LifeTiers", "LifeLeechTiers", "PhysicalResistTiers", "FireResistTiers"]
+	},
+
+	{
+		"Name": "Steel Shell",
+		"MinLevel": 4,
+		"Weight": 5,
+		"Fixed": ["SteelShellGlobal"],
+		"Random": ["LifeRegenTiers", "EnergyGenTiers", "LifeTiers", "LifeLeechTiers", "PhysicalResistTiers", "FireResistTiers"]
+	},
+
+	{
+		"Name": "Titanium Shell",
+		"MinLevel": 8,
+		"Weight": 2,
+		"Fixed": ["TitaniumShellGlobal"],
+		"Random": ["LifeRegenTiers", "EnergyGenTiers", "LifeTiers", "LifeLeechTiers", "PhysicalResistTiers", "FireResistTiers"]
+	},
+]

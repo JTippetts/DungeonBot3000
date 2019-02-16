@@ -86,7 +86,7 @@ void ItemNameTagContainer::DoItemHover()
 	{
 		case EqBlade: eqslot="Blade"; break;
 		case EqTurret: eqslot="Turret"; break;
-		case EqAntenna: eqslot="Antenna"; break;
+		case EqShell: eqslot="Shell"; break;
 		case EqProcessor: eqslot="Processor"; break;
 		case EqDriveSystem: eqslot="Drive System"; break;
 		case EqGeneratorSystem: eqslot="Generator System"; break;

@@ -1,5 +1,5 @@
 {
-	"MaximumLife": [["Flat", "8000+Level*200"]],
-	"LifeRegen": [["Flat", "0.05"]],
+	"MaximumLife": [["Flat", "800+Level*20"]],
+	"LifeRegen": [["Flat", "0.02"]],
 	"MovementSpeed": [["Flat", "42.0"]],
 }

@@ -261,9 +261,11 @@ void PlayerData::NewPlayer()
 	LoadSkillStats("Tables/Skills/skillstats.json");
 	LoadItemClass(EqBlade, "Tables/Items/blades.json");
 	LoadItemClass(EqTurret, "Tables/Items/lasers.json");
+	LoadItemClass(EqShell, "Tables/Items/shells.json");
 
 	EquipItem(EquipmentItemDef(EqBlade, IRNormal, "Starter Blade", "", "", {"StarterBladeImplicit"}), false);
 	EquipItem(EquipmentItemDef(EqTurret, IRNormal, "Starter Laser", "", "", {"StarterLaserImplicit"}), false);
+	EquipItem(EquipmentItemDef(EqShell, IRNormal, "Starter Shell", "", "", {"StarterShellGlobal"}), false);
 }
 
 void PlayerData::SpawnPlayer(Scene *scene, Vector3 location)
@@ -331,7 +333,6 @@ bool PlayerData::GenerateRandomItem(EquipmentItemDef &item, EquipmentSlots slot,
 	{
 		String tiergroup=entry->random_[choices[c]];
 		String mod=itemmodtiers_.Choose(tiergroup, level);
-		Log::Write(LOG_INFO, String("Chose random mod ") + mod);
 		item.itemmods_.push_back(mod);
 	}
 	return true;

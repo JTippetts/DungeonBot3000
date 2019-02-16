@@ -34,6 +34,8 @@
 		<attribute name="Height" value="2" />
 		<attribute name="Navigation Pushiness" value="Medium" />
 	</component>
+	<component type="PlayerVitals" >
+	</component>
 	<component type="CombatController" >
 		<attribute name="Object Path" value="Objects/DungeonBot3000" />
 		<attribute name="Animation Path" value="Objects/DungeonBot3000" />
@@ -41,8 +43,6 @@
 	</component>
 	<component type="CombatCameraController">
 		<attribute name="Offset" value="0.5" />
-	</component>
-	<component type="PlayerVitals" >
 	</component>
 	<component type="LifeBubbleUI" >
 	</component>

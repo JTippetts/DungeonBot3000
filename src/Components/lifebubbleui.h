@@ -42,8 +42,11 @@ class LifeBubbleUI : public LogicComponent
 	SharedPtr<Text> energyelement_;
 	SharedPtr<UIElement> help_;
 	SharedPtr<Text> levelelement_;
+	SharedPtr<UIElement> gamblebutton_;
 
 	virtual void DelayedStart() override;
 	virtual void Update(float dt) override;
 	virtual void Stop() override;
+
+	void HandleGamble(StringHash eventType, VariantMap &eventData);
 };

@@ -64,6 +64,7 @@ void RegisterCustomComponents(Context *context)
 	context->RegisterFactory<CASPlayerLaserBeam>();
 	context->RegisterFactory<CASPlayerLoot>();
 	context->RegisterFactory<CASPlayerStairs>();
+	context->RegisterFactory<CASPlayerDead>();
 
 	context->RegisterFactory<CASEnemyInactive>();
 	context->RegisterFactory<CASEnemyIdle>();

@@ -21,7 +21,7 @@ enum EquipmentSlots
 {
 	EqBlade,
 	EqTurret,
-	EqAntenna,
+	EqShell,
 	EqProcessor,
 	EqDriveSystem,
 	EqGeneratorSystem,

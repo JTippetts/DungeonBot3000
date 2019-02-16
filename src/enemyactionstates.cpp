@@ -2,6 +2,9 @@
 #include <Urho3D/UI/UI.h>
 #include <Urho3D/UI/Cursor.h>
 #include <Urho3D/IO/Log.h>
+#include <Urho3D/Audio/SoundSource.h>
+#include <Urho3D/Audio/Sound.h>
+#include <Urho3D/Resource/ResourceCache.h>
 
 #include "combatactionstates.h"
 #include "Components/thirdpersoncamera.h"
@@ -432,6 +435,17 @@ void CASEnemyKick::HandleTrigger(CombatController *actor, String animname, unsig
 			if(pv)
 			{
 				pv->ApplyDamageList(vitals,mystats,dmg);
+			}
+
+			auto cache=GetSubsystem<ResourceCache>();
+			auto* sound = cache->GetResource<Sound>("Sound/PlayerFistHit.wav");
+
+			if (sound)
+			{
+				auto* soundSource = node->GetScene()->CreateComponent<SoundSource>();
+				soundSource->SetAutoRemoveMode(REMOVE_COMPONENT);
+				soundSource->Play(sound);
+				soundSource->SetGain(0.75f);
 			}
 		}
 	}

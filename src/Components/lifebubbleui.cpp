@@ -21,6 +21,9 @@
 
 using namespace Urho3D;
 
+float rollf(float,float);
+int roll(int,int);
+
 void LifeBubbleUI::RegisterObject(Context *context)
 {
 	context->RegisterFactory<LifeBubbleUI>("UI");
@@ -108,6 +111,33 @@ void LifeBubbleUI::DelayedStart()
 	levelelement_->SetColor(Color(0.25,1.0,0.75));
 	levelelement_->SetPosition(IntVector2(0, 0));
 	ui->GetRoot()->AddChild(levelelement_);
+
+	gamblebutton_=ui->LoadLayout(cache->GetResource<XMLFile>("UI/GambleButton.xml"));
+	ui->GetRoot()->AddChild(gamblebutton_);
+	gamblebutton_->SetPosition(IntVector2(graphics->GetWidth()-gamblebutton_->GetWidth(), 0));
+	SubscribeToEvent(gamblebutton_, StringHash("Pressed"), URHO3D_HANDLER(LifeBubbleUI, HandleGamble));
+}
+
+void LifeBubbleUI::HandleGamble(StringHash eventType, VariantMap &eventData)
+{
+	auto pd=GetSubsystem<PlayerData>();
+	double energy=pd->GetEnergy();
+	if(energy<400.0) return;
+	pd->SetEnergy(energy-400.0);
+
+	int rr=roll(1,100);
+	ItemRarity ir=IRNormal;
+	if(rr<4) ir=IRUnique;
+	else if(rr<14) ir=IRRare;
+	else if(rr<64) ir=IRMagic;
+
+	int rt=roll(1,100);
+	EquipmentSlots slot=EqBlade;
+	if(rt<33) slot=EqTurret;
+	else if(rt<66) slot=EqShell;
+
+	EquipmentItemDef def;
+	if(pd->GenerateRandomItem(def, slot, ir, 10)) pd->DropItem(def, node_->GetPosition(), node_->GetPosition()+Vector3(rollf(-5.0,5.0), 0, rollf(-5.0,5.0)));
 }
 
 void LifeBubbleUI::Update(float dt)
@@ -153,5 +183,6 @@ SharedPtr<Scene> rttscene_;
 	energyelement_->Remove();
 	help_->Remove();
 	levelelement_->Remove();
+	gamblebutton_->Remove();
 	Log::Write(LOG_INFO, "Stopping bubble");
 }

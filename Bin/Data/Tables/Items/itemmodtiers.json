@@ -58,6 +58,15 @@
 		]
 	},
 
+	"PhysicalResistTiers": {
+		"Weighting": 2,
+		"Tables": [
+			{"Level": 1, "Mods": ["Reinforced"]},
+			{"Level": 4, "Mods": ["Plated","Reinforced"]},
+			{"Level": 8, "Mods": ["Armored", "Plated","Reinforced"]},
+		]
+	},
+
 	"AttackSpeedLocalTiers": {
 		"Weighting": 2,
 		"Tables": [

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "combatactionstates.h"
+#include <Urho3D/Audio/SoundSource.h>
 
 // Player action states
 
@@ -12,6 +13,16 @@ class CASPlayerBase : public CombatActionState
 
 	CombatActionState *CheckInputs(CombatController *actor);
 
+};
+
+class CASPlayerDead : public CASPlayerBase
+{
+	URHO3D_OBJECT(CASPlayerDead, CASPlayerBase);
+	public:
+	CASPlayerDead(Context *context);
+	virtual void End(CombatController *actor) override;
+	virtual void Start(CombatController *actor) override;
+	virtual CombatActionState *Update(CombatController *actor, float dt) override;
 };
 
 class CASPlayerIdle : public CASPlayerBase
@@ -84,6 +95,10 @@ class CASPlayerSpinAttack : public CASPlayerBase
 	virtual void End(CombatController *actor) override;
 	virtual CombatActionState *Update(CombatController *actor, float dt) override;
 	virtual void HandleTrigger(CombatController *actor, String animname, unsigned int value) override;
+
+	protected:
+	SoundSource *swing_;
+	SharedPtr<Sound> snd_;
 };
 
 class CASPlayerLaserBeam : public CASPlayerBase
@@ -97,6 +112,7 @@ class CASPlayerLaserBeam : public CASPlayerBase
 
 	protected:
 	Node *endburst_, *beam_;
+	SoundSource *swing_;
 
 	Vector3 lastendpos_, endpos_;
 	float interval_, timetopulse_, phase_;

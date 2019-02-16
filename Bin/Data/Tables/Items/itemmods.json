@@ -89,6 +89,18 @@
 		"BurnDamageTaken": [["Mult", "-0.2"]]
 	}],
 
+	"Reinforced": ["Global", "Decrease Physical damage taken by 10%.", {
+		"PhysicalDamageTaken": [["Mult", "-0.1"]]
+	}],
+
+	"Plated": ["Global", "Decrease Physical damage taken by 15%.", {
+		"PhysicalDamageTaken": [["Mult", "-0.15"]]
+	}],
+
+	"Armored": ["Global", "Decrease Physical damage taken by 20%.", {
+		"PhysicalDamageTaken": [["Mult", "-0.2"]]
+	}],
+
 	"QuickAttacks" : ["Local", "Increase attack speed with this weapon by 10%.", {
 		"AttackSpeed": [["Mult", "0.1"]]
 	}],
@@ -152,5 +164,21 @@
 	"LargeLaserImplicit":["Implicit", "Fire Damage: 8 to 16", {
 		"FireLow": [["Flat", "8"]],
 		"FireHigh": [["Flat", "16"]]
+	}],
+
+	"StarterShellGlobal":["Global", "Reduce all damage taken by 2%.", {
+		"AllDamageTaken": [["Mult", "-0.02"]]
+	}],
+
+	"AluminumShellGlobal":["Global", "Reduce all damage taken by 5%.", {
+		"AllDamageTaken": [["Mult", "-0.05"]]
+	}],
+
+	"SteelShellGlobal":["Global", "Reduce all damage taken by 10%.", {
+		"AllDamageTaken": [["Mult", "-0.1"]]
+	}],
+
+	"TitaniumShellGlobal":["Global", "Reduce all damage taken by 15%.", {
+		"AllDamageTaken": [["Mult", "-0.15"]]
 	}],
 }

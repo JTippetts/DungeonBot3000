@@ -74,7 +74,7 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 {
 	auto cache=context->GetSubsystem<ResourceCache>();
 
-	unsigned int w=2,h=2;
+	unsigned int w=3,h=3;
 	float size=200.0f;
 
 	SharedPtr<Scene> scene(new Scene(context));
@@ -95,7 +95,7 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 	auto audio=context->GetSubsystem<Audio>();
 	if(audio)
 	{
-		audio->SetMasterGain(SOUND_MUSIC, 0.5);
+		audio->SetMasterGain(SOUND_MUSIC, 0.25);
 	}
 
 
@@ -139,7 +139,7 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 			String path;
 			if(rl<=50)
 			{
-				if(x==downx && y==downy) path = levelpath + String("/tiledown") + String(p) + "_A.json";
+				if(x==downx && y==downy && level!=10) path = levelpath + String("/tiledown") + String(p) + "_A.json";
 				else path = levelpath + String("/tile") + String(p) + "_A.json";
 			}
 			else
@@ -235,7 +235,7 @@ SharedPtr<Scene> CreateLevel(Context *context, String levelpath, unsigned int le
 					}
 				}
 
-				int numusers=roll(8*level,12*level);
+				int numusers=roll(6*level,8*level);
 				for(int c=0; c<numusers; ++c)
 				{
 					Vector3 pt=nav->FindNearestPoint(roomcenter+Vector3(rollf(-size*0.5f, size*0.5f), 0.0f, rollf(-size*0.5f, size*0.5f)), extents);

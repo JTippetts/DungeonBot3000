@@ -39,7 +39,8 @@ void LootDrop::HandleLifeDepleted(StringHash eventType, VariantMap &eventData)
 
 			int rt=roll(1,100);
 			EquipmentSlots slot=EqBlade;
-			if(rt<50) slot=EqTurret;
+			if(rt<33) slot=EqTurret;
+			else if(rt<66) slot=EqShell;
 
 			EquipmentItemDef def;
 			if(pd->GenerateRandomItem(def, slot, ir, pd->GetDungeonLevel())) pd->DropItem(def, node_->GetPosition(), node_->GetPosition()+Vector3(rollf(-5.0,5.0), 0, rollf(-5.0,5.0)));

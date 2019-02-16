@@ -30,12 +30,6 @@ void PlayerDeath::HandleLifeDepleted(StringHash eventType, VariantMap &eventData
 	auto cache=GetSubsystem<ResourceCache>();
 	auto graphics=GetSubsystem<Graphics>();
 
-	auto ctrl=node_->GetComponent<CombatController>();
-	if(ctrl)
-	{
-		ctrl->SetEnabled(false);
-	}
-
 	element_=ui->LoadLayout(cache->GetResource<XMLFile>("UI/YouHaveDied.xml"));
 	ui->GetRoot()->AddChild(element_);
 	element_->SetPosition(IntVector2(graphics->GetWidth()/2-element_->GetWidth()/2, graphics->GetHeight()/2-element_->GetHeight()/2));
@@ -51,9 +45,10 @@ void PlayerDeath::HandleRespawn(StringHash eventType, VariantMap &eventData)
 	auto gamestate=GetSubsystem<GameStateHandler>();
 
 	element_->SetVisible(false);
-	auto scene=CreateLevel(context_, "Areas/Test", 1, 0);
+	unsigned int level=pd->GetDungeonLevel();
+	auto scene=CreateLevel(context_, "Areas/Test", level, level-1);
 	gamestate->SetState(scene);
-	pd->SetDungeonLevel(1);
+	//pd->SetDungeonLevel(1);
 
 }
 
