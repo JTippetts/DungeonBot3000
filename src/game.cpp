@@ -116,7 +116,7 @@ void Game::Setup()
     engineParameters_[EP_LOG_NAME]     = GetSubsystem<FileSystem>()->GetAppPreferencesDir("urho3d", "logs") + GetTypeName() + ".log";
     engineParameters_[EP_FULL_SCREEN]  = false;
     engineParameters_[EP_HEADLESS]     = false;
-    engineParameters_[EP_SOUND]        = true;
+    engineParameters_[EP_SOUND]        = false;
 
     // Construct a search path to find the resource prefix with two entries:
     // The first entry is an empty path which will be substituted with program/bin directory -- this entry is for binary when it is still in build tree
@@ -159,22 +159,7 @@ void Game::Start()
 	ui->GetRoot()->CreateChild<UIElement>("HUDLayer");
 	ui->GetRoot()->CreateChild<UIElement>("FadeLayer");
 
-	#if 0
-	auto scene=CreateLevel(context_, "Areas/Test", 1, 0);
-	gamestate->SetState(scene);
-	if(pd)
-	{
-		pd->NewPlayer();
-		pd->SetDungeonLevel(1);
-	}
-	#else
-	//auto scene=CreateMainMenu(context_);
-	//gamestate->SetState(scene);
-	//gamestate->SwitchToMenu();
 	gamestate->SwitchToState(SharedPtr<GameStateBase>(new MainMenuState(context_)));
-
-	#endif
-	Log::Write(LOG_INFO, String("hoverable hash:") + String(StringHash("hoverable")));
 }
 
 void Game::Stop()

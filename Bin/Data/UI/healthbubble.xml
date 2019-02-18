@@ -2,13 +2,13 @@
 <element>
 	<attribute name="Position" value="512 384" />
 	<attribute name="Pivot" value="0 0" />
-	<element type="Sprite" style="Sprite">
+	<element type="UIMesh">
 		<attribute name="Name" value="Bubble" />
-		<attribute name="Position" value="64 64" />
+		<attribute name="Model" value="Model;Models/Plane.mdl" />
+		<attribute name="Material" value="Material;Materials/health.xml" />
 		<attribute name="Size" value="128 128" />
-		<attribute name="Image Rect" value="0 0 127 127" />
-		<attribute name="Horiz Alignment" value="Center" />
-		<attribute name="Vert Alignment" value="Center" />
+		<attribute name="Position" value="0 0" />
+		<attribute name="Is Enabled" value="true" />
 	</element>
 	<element type="Sprite" style="Sprite">
 		<attribute name="Size" value="256 256" />

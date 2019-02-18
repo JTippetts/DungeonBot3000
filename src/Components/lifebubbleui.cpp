@@ -18,6 +18,7 @@
 
 #include "vitals.h"
 #include "../playerdata.h"
+#include "../UIMesh.h"
 
 using namespace Urho3D;
 
@@ -38,7 +39,7 @@ void LifeBubbleUI::DelayedStart()
 	// Set up the RTT scene
 	auto cache=GetSubsystem<ResourceCache>();
 
-	rttscene_ = new Scene(context_);
+	/*rttscene_ = new Scene(context_);
 	rttscene_->CreateComponent<Octree>();
 
 	rttcameranode_ = rttscene_->CreateChild("Camera");
@@ -68,25 +69,25 @@ void LifeBubbleUI::DelayedStart()
     RenderSurface* surface = rttrendertexture_->GetRenderSurface();
     rttviewport_ = new Viewport(context_, rttscene_, camera);
     surface->SetViewport(0, rttviewport_);
-	surface->SetUpdateMode(SURFACE_UPDATEALWAYS);
+	surface->SetUpdateMode(SURFACE_UPDATEALWAYS);*/
 
-	/*
-	uisprite_ = new Sprite(context_);
-	uisprite_->SetTexture(rttrendertexture_);
-	uisprite_->SetSize(IntVector2(128,128));
-	uisprite_->SetFullImageRect();
-
-	auto ui=GetSubsystem<UI>();
-	ui->GetRoot()->GetChild("HUDLayer",true)->AddChild(uisprite_);
-	uisprite_->SetVisible(true);*/
 	auto ui=GetSubsystem<UI>();
 	auto graphics=GetSubsystem<Graphics>();
+	healthmat_=cache->GetResource<Material>("Materials/health.xml");
 	element_ = ui->LoadLayout(cache->GetResource<XMLFile>("UI/healthbubble.xml"));
-	auto sprite = dynamic_cast<Sprite *>(element_->GetChild("Bubble", true));
+	/*auto sprite = dynamic_cast<Sprite *>(element_->GetChild("Bubble", true));
 	if(sprite)
 	{
-		sprite->SetTexture(rttrendertexture_);
-		sprite->SetFullImageRect();
+		//sprite->SetTexture(rttrendertexture_);
+		//sprite->SetFullImageRect();
+	}*/
+
+	auto bubble = dynamic_cast<UIMesh *>(element_->GetChild("Bubble", true));
+	if(bubble)
+	{
+		Log::Write(LOG_INFO, "Setting bubble values");
+		bubble->SetSize(127,127);
+		bubble->SetPosition(64,64);
 	}
 	ui->GetRoot()->GetChild("HUDLayer",true)->AddChild(element_);
 	element_->SetPosition(IntVector2(-38, graphics->GetHeight()-256+38));
@@ -177,7 +178,7 @@ SharedPtr<Scene> rttscene_;
 
 	SharedPtr<UIElement> element_;
 	*/
-	rttscene_->Remove();
+	//rttscene_->Remove();
 	element_->Remove();
 
 	energyelement_->Remove();

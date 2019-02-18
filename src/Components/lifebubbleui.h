@@ -27,16 +27,16 @@ class LifeBubbleUI : public LogicComponent
 
 	protected:
 
-	SharedPtr<Scene> rttscene_;
+	/*SharedPtr<Scene> rttscene_;
 	SharedPtr<Node> rttcameranode_;
 	SharedPtr<Viewport> rttviewport_;
 	SharedPtr<Material> rttmaterial_;
-	SharedPtr<Texture2D> rttrendertexture_;
+	SharedPtr<Texture2D> rttrendertexture_;*/
 	Material *healthmat_;
 
-	SharedPtr<Scene> overlayscene_;
+	/*SharedPtr<Scene> overlayscene_;
 	SharedPtr<Node> overlaynode_;
-	SharedPtr<Viewport> overlayviewport_;
+	SharedPtr<Viewport> overlayviewport_;*/
 
 	SharedPtr<UIElement> element_;
 	SharedPtr<Text> energyelement_;

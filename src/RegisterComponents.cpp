@@ -1,6 +1,8 @@
 #include <Urho3D/Urho3D.h>
 #include "RegisterComponents.h"
 
+#include "UIMesh.h"
+
 #include "Components/thirdpersoncamera.h"
 #include "Components/rotationsmoothing.h"
 #include "Components/combatcontroller.h"
@@ -60,6 +62,8 @@ void RegisterCustomComponents(Context *context)
 	MobNamer::RegisterObject(context);
 	MainMenu::RegisterObject(context);
 	PlayerDeath::RegisterObject(context);
+
+	UIMesh::RegisterObject(context);
 
 	context->RegisterFactory<MainMenuState>();
 	context->RegisterFactory<TestLevelState>();
