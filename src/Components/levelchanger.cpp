@@ -3,6 +3,7 @@
 #include "../scenetools.h"
 #include "../gamestatehandler.h"
 #include "../playerdata.h"
+#include "../Levels/testlevelstate.h"
 
 #include <Urho3D/IO/Log.h>
 
@@ -24,6 +25,13 @@ void LevelChanger::Use()
 
 	Log::Write(LOG_INFO, String("Changing from level ") + String(pd->GetDungeonLevel()) + " to " + String(destination_));
 	//gsh->SetState(CreateLevel(context_, "Areas/test", destination_, pd->GetDungeonLevel()));
-	gsh->SwitchToLevel(destination_, pd->GetDungeonLevel());
-	pd->SetDungeonLevel(destination_);
+	//gsh->SwitchToLevel(destination_, pd->GetDungeonLevel());
+	SharedPtr<GameStateBase> level(new TestLevelState(context_));
+	if(level)
+	{
+		level->GetData()[StringHash("level")]=destination_;
+		level->GetData()[StringHash("previouslevel")]=pd->GetDungeonLevel();
+		gsh->SwitchToState(level);
+		pd->SetDungeonLevel(destination_);
+	}
 }

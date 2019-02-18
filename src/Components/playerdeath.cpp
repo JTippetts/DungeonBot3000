@@ -10,6 +10,9 @@
 #include "../scenetools.h"
 #include "../playerdata.h"
 
+#include "../Levels/testlevelstate.h"
+#include "../Levels/mainmenustate.h"
+
 
 void PlayerDeath::RegisterObject(Context *context)
 {
@@ -45,11 +48,18 @@ void PlayerDeath::HandleRespawn(StringHash eventType, VariantMap &eventData)
 	auto gamestate=GetSubsystem<GameStateHandler>();
 
 	element_->SetVisible(false);
-	unsigned int level=pd->GetDungeonLevel();
+	unsigned int lvl=pd->GetDungeonLevel();
 	//auto scene=CreateLevel(context_, "Areas/Test", level, level-1);
 	//gamestate->SetState(scene);
-	gamestate->SwitchToLevel(level, level-1);
+	//gamestate->SwitchToLevel(level, level-1);
 	//pd->SetDungeonLevel(1);
+	SharedPtr<GameStateBase> level(new TestLevelState(context_));
+	if(level)
+	{
+		level->GetData()[StringHash("level")]=lvl;
+		level->GetData()[StringHash("previouslevel")]=level-1;
+		gamestate->SwitchToState(level);
+	}
 
 }
 
@@ -59,7 +69,8 @@ void PlayerDeath::HandleReturn(StringHash eventType, VariantMap &eventData)
 
 	//auto scene=CreateMainMenu(context_);
 	//gamestate->SetState(scene);
-	gamestate->SwitchToMenu();
+	//gamestate->SwitchToMenu();
+	gamestate->SwitchToState(SharedPtr<GameStateBase> (new MainMenuState(context_)));
 	element_->SetVisible(false);
 }
 

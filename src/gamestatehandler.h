@@ -8,6 +8,8 @@
 #include <Urho3D/Core/Object.h>
 #include <Urho3D/UI/BorderImage.h>
 
+#include "gamestatebase.h"
+
 using namespace Urho3D;
 
 class GameStateHandler : public Object
@@ -16,9 +18,14 @@ class GameStateHandler : public Object
 	public:
 	GameStateHandler(Context *context);
 
-	void SwitchToMenu();
-	void SwitchToLevel(unsigned int level, unsigned int from);
-	Scene* GetCurrentScene(){return currentscene_;}
+	//void SwitchToMenu();
+	//void SwitchToLevel(unsigned int level, unsigned int from);
+	void SwitchToState(SharedPtr<GameStateBase> state);
+	Scene* GetCurrentScene()
+	{
+		if(currentstate_) return currentstate_->GetScene();
+		return nullptr;
+	}
 
 	protected:
 
@@ -29,11 +36,13 @@ class GameStateHandler : public Object
 		FadingOut,
 		FadedOut
 	};
-	SharedPtr<Scene> currentscene_;
+	//SharedPtr<Scene> currentscene_;
+	SharedPtr<GameStateBase> currentstate_, nextstate_;
+
 	SharedPtr<BorderImage> element_;
 	FadeState fade_;
 	float duration_, counter_;
-	unsigned int switchto_, from_;
+	//unsigned int switchto_, from_;
 
 
 	void HandleUpdate(StringHash eventType, VariantMap &eventData);

@@ -85,7 +85,7 @@ void ItemNameTag::Start()
 	auto cache=GetSubsystem<ResourceCache>();
 
 	element_ = ui->LoadLayout(cache->GetResource<XMLFile>("UI/ItemNameTag.xml"));
-	ui->GetRoot()->AddChild(element_);
+	ui->GetRoot()->GetChild("ItemTagLayer", true)->AddChild(element_);
 	//element_->SetVisible(false);
 	SetScreenLocation(screenpos);
 	element_->SetVar(StringHash("ItemNameTag"), Variant(this));

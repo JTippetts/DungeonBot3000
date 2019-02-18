@@ -14,6 +14,7 @@ GameStateHandler::GameStateHandler(Context *context) : Object(context), fade_(Fa
 	SubscribeToEvent(StringHash("EndFrame"), URHO3D_HANDLER(GameStateHandler, HandleEndFrame));
 }
 
+/*
 void GameStateHandler::SwitchToMenu()
 {
 	if(fade_==FadingIn || fade_==FadingOut) return;
@@ -48,12 +49,34 @@ void GameStateHandler::SwitchToLevel(unsigned int level, unsigned int from)
 	element_->SetImageRect(IntRect(86,90,87,91));
 	element_->SetSize(graphics->GetSize());
 	element_->SetColor(Color(0,0,0));
-	ui->GetRoot()->AddChild(element_);
+	ui->GetRoot()->GetChild("FadeLayer", true)->AddChild(element_);
 
 	fade_=FadingOut;
 	counter_=0.0f;
 	switchto_=level;
 	from_=from;
+}
+*/
+
+void GameStateHandler::SwitchToState(SharedPtr<GameStateBase> level)
+{
+	if(fade_==FadingIn || fade_==FadingOut) return;
+	if(!level) return;
+
+	auto cache=GetSubsystem<ResourceCache>();
+	auto graphics=GetSubsystem<Graphics>();
+	auto ui=GetSubsystem<UI>();
+
+	element_=SharedPtr<BorderImage>(new BorderImage(context_));
+	element_->SetTexture(cache->GetResource<Texture2D>("Textures/UI.png"));
+	element_->SetImageRect(IntRect(86,90,87,91));
+	element_->SetSize(graphics->GetSize());
+	element_->SetColor(Color(0,0,0));
+	ui->GetRoot()->GetChild("FadeLayer", true)->AddChild(element_);
+
+	fade_=FadingOut;
+	counter_=0.0f;
+	nextstate_=level;
 }
 
 void GameStateHandler::HandleUpdate(StringHash eventType, VariantMap &eventData)
@@ -93,19 +116,15 @@ void GameStateHandler::HandleEndFrame(StringHash eventType, VariantMap &eventDat
 	if(fade_==FadedOut)
 	{
 		// Okay to switch
-		if(currentscene_)
-		{
-			currentscene_->Remove();
-			currentscene_.Reset();
+		if(currentstate_)
+		{	Log::Write(LOG_INFO, "Stopping previous game state");
+			currentstate_->Stop();
+			currentstate_.Reset();
 		}
-		if(switchto_==0)
-		{
-			currentscene_=CreateMainMenu(context_);
-		}
-		else
-		{
-			currentscene_=CreateLevel(context_, "Areas/Test", switchto_, from_);
-		}
+		currentstate_=nextstate_;//CreateLevel(context_, "Areas/Test", switchto_, from_);
+		Log::Write(LOG_INFO, "Starting next game state.");
+		currentstate_->Start();
+
 		fade_=FadingIn;
 		counter_=0;
 	}

@@ -77,7 +77,7 @@ void LifeBubbleUI::DelayedStart()
 	uisprite_->SetFullImageRect();
 
 	auto ui=GetSubsystem<UI>();
-	ui->GetRoot()->AddChild(uisprite_);
+	ui->GetRoot()->GetChild("HUDLayer",true)->AddChild(uisprite_);
 	uisprite_->SetVisible(true);*/
 	auto ui=GetSubsystem<UI>();
 	auto graphics=GetSubsystem<Graphics>();
@@ -88,7 +88,7 @@ void LifeBubbleUI::DelayedStart()
 		sprite->SetTexture(rttrendertexture_);
 		sprite->SetFullImageRect();
 	}
-	ui->GetRoot()->AddChild(element_);
+	ui->GetRoot()->GetChild("HUDLayer",true)->AddChild(element_);
 	element_->SetPosition(IntVector2(-38, graphics->GetHeight()-256+38));
 
 	auto pd=GetSubsystem<PlayerData>();
@@ -98,10 +98,10 @@ void LifeBubbleUI::DelayedStart()
 	energyelement_->SetText(String("Energy: ") + String((int)pd->GetEnergy()));
 	energyelement_->SetColor(Color(0.25,1.0,0.25));
 	energyelement_->SetPosition(IntVector2(0, graphics->GetHeight()-256+38-energyelement_->GetHeight()));
-	ui->GetRoot()->AddChild(energyelement_);
+	ui->GetRoot()->GetChild("HUDLayer",true)->AddChild(energyelement_);
 
 	help_=ui->LoadLayout(cache->GetResource<XMLFile>("UI/Help.xml"));
-	ui->GetRoot()->AddChild(help_);
+	ui->GetRoot()->GetChild("HUDLayer",true)->AddChild(help_);
 	help_->SetPosition(IntVector2(graphics->GetWidth()-help_->GetWidth(), graphics->GetHeight()-help_->GetHeight()));
 
 	levelelement_=new Text(context_);
@@ -110,10 +110,10 @@ void LifeBubbleUI::DelayedStart()
 	levelelement_->SetText(String("Dungeon Level ") + String((int)pd->GetDungeonLevel()));
 	levelelement_->SetColor(Color(0.25,1.0,0.75));
 	levelelement_->SetPosition(IntVector2(0, 0));
-	ui->GetRoot()->AddChild(levelelement_);
+	ui->GetRoot()->GetChild("HUDLayer",true)->AddChild(levelelement_);
 
 	gamblebutton_=ui->LoadLayout(cache->GetResource<XMLFile>("UI/GambleButton.xml"));
-	ui->GetRoot()->AddChild(gamblebutton_);
+	ui->GetRoot()->GetChild("HUDLayer",true)->AddChild(gamblebutton_);
 	gamblebutton_->SetPosition(IntVector2(graphics->GetWidth()-gamblebutton_->GetWidth(), 0));
 	SubscribeToEvent(gamblebutton_, StringHash("Pressed"), URHO3D_HANDLER(LifeBubbleUI, HandleGamble));
 }

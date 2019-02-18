@@ -73,7 +73,7 @@ void EnemyNameplate::Start()
 	auto graphics=GetSubsystem<Graphics>();
 
 	element_=ui->LoadLayout(cache->GetResource<XMLFile>("UI/EnemyNameplate.xml"));
-	ui->GetRoot()->AddChild(element_);
+	ui->GetRoot()->GetChild("HUDLayer", true)->AddChild(element_);
 	element_->SetVisible(false);
 	element_->SetPosition(IntVector2(graphics->GetWidth()/2 - element_->GetWidth()/2, 0));
 }

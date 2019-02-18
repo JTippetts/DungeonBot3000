@@ -29,6 +29,9 @@
 #include "Enemies/jbadams.h"
 #include "Enemies/khawk.h"
 
+#include "Levels/mainmenustate.h"
+#include "Levels/testlevelstate.h"
+
 void RegisterCustomComponents(Context *context)
 {
 	ThirdPersonCamera::RegisterObject(context);
@@ -57,6 +60,9 @@ void RegisterCustomComponents(Context *context)
 	MobNamer::RegisterObject(context);
 	MainMenu::RegisterObject(context);
 	PlayerDeath::RegisterObject(context);
+
+	context->RegisterFactory<MainMenuState>();
+	context->RegisterFactory<TestLevelState>();
 
 	context->RegisterFactory<CASPlayerIdle>();
 	context->RegisterFactory<CASPlayerMove>();

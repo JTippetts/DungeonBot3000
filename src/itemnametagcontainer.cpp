@@ -38,7 +38,8 @@ ItemNameTag *ItemNameTagContainer::GetHoveredTag()
 	auto element = ui->GetElementAt(mousepos);
 	if(element)
 	{
-		while(element->GetParent() != ui->GetRoot()) element=element->GetParent();
+		//while(element->GetParent() != ui->GetRoot()->GetChild("ItemTagLayer", true)) element=element->GetParent();
+		if(element->GetParent() != ui->GetRoot()->GetChild("ItemTagLayer", true)) return nullptr;
 		auto nametag=dynamic_cast<ItemNameTag *>(element->GetVar(StringHash("ItemNameTag")).GetPtr());
 		return nametag;
 	}
@@ -70,13 +71,13 @@ void ItemNameTagContainer::DoItemHover()
 	if(!itemdesc_)
 	{
 		itemdesc_=ui->LoadLayout(cache->GetResource<XMLFile>("UI/ItemDescriptionBox.xml"));
-		ui->GetRoot()->AddChild(itemdesc_);
+		ui->GetRoot()->GetChild("HUDLayer",true)->AddChild(itemdesc_);
 	}
 
 	if(!equippeddesc_)
 	{
 		equippeddesc_=ui->LoadLayout(cache->GetResource<XMLFile>("UI/ItemDescriptionBox.xml"));
-		ui->GetRoot()->AddChild(equippeddesc_);
+		ui->GetRoot()->GetChild("HUDLayer", true)->AddChild(equippeddesc_);
 		Text *title=dynamic_cast<Text *>(equippeddesc_->GetChild("Title", true));
 		if(title) title->SetText("Equipped Item");
 	}

@@ -57,6 +57,7 @@
 #include "combat.h"
 #include "scenetools.h"
 #include "gamestatehandler.h"
+#include "Levels/mainmenustate.h"
 
 int roll(int low, int high)
 {
@@ -152,6 +153,12 @@ void Game::Start()
 	cursor->SetVisible(true);
 	cursor->SetPosition(ui->GetRoot()->GetWidth()/2, ui->GetRoot()->GetHeight()/2);
 
+	// Add children to UI for different layers
+	ui->GetRoot()->CreateChild<UIElement>("ItemTagLayer");
+	ui->GetRoot()->CreateChild<UIElement>("ObjectTagLayer");
+	ui->GetRoot()->CreateChild<UIElement>("HUDLayer");
+	ui->GetRoot()->CreateChild<UIElement>("FadeLayer");
+
 	#if 0
 	auto scene=CreateLevel(context_, "Areas/Test", 1, 0);
 	gamestate->SetState(scene);
@@ -163,7 +170,9 @@ void Game::Start()
 	#else
 	//auto scene=CreateMainMenu(context_);
 	//gamestate->SetState(scene);
-	gamestate->SwitchToMenu();
+	//gamestate->SwitchToMenu();
+	gamestate->SwitchToState(SharedPtr<GameStateBase>(new MainMenuState(context_)));
+
 	#endif
 	Log::Write(LOG_INFO, String("hoverable hash:") + String(StringHash("hoverable")));
 }

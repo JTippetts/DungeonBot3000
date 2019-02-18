@@ -38,7 +38,7 @@ void EnemyLifeBar::DelayedStart()
 	auto cache=GetSubsystem<ResourceCache>();
 
 	element_ = ui->LoadLayout(cache->GetResource<XMLFile>("UI/enemybar.xml"));
-	ui->GetRoot()->AddChild(element_);
+	ui->GetRoot()->GetChild("ObjectTagLayer", true)->AddChild(element_);
 	element_->SetVisible(false);
 
 	SubscribeToEvent(node_, StringHash("LifeDepleted"), URHO3D_HANDLER(EnemyLifeBar, HandleLifeDepleted));

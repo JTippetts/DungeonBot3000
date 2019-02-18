@@ -10,6 +10,9 @@
 #include "../scenetools.h"
 #include "../playerdata.h"
 
+#include "../Levels/mainmenustate.h"
+#include "../Levels/testlevelstate.h"
+
 void MainMenu::RegisterObject(Context *context)
 {
 	context->RegisterFactory<MainMenu>();
@@ -27,9 +30,16 @@ void MainMenu::HandlePlay(StringHash eventType, VariantMap &eventData)
 
 	//auto scene=CreateLevel(context_, "Areas/Test", 1, 0);
 	//gamestate->SetState(scene);
-	gamestate->SwitchToLevel(1,0);
-	pd->NewPlayer();
-	pd->SetDungeonLevel(1);
+	//gamestate->SwitchToLevel(1,0);
+	SharedPtr<GameStateBase> level(new TestLevelState(context_));
+	if(level)
+	{
+		level->GetData()[StringHash("level")]=1;
+		level->GetData()[StringHash("previouslevel")]=0;
+		pd->NewPlayer();
+		pd->SetDungeonLevel(1);
+		gamestate->SwitchToState(level);
+	}
 
 	element_->SetVisible(false);
 }
