@@ -5,6 +5,8 @@
 #include <Urho3D/Resource/XMLFile.h>
 #include <Urho3D/UI/UI.h>
 
+#include "itemnametagcontainer.h"
+
 void ItemNameTag::RegisterObject(Context *context)
 {
 	context->RegisterFactory<ItemNameTag>("UI");
@@ -12,6 +14,7 @@ void ItemNameTag::RegisterObject(Context *context)
 
 ItemNameTag::ItemNameTag(Context *context) : LogicComponent(context), element_(nullptr)
 {
+	SetUpdateEventMask(USE_NO_EVENT);
 }
 
 IntVector2 ItemNameTag::GetObjectScreenLocation()
@@ -44,11 +47,37 @@ IntVector2 ItemNameTag::GetScreenSize()
 	return IntVector2(0,0);
 }
 
-void ItemNameTag::SetScreenLocation(const IntVector2 &loc)
+bool ItemNameTag::GetCollision(IntRect &myrect, int &move)
 {
+	//IntRect myrect=element_->GetCombinedScreenRect();
+/*	PODVector<UIElement *> tags;
+	auto ui=GetSubsystem<UI>();
+
+	ui->GetRoot()->GetChild("ItemTagLayer", true)->GetChildren(tags,false);
+	for(unsigned int c=0; c<tags.Size(); ++c)
+	{
+		if(tags[c] == element_.Get()) continue;
+		IntRect rect=tags[c]->GetCombinedScreenRect();
+		//auto intersect=rect.IsInside(myrect);
+		auto intersect=RectIntersect(myrect, rect);
+		if(intersect==INTERSECTS || intersect==INSIDE)
+		{
+			move=(rect.bottom_ - myrect.top_)+1;;
+			return true;
+		}
+	}*/
+	return false;
+}
+
+void ItemNameTag::SetScreenLocation()
+{
+	auto loc=GetObjectScreenLocation();
 	IntVector2 size=GetScreenSize();
 	screenlocation_=loc - size/2;
-	if(element_) element_->SetPosition(screenlocation_);
+	if(element_)
+	{
+		element_->SetPosition(screenlocation_);
+	}
 }
 
 void ItemNameTag::SetItemName(const String &name)
@@ -79,21 +108,33 @@ void ItemNameTag::SetItemColor(const Color &c)
 
 void ItemNameTag::Start()
 {
-	IntVector2 screenpos=GetObjectScreenLocation();
-
 	auto ui=GetSubsystem<UI>();
 	auto cache=GetSubsystem<ResourceCache>();
 
 	element_ = ui->LoadLayout(cache->GetResource<XMLFile>("UI/ItemNameTag.xml"));
-	ui->GetRoot()->GetChild("ItemTagLayer", true)->AddChild(element_);
+	//ui->GetRoot()->GetChild("ItemTagLayer", true)->AddChild(element_);
 	//element_->SetVisible(false);
-	SetScreenLocation(screenpos);
+	SetScreenLocation();
 	element_->SetVar(StringHash("ItemNameTag"), Variant(this));
+	auto inc = node_->GetScene()->GetComponent<ItemNameTagContainer>();
+	if(inc)
+	{
+		inc->AddNameTag(this);
+	}
 }
 
 void ItemNameTag::Update(float dt)
 {
-	SetScreenLocation(GetObjectScreenLocation());
+	//SetScreenLocation(GetObjectScreenLocation());
+}
+
+void ItemNameTag::RemoveTag()
+{
+	auto inc = node_->GetScene()->GetComponent<ItemNameTagContainer>();
+	if(inc)
+	{
+		inc->RemoveNameTag(this);
+	}
 }
 
 void ItemNameTag::Stop()

@@ -49,7 +49,7 @@
 #include "Components/enemynameplate.h"
 
 #include "playerdata.h"
-#include "itemnametagcontainer.h"
+#include "Components/itemnametagcontainer.h"
 #include "playeractionstates.h"
 #include "enemyactionstates.h"
 
@@ -138,7 +138,7 @@ void Game::Start()
 	SubscribeToEvent(StringHash("Update"), URHO3D_HANDLER(Game, HandleUpdate));
 
 	context_->RegisterSubsystem(new PlayerData(context_));
-	context_->RegisterSubsystem(new ItemNameTagContainer(context_));
+	//context_->RegisterSubsystem(new ItemNameTagContainer(context_));
 	context_->RegisterSubsystem(new GameStateHandler(context_));
 
 	auto pd=context_->GetSubsystem<PlayerData>();
@@ -253,8 +253,8 @@ void Game::HandleUpdate(StringHash eventType, VariantMap &eventData)
 	if(input->IsMouseVisible()) mousepos=input->GetMousePosition();
 	else mousepos=ui->GetCursorPosition();
 
-	auto it=GetSubsystem<ItemNameTagContainer>();
-	it->DoItemHover();
+	//auto it=GetSubsystem<ItemNameTagContainer>();
+	//it->DoItemHover();
 }
 
 URHO3D_DEFINE_APPLICATION_MAIN(Game)

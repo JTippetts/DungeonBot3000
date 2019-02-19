@@ -27,6 +27,7 @@
 #include "Components/mobnamer.h"
 #include "Components/mainmenu.h"
 #include "Components/playerdeath.h"
+#include "Components/itemnametagcontainer.h"
 
 #include "Enemies/jbadams.h"
 #include "Enemies/khawk.h"
@@ -62,6 +63,7 @@ void RegisterCustomComponents(Context *context)
 	MobNamer::RegisterObject(context);
 	MainMenu::RegisterObject(context);
 	PlayerDeath::RegisterObject(context);
+	ItemNameTagContainer::RegisterObject(context);
 
 	UIMesh::RegisterObject(context);
 

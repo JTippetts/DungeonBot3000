@@ -106,7 +106,8 @@ bool LoadLightingAndCamera(Scene *scene, String levelpath)
 
 			zone->SetFogStart(lightingObject["near"]->GetFloat());
 			zone->SetFogEnd(lightingObject["far"]->GetFloat());
-			zone->SetBoundingBox(BoundingBox(-1000,1000));
+			auto octree=scene->GetComponent<Octree>();
+			zone->SetBoundingBox(octree->GetWorldBoundingBox());
 		}
 
 	}

@@ -53,8 +53,9 @@ void PlayerDeath::HandleRespawn(StringHash eventType, VariantMap &eventData)
 	SharedPtr<GameStateBase> level(new TestLevelState(context_));
 	if(level)
 	{
-		level->GetData()[StringHash("level")]=lvl;
-		level->GetData()[StringHash("previouslevel")]=level-1;
+		auto &data=level->GetData();
+		data[StringHash("level")]=lvl;
+		data[StringHash("previouslevel")]=lvl-1;
 		gamestate->SwitchToState(level);
 	}
 

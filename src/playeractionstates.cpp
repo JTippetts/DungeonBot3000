@@ -24,7 +24,7 @@
 #include "Components/vitals.h"
 
 #include "playeractionstates.h"
-#include "itemnametagcontainer.h"
+#include "Components/itemnametagcontainer.h"
 #include "Components/dropitem.h"
 #include "Components/levelchanger.h"
 
@@ -62,7 +62,8 @@ CombatActionState *CASPlayerBase::CheckInputs(CombatController *actor)
 
 	if(input->GetMouseButtonPress(MOUSEB_LEFT))
 	{
-		auto nametags=GetSubsystem<ItemNameTagContainer>();
+		//auto nametags=GetSubsystem<ItemNameTagContainer>();
+		auto nametags=node->GetScene()->GetComponent<ItemNameTagContainer>();
 		if(nametags)
 		{
 			auto nametag=nametags->GetHoveredTag();
@@ -395,6 +396,7 @@ CombatActionState *CASPlayerLoot::Update(CombatController *actor, float dt)
 			{
 				auto pd=node->GetSubsystem<PlayerData>();
 				pd->EquipItem(itemdrop->GetItem(), true);
+				item_->GetComponent<ItemNameTag>()->RemoveTag();
 				item_->Remove();
 			}
 			return actor->GetState<CASPlayerIdle>();

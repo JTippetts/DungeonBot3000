@@ -29,14 +29,18 @@ class ItemNameTag : public LogicComponent
 	IntVector2 GetScreenLocation();
 	IntVector2 GetScreenSize();
 
-	void SetScreenLocation(const IntVector2 &loc);
+	void SetScreenLocation();
 	void SetItemName(const String &name);
 	void SetItemColor(const Color &c);
+	UIElement *GetElement(){return element_;}
+	void RemoveTag();
 
 	protected:
 	String name_;
 	IntVector2 screenlocation_;
 	SharedPtr<UIElement> element_;
+
+	bool GetCollision(IntRect &rect, int &move);
 
 	virtual void Start() override;
 	virtual void Stop() override;

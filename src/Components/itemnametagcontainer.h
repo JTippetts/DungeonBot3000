@@ -6,18 +6,20 @@
 #include <Urho3D/Core/Context.h>
 #include <Urho3D/Scene/Node.h>
 #include <Urho3D/Scene/Scene.h>
+#include <Urho3D/Scene/LogicComponent.h>
 
 #include <Urho3D/UI/UIElement.h>
 
-#include "Components/itemnametag.h"
+#include "itemnametag.h"
 #include <vector>
 
 using namespace Urho3D;
 
-class ItemNameTagContainer : public Object
+class ItemNameTagContainer : public LogicComponent
 {
-	URHO3D_OBJECT(ItemNameTagContainer, Object);
+	URHO3D_OBJECT(ItemNameTagContainer, LogicComponent);
 	public:
+	static void RegisterObject(Context *context);
 	ItemNameTagContainer(Context *context);
 
 	void AddNameTag(ItemNameTag *tag);
@@ -26,8 +28,15 @@ class ItemNameTagContainer : public Object
 	ItemNameTag *GetHoveredTag();
 
 	void DoItemHover();
+	virtual void DelayedStart() override;
+	virtual void Update(float dt) override;
 
 	protected:
+	SharedPtr<UIElement> layer_;
 	std::vector<WeakPtr<ItemNameTag>> tags_;
 	SharedPtr<UIElement> itemdesc_, equippeddesc_;
+
+	void Populate();
+
+	bool ready_;
 };

@@ -49,6 +49,7 @@
 #include "../Components/levelchanger.h"
 #include "../Components/vitals.h"
 #include "../Components/mainmenu.h"
+#include "../Components/itemnametagcontainer.h"
 
 #include "../scenetools.h"
 
@@ -77,6 +78,7 @@ void TestLevelState::Start()
 	scene_->CreateComponent<Navigable>();
 	scene_->CreateComponent<CrowdManager>();
 	scene_->CreateComponent<HoverHandler>();
+	scene_->CreateComponent<ItemNameTagContainer>();
 	auto musicsource=scene_->CreateComponent<SoundSource>();
 	musicsource->SetSoundType(SOUND_MUSIC);
 	auto music=cache->GetResource<Sound>("Music/Gravity Sound - Chase CC BY 4.0_0.ogg");
@@ -98,8 +100,6 @@ void TestLevelState::Start()
 	nav->SetCellSize(1.0);
 	nav->SetCellHeight(0.5);
 	nav->SetTileSize(64);
-
-	LoadLightingAndCamera(scene_, levelpath);
 
 	Maze2 maze;
 	maze.Init(w,h);
@@ -164,6 +164,7 @@ void TestLevelState::Start()
 	}
 
 	nav->Build();
+	bbox_ = nav->GetWorldBoundingBox();
 
 	for(unsigned int x=0; x<maze.GetCellWidth(); ++x)
 	{
@@ -244,6 +245,8 @@ void TestLevelState::Start()
 			}
 		}
 	}
+
+	LoadLightingAndCamera(scene_, levelpath);
 
 	auto pd=scene_->GetSubsystem<PlayerData>();
 	if(pd)

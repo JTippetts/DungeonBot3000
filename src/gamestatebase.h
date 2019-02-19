@@ -22,7 +22,10 @@ class GameStateBase : public Object
 	virtual void Start()=0;
 	virtual void Stop(){if(scene_) scene_->Remove(); scene_.Reset();}
 
+	const BoundingBox &GetBoundingBox() const {return bbox_;}
+
 	protected:
 	VariantMap data_;
 	SharedPtr<Scene> scene_;
+	BoundingBox bbox_;
 };

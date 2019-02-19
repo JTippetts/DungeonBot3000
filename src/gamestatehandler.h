@@ -26,6 +26,7 @@ class GameStateHandler : public Object
 		if(currentstate_) return currentstate_->GetScene();
 		return nullptr;
 	}
+	GameStateBase *GetCurrentLevel(){ return currentstate_;}
 
 	protected:
 

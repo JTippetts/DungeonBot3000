@@ -43,6 +43,15 @@ Vector2 ThirdPersonCamera::WorldToScreen(const Vector3 &pt)
 	return Vector2(0,0);
 }
 
+Vector2 ThirdPersonCamera::WorldToScreenAtLocation(const Vector3 &pt, const Vector3 &location)
+{
+	Vector3 oldloc=node_->GetWorldPosition();
+	node_->SetWorldPosition(location);
+	Vector2 pos=WorldToScreen(pt);
+	node_->SetWorldPosition(oldloc);
+	return pos;
+}
+
 void ThirdPersonCamera::Update(float dt)
 {
 	shaketime_+=dt*shakespeed_;

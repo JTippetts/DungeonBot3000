@@ -60,7 +60,10 @@ class ThirdPersonCamera : public LogicComponent
 	float CameraPick(Ray &ray, float followdist);
 
 	Vector2 WorldToScreen(const Vector3 &pt);
+	Vector2 WorldToScreenAtLocation(const Vector3 &pt, const Vector3 &location);
 	Node *TopLevelNode(Drawable *d, Scene *s);
+
+	Frustum GetFrustum(){if(camera_) return camera_->GetFrustum(); else return Frustum();}
 
 	protected:
 	void HandleSetCameraPosition(StringHash eventType, VariantMap &eventData);

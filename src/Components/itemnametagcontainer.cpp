@@ -7,23 +7,158 @@
 #include <Urho3D/Resource/ResourceCache.h>
 #include <Urho3D/Resource/XMLFile.h>
 #include <Urho3D/UI/Font.h>
+#include <Urho3D/Graphics/Octree.h>
+#include <Urho3D/IO/Log.h>
 
-#include "Components/itemnametag.h"
-#include "Components/dropitem.h"
-#include "itemmods.h"
-#include "playerdata.h"
+#include "itemnametag.h"
+#include "dropitem.h"
+#include "thirdpersoncamera.h"
+#include "../itemmods.h"
+#include "../playerdata.h"
+#include "../gamestatehandler.h"
 
-ItemNameTagContainer::ItemNameTagContainer(Context *context) : Object(context)
+#include <algorithm>
+
+Intersection RectIntersect(IntRect &r1, IntRect r2)
+{
+	if(r2.right_ < r1.left_ || r2.left_ > r1.right_ || r2.bottom_ < r1.top_ || r2.top_ > r1.bottom_) return OUTSIDE;
+	else if (r2.left_ < r1.left_ || r2.right_ > r1.right_ || r2.top_ < r1.top_ || r2.bottom_ > r1.bottom_) return INTERSECTS;
+	else return INSIDE;
+}
+
+String WriteVector3(const Vector3 &v)
+{
+	return String("(")+String(v.x_)+","+String(v.y_)+","+String(v.z_)+")";
+}
+
+String WriteVector2(const Vector2 &v)
+{
+	return String("(")+String(v.x_)+","+String(v.y_)+")";
+}
+
+
+void ItemNameTagContainer::RegisterObject(Context *context)
+{
+	context->RegisterFactory<ItemNameTagContainer>();
+}
+
+ItemNameTagContainer::ItemNameTagContainer(Context *context) : LogicComponent(context), ready_(false)
 {
 }
 
 void ItemNameTagContainer::AddNameTag(ItemNameTag *tag)
 {
+	tags_.push_back(WeakPtr<ItemNameTag>(tag));
 }
 
 void ItemNameTagContainer::RemoveNameTag(ItemNameTag *tag)
 {
+	//tags_.remove(tag);
+	/*for(unsigned int i=0; i<tags_.size(); ++i)
+	{
+		if(tags_[i]==tag)
+		{
+			tags_[i]=tags_[tags_.size()-1];
+			tags_.pop_back();
+			return;
+		}
+	}*/
+}
 
+void ItemNameTagContainer::DelayedStart()
+{
+
+}
+
+bool Collides(std::vector<ItemNameTag *> &fixed, ItemNameTag *tag, int &move)
+{
+	auto myelem=tag->GetElement();
+	IntRect myrect=myelem->GetCombinedScreenRect();
+
+	for(auto i : fixed)
+	{
+		auto elem=i->GetElement();
+
+		IntRect rect=elem->GetCombinedScreenRect();
+		auto intersect=RectIntersect(myrect, rect);
+		if(intersect==INTERSECTS || intersect==INSIDE)
+		{
+			move=(rect.bottom_ - myrect.top_)+1;
+			return true;
+		}
+	}
+	return false;
+}
+
+void ItemNameTagContainer::Populate()
+{
+	std::vector<ItemNameTag *> visible;
+	auto ui=GetSubsystem<UI>();
+	auto layer=ui->GetRoot()->GetChild("ItemTagLayer", true);
+	auto cam = node_->GetScene()->GetChild("Camera")->GetComponent<ThirdPersonCamera>();
+	auto frustum = cam->GetFrustum();
+
+	std::vector<ItemNameTag *> fixed;
+
+	if(layer)
+	{
+		layer->RemoveAllChildren();
+
+		// Find all visible items and store in visible
+		for(auto i=tags_.begin(); i!=tags_.end(); ++i)
+		{
+			// Get position and check visibility
+			while((*i).Expired()) i=tags_.erase(i);
+			if(i!=tags_.end())
+			{
+				auto pos = (*i)->GetNode()->GetWorldPosition();
+				if(frustum.IsInside(pos)==INSIDE)
+				{
+					visible.push_back((*i).Get());
+					(*i)->SetScreenLocation();
+					layer->AddChild((*i)->GetElement());
+				}
+			}
+		}
+
+		// Sort visible based on the on-screen y coordinate of the tag
+		std::sort(visible.begin(), visible.end(), [](ItemNameTag *t1, ItemNameTag *t2)->bool
+			{
+				auto e1 = t1->GetElement();
+				auto e2 = t2->GetElement();
+				int p1=e1->GetPosition().y_;
+				int p2=e2->GetPosition().y_;
+				if(p1==p2)
+				{
+					// Break the tie with node ID
+					auto n1=t1->GetNode()->GetID();
+					auto n2=t2->GetNode()->GetID();
+					return n1<n2;
+				}
+				return e1->GetPosition().y_ < e2->GetPosition().y_;
+			}
+		);
+
+		//
+		int move;
+		for(auto i : visible)
+		{
+			while(Collides(fixed, i, move))
+			{
+				auto element=i->GetElement();
+				auto pos = element->GetPosition();
+				pos.y_ += move+1;
+				element->SetPosition(pos);
+			}
+			fixed.push_back(i);
+		}
+	}
+}
+
+void ItemNameTagContainer::Update(float dt)
+{
+	Populate();
+	DoItemHover();
 }
 
 ItemNameTag *ItemNameTagContainer::GetHoveredTag()
