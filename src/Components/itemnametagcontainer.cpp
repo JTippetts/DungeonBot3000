@@ -95,8 +95,9 @@ void ItemNameTagContainer::Populate()
 	std::vector<ItemNameTag *> visible;
 	auto ui=GetSubsystem<UI>();
 	auto layer=ui->GetRoot()->GetChild("ItemTagLayer", true);
-	auto cam = node_->GetScene()->GetChild("Camera")->GetComponent<ThirdPersonCamera>();
-	auto frustum = cam->GetFrustum();
+	auto cam = node_->GetScene()->GetChild("Camera");//->GetComponent<ThirdPersonCamera>();
+	//auto frustum = cam->GetFrustum();
+	auto campos=cam->GetWorldPosition();
 
 	std::vector<ItemNameTag *> fixed;
 
@@ -112,7 +113,8 @@ void ItemNameTagContainer::Populate()
 			if(i!=tags_.end())
 			{
 				auto pos = (*i)->GetNode()->GetWorldPosition();
-				if(frustum.IsInside(pos)==INSIDE)
+				if((pos-campos).Length() < 100.0f)
+				//if(frustum.IsInside(pos)==INSIDE)
 				{
 					visible.push_back((*i).Get());
 					(*i)->SetScreenLocation();
@@ -124,18 +126,25 @@ void ItemNameTagContainer::Populate()
 		// Sort visible based on the on-screen y coordinate of the tag
 		std::sort(visible.begin(), visible.end(), [](ItemNameTag *t1, ItemNameTag *t2)->bool
 			{
-				auto e1 = t1->GetElement();
+				/*auto e1 = t1->GetElement();
 				auto e2 = t2->GetElement();
 				int p1=e1->GetPosition().y_;
 				int p2=e2->GetPosition().y_;
 				if(p1==p2)
 				{
-					// Break the tie with node ID
-					auto n1=t1->GetNode()->GetID();
-					auto n2=t2->GetNode()->GetID();
-					return n1<n2;
+					// Break the tie with node position
+					//auto n1=t1->GetNode()->GetID();
+					//auto n2=t2->GetNode()->GetID();
+					//return n1<n2;
+					auto n1=t1->GetNode()->GetWorldPosition();
+					auto n2=t2->GetNode()->GetWorldPosition();
+					return n2.x_ - n2.z_ < n1.x_ - n1.z_;
 				}
-				return e1->GetPosition().y_ < e2->GetPosition().y_;
+				return p2 < p1;*/
+				// Sort based on x-z of item location
+				auto p1 = t1->GetNode()->GetWorldPosition();
+				auto p2 = t2->GetNode()->GetWorldPosition();
+				return p1.x_ - p1.z_ < p2.x_ - p2.z_;
 			}
 		);
 
@@ -252,6 +261,9 @@ void ItemNameTagContainer::DoItemHover()
 		}
 	}
 
+	// DEBUGGING: Add item world position
+	AddItem(WriteVector3(nd->GetWorldPosition()), modlist);
+
 	itemdesc_->SetPosition(IntVector2(graphics->GetWidth()-itemdesc_->GetWidth(), graphics->GetHeight()/2 - itemdesc_->GetHeight()/2));
 	itemdesc_->SetVisible(true);
 
@@ -272,5 +284,17 @@ void ItemNameTagContainer::DoItemHover()
 		}
 		equippeddesc_->SetPosition(IntVector2(0, graphics->GetHeight()/2 - equippeddesc_->GetHeight()/2));
 		equippeddesc_->SetVisible(true);
+	}
+}
+
+void ItemNameTagContainer::Stop()
+{
+	if(itemdesc_)
+	{
+		itemdesc_->Remove();
+	}
+	if(equippeddesc_)
+	{
+		equippeddesc_->Remove();
 	}
 }

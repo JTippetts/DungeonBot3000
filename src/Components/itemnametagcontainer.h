@@ -30,6 +30,7 @@ class ItemNameTagContainer : public LogicComponent
 	void DoItemHover();
 	virtual void DelayedStart() override;
 	virtual void Update(float dt) override;
+	virtual void Stop() override;
 
 	protected:
 	SharedPtr<UIElement> layer_;
