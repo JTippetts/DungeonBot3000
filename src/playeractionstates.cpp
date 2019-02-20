@@ -713,6 +713,7 @@ CASPlayerLaserBeam::CASPlayerLaserBeam(Context *context) : CASPlayerBase(context
 
 void CASPlayerLaserBeam::Start(CombatController *actor)
 {
+	auto cache = GetSubsystem<ResourceCache>();
 	auto node = actor->GetNode();
 	auto ac = node->GetComponent<AnimationController>();
 	auto scene = node->GetScene();
@@ -722,31 +723,42 @@ void CASPlayerLaserBeam::Start(CombatController *actor)
 		ac->Play(actor->GetAnimPath() + "/Models/Idle.ani", 0, true, 0.1f);
 	}
 
-	endburst_ = scene->CreateChild();
-	beam_ = scene->CreateChild();
-
-	auto cache = GetSubsystem<ResourceCache>();
-	auto emitter = endburst_->CreateComponent<ParticleEmitter>();
-	auto pe = cache->GetResource<ParticleEffect>("Effects/laserbeamparticle.xml");
-	if(pe)
+	if(!endburst_)
 	{
-		emitter->SetEffect(pe);
+		endburst_ = scene->CreateChild();
+		auto emitter = endburst_->CreateComponent<ParticleEmitter>();
+		auto pe = cache->GetResource<ParticleEffect>("Effects/laserbeamparticle.xml");
+		if(pe)
+		{
+			emitter->SetEffect(pe);
+		}
+
+		auto lnode = endburst_->CreateChild("LightNode");
+		lnode->SetPosition(Vector3(0,8,0));
+		auto ll = lnode->CreateComponent<Light>();
+		ll->SetLightType(LIGHT_POINT);
+		ll->SetRange(16);
+		ll->SetEnabled(true);
+		ll->SetColor(Color(1.5,1.2,1));
 	}
 
-	auto lnode = endburst_->CreateChild();
-	lnode->SetPosition(Vector3(0,8,0));
-	auto ll = lnode->CreateComponent<Light>();
-	ll->SetLightType(LIGHT_POINT);
-	ll->SetRange(16);
-	ll->SetEnabled(true);
-	ll->SetColor(Color(1.5,1.2,1));
+	endburst_->GetComponent<ParticleEmitter>()->SetEmitting(true);
+	endburst_->GetChild("LightNode", true)->SetEnabled(true);
 
-	auto beambb = beam_->CreateComponent<StaticModel>();
-	if(beambb)
+	if(!beam_)
 	{
-		beambb->SetModel(cache->GetResource<Model>("Effects/Beam.mdl"));
-		beambb->SetMaterial(cache->GetResource<Material>("Effects/flame2.xml"));
+		beam_ = scene->CreateChild();
+
+
+		auto beambb = beam_->CreateComponent<StaticModel>();
+		if(beambb)
+		{
+			beambb->SetModel(cache->GetResource<Model>("Effects/Beam.mdl"));
+			beambb->SetMaterial(cache->GetResource<Material>("Effects/flame2.xml"));
+		}
 	}
+
+	beam_->SetEnabled(true);
 
 	lastendpos_ = endpos_ = GetEndPoint(node);
 	timetopulse_=0;
@@ -771,8 +783,12 @@ void CASPlayerLaserBeam::End(CombatController *actor)
 		ac->Stop(actor->GetAnimPath() + "/Models/Idle.ani", 0.1f);
 	}
 
-	endburst_->Remove();
-	beam_->Remove();
+	//endburst_->Remove();
+	endburst_->GetComponent<ParticleEmitter>()->SetEmitting(false);
+	endburst_->GetChild("LightNode", true)->SetEnabled(false);
+
+	//beam_->Remove();
+	beam_->SetEnabled(false);
 
 	if(swing_)
 	{

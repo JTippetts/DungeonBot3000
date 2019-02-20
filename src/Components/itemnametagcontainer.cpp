@@ -123,24 +123,9 @@ void ItemNameTagContainer::Populate()
 			}
 		}
 
-		// Sort visible based on the on-screen y coordinate of the tag
+		// Sort visible based on the x-z coordinate of the item drop
 		std::sort(visible.begin(), visible.end(), [](ItemNameTag *t1, ItemNameTag *t2)->bool
 			{
-				/*auto e1 = t1->GetElement();
-				auto e2 = t2->GetElement();
-				int p1=e1->GetPosition().y_;
-				int p2=e2->GetPosition().y_;
-				if(p1==p2)
-				{
-					// Break the tie with node position
-					//auto n1=t1->GetNode()->GetID();
-					//auto n2=t2->GetNode()->GetID();
-					//return n1<n2;
-					auto n1=t1->GetNode()->GetWorldPosition();
-					auto n2=t2->GetNode()->GetWorldPosition();
-					return n2.x_ - n2.z_ < n1.x_ - n1.z_;
-				}
-				return p2 < p1;*/
 				// Sort based on x-z of item location
 				auto p1 = t1->GetNode()->GetWorldPosition();
 				auto p2 = t2->GetNode()->GetWorldPosition();
