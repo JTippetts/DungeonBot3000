@@ -127,7 +127,7 @@ StatSet *PlayerData::GetSkillStatSet(const std::string &name)
 	return &(i->second);
 }
 
-StatSetCollection PlayerData::GetStatSetCollection(EquipmentSlots slot, const std::string &skillname)
+StatSetCollection PlayerData::GetStatSetCollection(unsigned int slot, const std::string &skillname)
 {
 	// Build a collection.
 	// Collect all item global stat sets, all buff stat sets, and all base stats
@@ -138,16 +138,19 @@ StatSetCollection PlayerData::GetStatSetCollection(EquipmentSlots slot, const st
 	coll.push_back(&basestats_);
 
 	// Push global stats for all eq
-	for(unsigned int g=0; g<EqNumEquipmentSlots; ++g)
+	/*for(unsigned int g=0; g<EqNumEquipmentSlots; ++g)
 	{
 		coll.push_back(&equipmentglobalstats_[g]);
-	}
+	}*/
+	coll.push_back(equipmentset_.GetGlobalStats());
 
 	// Push local stats for requested slot
-	if(slot<EqNumEquipmentSlots)
+	/*if(slot<EqNumEquipmentSlots)
 	{
 		coll.push_back(&equipmentlocalstats_[slot]);
-	}
+	}*/
+	auto imp=equipmentset_.GetLocalStats(slot);
+	if(imp) coll.push_back(imp);
 
 	if(skillname != "")
 	{

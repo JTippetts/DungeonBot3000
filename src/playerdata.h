@@ -44,10 +44,8 @@ class PlayerData : public Object
 	{
 		vitalsstats_.clear();
 		vitalsstats_.push_back(&basestats_);
-		for(unsigned int g=0; g<EqNumEquipmentSlots; ++g)
-		{
-			vitalsstats_.push_back(&equipmentglobalstats_[g]);
-		}
+		vitalsstats_.push_back(equipmentset_.GetGlobalStats());
+
 		return vitalsstats_;
 	}
 
@@ -59,7 +57,7 @@ class PlayerData : public Object
 
 	StatSet *GetSkillStatSet(const std::string &name);
 
-	StatSetCollection GetStatSetCollection(EquipmentSlots slot=EqNumEquipmentSlots, const std::string &skillname="");  // Pass EqNumEquipmentSlots and/or "" to disregard these parameters
+	StatSetCollection GetStatSetCollection(unsigned int slot, const std::string &skillname="");  // Pass EqNumEquipmentSlots and/or "" to disregard these parameters
 
 	//void EquipItem(const EquipmentItemDef &item, bool drop=false);
 	//void DropItem(const EquipmentItemDef &item, Vector3 dropperlocation, Vector3 location);
@@ -77,11 +75,11 @@ class PlayerData : public Object
 
 	//bool GenerateRandomItem(EquipmentItemDef &item, EquipmentSlots slot, ItemRarity rarity, int level);
 	GeneralItem *GenerateRandomEquipmentItem(EquipmentSlots slot, ItemRarity rarity, int level);
-	EquipmentItemDef *GetEquipmentSlot(EquipmentSlots slot)
+	/*EquipmentItemDef *GetEquipmentSlot(EquipmentSlots slot)
 	{
 		if(slot==EqNumEquipmentSlots) return nullptr;
 		return &equipment_[slot];
-	}
+	}*/
 
 	unsigned int GetDungeonLevel(){return dungeonlevel_;}
 	void SetDungeonLevel(unsigned int l){dungeonlevel_=l;}
@@ -99,9 +97,9 @@ class PlayerData : public Object
 	StatSetCollection vitalsstats_;
 	StatModifierHandle levelmodifier_;
 
-	EquipmentItemDef equipment_[EqNumEquipmentSlots];
-	StatSet equipmentglobalstats_[EqNumEquipmentSlots];
-	StatSet equipmentlocalstats_[EqNumEquipmentSlots];
+	//EquipmentItemDef equipment_[EqNumEquipmentSlots];
+	//StatSet equipmentglobalstats_[EqNumEquipmentSlots];
+	//StatSet equipmentlocalstats_[EqNumEquipmentSlots];
 
 
 	std::unordered_map<std::string, StatSet> skillstats_;

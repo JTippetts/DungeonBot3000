@@ -258,7 +258,8 @@ void ItemNameTagContainer::DoItemHover()
 		itemdesc_->SetVisible(true);
 
 		// Equipped item
-		EquipmentItemDef *eqdef=pd->GetEquipmentSlot(def.slot_);
+		// TODO
+		/*EquipmentItemDef *eqdef=pd->GetEquipmentSlot(def.slot_);
 		if(eqdef)
 		{
 			modlist=equippeddesc_->GetChild("ModList", true);
@@ -274,7 +275,7 @@ void ItemNameTagContainer::DoItemHover()
 			}
 			equippeddesc_->SetPosition(IntVector2(0, graphics->GetHeight()/2 - equippeddesc_->GetHeight()/2));
 			equippeddesc_->SetVisible(true);
-		}
+		}*/
 	}
 }
 

@@ -13,7 +13,7 @@ struct EquipmentEntry
 	bool used_;
 	bool active_;
 	std::vector<EquipmentSlots> allowabletypes_;
-	EquipmentItemDef def_;
+	WeakPtr<GeneralItem> item_;
 
 	EquipmentEntry();
 	EquipmentEntry(const String &allowables);
@@ -28,14 +28,14 @@ class EquipmentSet : public Object
 	EquipmentSet(Context *context);
 
 	unsigned int CreateSlot(const String &allowables);
-	bool CanAddItemToSlot(unsigned int slot, const EquipmentItemDef &def);
-	bool AddItemToSlot(EquipmentItemDef &existing, unsigned int slot, const EquipmentItemDef &def);
-	bool RemoveItemFromSlot(EquipmentItemDef &existing, unsigned int slot);
-	bool GetItemAtSlot(EquipmentItemDef &existing, unsigned int slot);
+	bool CanAddItemToSlot(unsigned int slot, GeneralItem *item, bool checkisused=false);
+	bool AddItemToSlot(unsigned int slot, GeneralItem *item);
+	bool RemoveItemFromSlot(unsigned int slot);
+	GeneralItem *GetItemAtSlot(unsigned int slot);
 	void SetSlotActive(unsigned int slot, bool a);
 
 	StatSet *GetGlobalStats();
-	StatSet *GetImplicitStats(unsigned int slot);
+	StatSet *GetLocalStats(unsigned int slot);
 	unsigned int GetImplicitStats(StatSetCollection &ssc, EquipmentSlots eqtype);
 	unsigned int GetNumberOfSlots();
 

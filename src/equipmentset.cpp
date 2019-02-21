@@ -56,36 +56,39 @@ unsigned int EquipmentSet::CreateSlot(const String &allowables)
 	return slots_.size()-1;
 }
 
-bool EquipmentSet::CanAddItemToSlot(unsigned int slot, const EquipmentItemDef &def)
+bool EquipmentSet::CanAddItemToSlot(unsigned int slot, GeneralItem *item, bool checkisused)
 {
 	if(slot>=slots_.size()) return false;
+	if(!item) return false;
+	if(item->type_ != GITEquipment) return false;
 
 	auto &s=slots_[slot];
-	if (s.Allowed(def.slot_)) return true;
+	if(checkisused)
+	{
+		if(s.used_) return false;
+	}
+	if (s.Allowed(item->def_.slot_)) return true;
 
 	return false;
 }
 
-bool EquipmentSet::AddItemToSlot(EquipmentItemDef &existing, unsigned int slot, const EquipmentItemDef &def)
+bool EquipmentSet::AddItemToSlot(unsigned int slot, GeneralItem *item)
 {
 	// This method returns true if there was already an item in the slot, and fills in existing with the item there
-	if(!CanAddItemToSlot(slot, def)) return false;
+	if(!item) return false;
+	if(item->type_ != GITEquipment) return false;
+	if(!CanAddItemToSlot(slot, item)) return false;
 
 	auto pd=GetSubsystem<PlayerData>();
 	auto &itemmodtable = pd->GetItemModTable();
 
 	auto &s=slots_[slot];
-	bool hasexisting=false;
-	if(s.used_)
-	{
-		hasexisting=true;
-		existing=s.def_;
-	}
-	s.def_=def;
+
+	s.item_=item;
 	s.used_=true;
 
 	localstats_[slot].Clear();
-	for(auto m : def.itemmods_)
+	for(auto m : item->def_.itemmods_)
 	{
 		auto mod = itemmodtable.GetMod(m);
 		if(mod)
@@ -98,10 +101,10 @@ bool EquipmentSet::AddItemToSlot(EquipmentItemDef &existing, unsigned int slot, 
 		}
 	}
 	RebuildGlobalStatSet();
-	return hasexisting;
+	return true;
 }
 
-bool EquipmentSet::RemoveItemFromSlot(EquipmentItemDef &existing, unsigned int slot)
+bool EquipmentSet::RemoveItemFromSlot(unsigned int slot)
 {
 	if(slot>=slots_.size())
 	{
@@ -109,33 +112,22 @@ bool EquipmentSet::RemoveItemFromSlot(EquipmentItemDef &existing, unsigned int s
 	}
 
 	auto &s=slots_[slot];
-	bool hasexisting=false;
-	if(s.used_)
-	{
-		hasexisting=true;
-		existing=s.def_;
-	}
 	localstats_[slot].Clear();
 	s.used_=false;
 	RebuildGlobalStatSet();
-	return hasexisting;
+	return true;
 }
 
-bool EquipmentSet::GetItemAtSlot(EquipmentItemDef &existing, unsigned int slot)
+GeneralItem *EquipmentSet::GetItemAtSlot(unsigned int slot)
 {
 	if(slot>=slots_.size())
 	{
-		return false;
+		return nullptr;
 	}
 
 	auto &s=slots_[slot];
-	bool hasexisting=false;
-	if(s.used_)
-	{
-		hasexisting=true;
-		existing=s.def_;
-	}
-	return hasexisting;
+	if(s.used_ && s.item_ && !s.item_.Expired()) return s.item_.Get();
+	return nullptr;
 }
 
 StatSet *EquipmentSet::GetGlobalStats()
@@ -143,7 +135,7 @@ StatSet *EquipmentSet::GetGlobalStats()
 	return &globalstats_;
 }
 
-StatSet *EquipmentSet::GetImplicitStats(unsigned int slot)
+StatSet *EquipmentSet::GetLocalStats(unsigned int slot)
 {
 	if(slot>=localstats_.size())
 	{
@@ -181,9 +173,9 @@ void EquipmentSet::RebuildGlobalStatSet()
 	for(unsigned int c=0; c<slots_.size(); ++c)
 	{
 		auto &s = slots_[c];
-		if(s.used_ && s.active_)
+		if(s.used_ && s.active_ && s.item_ && !s.item_.Expired())
 		{
-			for(auto m : s.def_.itemmods_)
+			for(auto m : s.item_->def_.itemmods_)
 			{
 				auto mod = itemmodtable.GetMod(m);
 				if(mod)

@@ -129,13 +129,13 @@ bool InventoryScreen::IsVisible()
 	return false;
 }
 
-bool InventoryScreen::CanEquipItemInSlot(unsigned int slot, EquipmentItemDef &def)
+bool InventoryScreen::CanEquipItemInSlot(unsigned int slot, GeneralItem *item)
 {
 	auto pd=GetSubsystem<PlayerData>();
 	auto &eqp=pd->GetEquipmentSet();
 
 	if(slot>=slots_.size()) return false;
-	return eqp.CanAddItemToSlot(slot, def);
+	return eqp.CanAddItemToSlot(slot, item);
 }
 
 IntVector2 InventoryScreen::GetInventorySizeByType(EquipmentSlots slot)

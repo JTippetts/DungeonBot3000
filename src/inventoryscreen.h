@@ -19,7 +19,7 @@ class InventoryScreen : public Object
 	void SetVisible(bool vis);
 	bool IsVisible();
 
-	bool CanEquipItemInSlot(unsigned int slot, EquipmentItemDef &def);
+	bool CanEquipItemInSlot(unsigned int slot, GeneralItem *item);
 	UIElement *GetHoveredSlot(const IntVector2 &mousepos, unsigned int &slot);
 	IntVector2 GetInventorySizeByType(EquipmentSlots slot);
 	bool GetHoveredBagSlot(const IntVector2 &mousepos, IntVector2 &pos);
