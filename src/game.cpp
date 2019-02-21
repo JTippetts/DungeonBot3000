@@ -148,7 +148,7 @@ void Game::Start()
 	UI *ui=GetSubsystem<UI>();
 
 	Cursor* cursor=new Cursor(context_);
-	cursor->DefineShape(CS_NORMAL, cache->GetResource<Image>("UI/buttons.png"), IntRect(950,50,1000,100), IntVector2(20,15));
+	cursor->DefineShape(CS_NORMAL, cache->GetResource<Image>("UI/buttons.png"), IntRect(972,74,1008,112), IntVector2(10,6));
 	ui->SetCursor(cursor);
 	cursor->SetVisible(true);
 	cursor->SetPosition(ui->GetRoot()->GetWidth()/2, ui->GetRoot()->GetHeight()/2);

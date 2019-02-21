@@ -24,7 +24,7 @@ int roll(int,int);
 float rollf(float,float);
 double rolld(double,double);
 
-PlayerData::PlayerData(Context *context) : Object(context), energy_(0), currentattack_(PASpinAttack)
+PlayerData::PlayerData(Context *context) : Object(context), energy_(0), currentattack_(PASpinAttack), inventoryscreen_(context), equipmentset_(context)
 {
 }
 
@@ -168,6 +168,7 @@ Node *PlayerData::GetPlayerNode()
 	return nullptr;
 }
 
+/*
 void PlayerData::EquipItem(const EquipmentItemDef &item, bool drop)
 {
 	if(item.slot_ < EqNumEquipmentSlots)
@@ -208,8 +209,10 @@ void PlayerData::EquipItem(const EquipmentItemDef &item, bool drop)
 	auto ssc=GetVitalsStats();
 	Log::Write(LOG_INFO, String("Life regen: ") + String(GetStatValue(ssc, "LifeRegen")));
 }
+*/
 
-void PlayerData::DropItem(const EquipmentItemDef &item, Vector3 dropperlocation, Vector3 location)
+//void PlayerData::DropItem(const EquipmentItemDef &item, Vector3 dropperlocation, Vector3 location)
+void PlayerData::DropItem(GeneralItem *item, Vector3 dropperlocation, Vector3 location)
 {
 	if(!GetCurrentScene()) return;
 
@@ -220,15 +223,18 @@ void PlayerData::DropItem(const EquipmentItemDef &item, Vector3 dropperlocation,
 	auto nametag = n->CreateComponent<ItemNameTag>();
 	if(nametag)
 	{
-		nametag->SetItemName(item.name_);
-		nametag->SetItemColor(Color(1,1,1));
-		switch(item.rarity_)
+		if(item->type_==GITEquipment)
 		{
-			case IRNormal: nametag->SetItemColor(Color(1,1,1)); break;
-			case IRMagic: nametag->SetItemColor(Color(0.5,0.5,1)); break;
-			case IRRare: nametag->SetItemColor(Color(1,1,0.5)); break;
-			case IRUnique: nametag->SetItemColor(Color(1,0.75,0.25)); break;
-		};
+			nametag->SetItemName(item->def_.name_);
+			nametag->SetItemColor(Color(1,1,1));
+			switch(item->def_.rarity_)
+			{
+				case IRNormal: nametag->SetItemColor(Color(1,1,1)); break;
+				case IRMagic: nametag->SetItemColor(Color(0.5,0.5,1)); break;
+				case IRRare: nametag->SetItemColor(Color(1,1,0.5)); break;
+				case IRUnique: nametag->SetItemColor(Color(1,0.75,0.25)); break;
+			};
+		}
 	}
 	else
 	{
@@ -263,9 +269,46 @@ void PlayerData::NewPlayer()
 	LoadItemClass(EqTurret, "Tables/Items/lasers.json");
 	LoadItemClass(EqShell, "Tables/Items/shells.json");
 
-	EquipItem(EquipmentItemDef(EqBlade, IRNormal, "Starter Blade", "", "", {"StarterBladeImplicit"}), false);
-	EquipItem(EquipmentItemDef(EqTurret, IRNormal, "Starter Laser", "", "", {"StarterLaserImplicit"}), false);
-	EquipItem(EquipmentItemDef(EqShell, IRNormal, "Starter Shell", "", "", {"StarterShellGlobal"}), false);
+	inventoryscreen_.Setup();
+
+	//EquipItem(EquipmentItemDef(EqBlade, IRNormal, "Starter Blade", "", "", {"StarterBladeImplicit"}), false);
+	//EquipItem(EquipmentItemDef(EqTurret, IRNormal, "Starter Laser", "", "", {"StarterLaserImplicit"}), false);
+	//EquipItem(EquipmentItemDef(EqShell, IRNormal, "Starter Shell", "", "", {"StarterShellGlobal"}), false);
+}
+
+void PlayerData::ShowInventoryScreen(bool show)
+{
+	inventoryscreen_.SetVisible(show);
+}
+
+bool PlayerData::IsInventoryScreenVisible()
+{
+	return inventoryscreen_.IsVisible();
+}
+
+EquipmentSet &PlayerData::GetEquipmentSet()
+{
+	return equipmentset_;
+}
+
+GeneralItem *PlayerData::AddItem(const EquipmentItemDef &def)
+{
+	SharedPtr<GeneralItem> itm(new GeneralItem(context_, def));
+	globalitemlist_.push_back(itm);
+	return itm;
+}
+
+void PlayerData::RemoveItem(GeneralItem *item)
+{
+	for(unsigned int c=0; c<globalitemlist_.size(); ++c)
+	{
+		if(globalitemlist_[c]==item)
+		{
+			globalitemlist_[c].Reset();
+			globalitemlist_[c]=globalitemlist_[globalitemlist_.size()-1];
+			globalitemlist_.pop_back();
+		}
+	}
 }
 
 void PlayerData::SpawnPlayer(Scene *scene, Vector3 location)
@@ -300,23 +343,29 @@ void PlayerData::SpawnPlayer(Scene *scene, Vector3 location)
 	n->SetWorldPosition(location);
 }
 
-bool PlayerData::GenerateRandomItem(EquipmentItemDef &item, EquipmentSlots slot, ItemRarity rarity, int level)
+//bool PlayerData::GenerateRandomItem(EquipmentItemDef &item, EquipmentSlots slot, ItemRarity rarity, int level)
+GeneralItem *PlayerData::GenerateRandomEquipmentItem(EquipmentSlots slot, ItemRarity rarity, int level)
 {
+	EquipmentItemDef item;
+
 	if(rarity==IRUnique) rarity=IRRare;   // TODO: Implement uniques
 	item.rarity_=rarity;
 	item.slot_=slot;
 
 	auto cls=GetItemClass(slot);
-	if(!cls) return false;
+	if(!cls) return nullptr;
 
 	ItemClassEntry *entry=cls->Choose(level);
-	if(!entry) return false;
+	if(!entry) return nullptr;
 
 	item.name_=entry->name_;
 	item.itemmods_.clear();
 	for(auto i : entry->fixed_) item.itemmods_.push_back(i);
 
-	if(rarity==IRNormal) return true;
+	if(rarity==IRNormal)
+	{
+		return AddItem(item);
+	}
 
 	unsigned int nummods=0;
 	if(rarity==IRMagic) nummods=roll(1,2);
@@ -335,5 +384,5 @@ bool PlayerData::GenerateRandomItem(EquipmentItemDef &item, EquipmentSlots slot,
 		String mod=itemmodtiers_.Choose(tiergroup, level);
 		item.itemmods_.push_back(mod);
 	}
-	return true;
+	return AddItem(item);
 }

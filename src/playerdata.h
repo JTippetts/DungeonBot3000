@@ -11,6 +11,9 @@
 #include <unordered_map>
 #include <vector>
 
+#include "inventoryscreen.h"
+#include "equipmentset.h"
+
 using namespace Urho3D;
 
 enum PlayerAttack
@@ -58,8 +61,10 @@ class PlayerData : public Object
 
 	StatSetCollection GetStatSetCollection(EquipmentSlots slot=EqNumEquipmentSlots, const std::string &skillname="");  // Pass EqNumEquipmentSlots and/or "" to disregard these parameters
 
-	void EquipItem(const EquipmentItemDef &item, bool drop=false);
-	void DropItem(const EquipmentItemDef &item, Vector3 dropperlocation, Vector3 location);
+	//void EquipItem(const EquipmentItemDef &item, bool drop=false);
+	//void DropItem(const EquipmentItemDef &item, Vector3 dropperlocation, Vector3 location);
+	void DropItem(GeneralItem *item, Vector3 dropperlocation, Vector3 location);
+
 
 	void NewPlayer();
 	void SpawnPlayer(Scene *scene, Vector3 location);  // Spawn player into current scene
@@ -70,7 +75,8 @@ class PlayerData : public Object
 	PlayerAttack GetAttack(){return currentattack_;}
 	void SetAttack(PlayerAttack a){currentattack_=a;}
 
-	bool GenerateRandomItem(EquipmentItemDef &item, EquipmentSlots slot, ItemRarity rarity, int level);
+	//bool GenerateRandomItem(EquipmentItemDef &item, EquipmentSlots slot, ItemRarity rarity, int level);
+	GeneralItem *GenerateRandomEquipmentItem(EquipmentSlots slot, ItemRarity rarity, int level);
 	EquipmentItemDef *GetEquipmentSlot(EquipmentSlots slot)
 	{
 		if(slot==EqNumEquipmentSlots) return nullptr;
@@ -79,6 +85,14 @@ class PlayerData : public Object
 
 	unsigned int GetDungeonLevel(){return dungeonlevel_;}
 	void SetDungeonLevel(unsigned int l){dungeonlevel_=l;}
+
+	void ShowInventoryScreen(bool show);
+	bool IsInventoryScreenVisible();
+
+	EquipmentSet &GetEquipmentSet();
+
+	GeneralItem *AddItem(const EquipmentItemDef &def);
+	void RemoveItem(GeneralItem *item);
 
 	protected:
 	StatSet basestats_;
@@ -99,4 +113,8 @@ class PlayerData : public Object
 	double energy_;
 	PlayerAttack currentattack_;
 	unsigned int dungeonlevel_;
+
+	std::vector<SharedPtr<GeneralItem>> globalitemlist_;
+	InventoryScreen inventoryscreen_;
+	EquipmentSet equipmentset_;
 };

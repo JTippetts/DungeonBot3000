@@ -100,8 +100,8 @@ void LifeBubbleUI::HandleGamble(StringHash eventType, VariantMap &eventData)
 	if(rt<33) slot=EqTurret;
 	else if(rt<66) slot=EqShell;
 
-	EquipmentItemDef def;
-	if(pd->GenerateRandomItem(def, slot, ir, 10)) pd->DropItem(def, node_->GetPosition(), node_->GetPosition()+Vector3(rollf(-5.0,5.0), 0, rollf(-5.0,5.0)));
+	auto item=pd->GenerateRandomEquipmentItem(slot, ir, 10);
+	if(item) pd->DropItem(item, node_->GetPosition(), node_->GetPosition()+Vector3(rollf(-5.0,5.0), 0, rollf(-5.0,5.0)));
 }
 
 void LifeBubbleUI::Update(float dt)
@@ -123,6 +123,12 @@ void LifeBubbleUI::Update(float dt)
 	auto input=GetSubsystem<Input>();
 	if(input->GetKeyPress(KEY_Q)) pd->SetAttack(PASpinAttack);
 	else if(input->GetKeyPress(KEY_W)) pd->SetAttack(PALaserBeam);
+
+	if(input->GetKeyPress(KEY_I))
+	{
+		if(pd->IsInventoryScreenVisible()) pd->ShowInventoryScreen(false);
+		else pd->ShowInventoryScreen(true);
+	}
 }
 
 void LifeBubbleUI::Stop()

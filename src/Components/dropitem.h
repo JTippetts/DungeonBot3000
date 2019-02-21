@@ -18,9 +18,12 @@ class DropItemContainer : public LogicComponent
 	static void RegisterObject(Context *context);
 
 	DropItemContainer(Context *context);
-	void SetItem(const EquipmentItemDef &item);
-	const EquipmentItemDef &GetItem() const;
+	//void SetItem(const EquipmentItemDef &item);
+	//const EquipmentItemDef &GetItem() const;
+	void SetItem(GeneralItem *item);
+	GeneralItem *GetItem();
 
 	protected:
-	EquipmentItemDef item_;
+	//EquipmentItemDef item_;
+	WeakPtr<GeneralItem> item_;
 };

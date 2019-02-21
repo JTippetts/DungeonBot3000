@@ -394,10 +394,11 @@ CombatActionState *CASPlayerLoot::Update(CombatController *actor, float dt)
 			auto itemdrop = item_->GetComponent<DropItemContainer>();
 			if(itemdrop)
 			{
-				auto pd=node->GetSubsystem<PlayerData>();
+				/*auto pd=node->GetSubsystem<PlayerData>();
 				pd->EquipItem(itemdrop->GetItem(), true);
 				item_->GetComponent<ItemNameTag>()->RemoveTag();
-				item_->Remove();
+				item_->Remove();*/
+				// TODO under new item system
 			}
 			return actor->GetState<CASPlayerIdle>();
 		}
@@ -421,9 +422,10 @@ CombatActionState *CASPlayerLoot::Update(CombatController *actor, float dt)
 				auto itemdrop = item_->GetComponent<DropItemContainer>();
 				if(itemdrop)
 				{
-					auto pd=node->GetSubsystem<PlayerData>();
+					/*auto pd=node->GetSubsystem<PlayerData>();
 					pd->EquipItem(itemdrop->GetItem(), true);
-					item_->Remove();
+					item_->Remove();*/
+					//TODO under new item system
 				}
 				return actor->GetState<CASPlayerIdle>();
 			}

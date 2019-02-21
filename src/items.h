@@ -25,6 +25,7 @@ enum EquipmentSlots
 	EqProcessor,
 	EqDriveSystem,
 	EqGeneratorSystem,
+	EqShield,
 	EqNumEquipmentSlots
 };
 
@@ -50,6 +51,29 @@ struct EquipmentItemDef
 	std::vector<String> itemmods_;
 };
 
+
+enum GeneralItemTypes
+{
+	GITEquipment,
+	GITNumTypes
+};
+
+class GeneralItem : public Object
+{
+	URHO3D_OBJECT(GeneralItem, Object);
+	public:
+	GeneralItemTypes type_;
+	IntVector2 invsize_;
+	IntVector2 invlocation_;
+	String inventoryimage_;
+	EquipmentItemDef def_;
+
+	GeneralItem(Context *context) : Object(context), type_(GITNumTypes){}
+	GeneralItem(Context *context, const EquipmentItemDef &def) : Object(context), type_(GITEquipment), inventoryimage_(def.objectpath_), def_(def){}
+	GeneralItem(const GeneralItem &rhs) : Object(rhs.context_), type_(rhs.type_), invsize_(rhs.invsize_), inventoryimage_(rhs.inventoryimage_), def_(rhs.def_)
+	{
+	}
+};
 
 // Class to randomly generate an item from a list of mods.
 // Mods are loaded from a table, and the tables are of the format

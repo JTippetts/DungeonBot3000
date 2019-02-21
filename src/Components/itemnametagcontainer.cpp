@@ -190,76 +190,59 @@ void ItemNameTagContainer::DoItemHover()
 
 	if(!drop) return;
 
-	auto def=drop->GetItem();
+	WeakPtr<GeneralItem> item(drop->GetItem());
+	if(!item || item.Expired()) return;
 	auto ui=GetSubsystem<UI>();
 	auto cache=GetSubsystem<ResourceCache>();
 	auto graphics=GetSubsystem<Graphics>();
 	auto pd=GetSubsystem<PlayerData>();
 	auto &modtable=pd->GetItemModTable();
 
-	if(!itemdesc_)
+	if(item->type_==GITEquipment)
 	{
-		itemdesc_=ui->LoadLayout(cache->GetResource<XMLFile>("UI/ItemDescriptionBox.xml"));
-		ui->GetRoot()->GetChild("HUDLayer",true)->AddChild(itemdesc_);
-	}
-
-	if(!equippeddesc_)
-	{
-		equippeddesc_=ui->LoadLayout(cache->GetResource<XMLFile>("UI/ItemDescriptionBox.xml"));
-		ui->GetRoot()->GetChild("HUDLayer", true)->AddChild(equippeddesc_);
-		Text *title=dynamic_cast<Text *>(equippeddesc_->GetChild("Title", true));
-		if(title) title->SetText("Equipped Item");
-	}
-
-	String eqslot;
-	switch(def.slot_)
-	{
-		case EqBlade: eqslot="Blade"; break;
-		case EqTurret: eqslot="Turret"; break;
-		case EqShell: eqslot="Shell"; break;
-		case EqProcessor: eqslot="Processor"; break;
-		case EqDriveSystem: eqslot="Drive System"; break;
-		case EqGeneratorSystem: eqslot="Generator System"; break;
-		default: eqslot="Unknown"; break;
-	};
-
-	auto modlist=itemdesc_->GetChild("ModList", true);
-	modlist->RemoveAllChildren();
-
-	auto AddItem=[cache](const String &item, UIElement *modlist)
-	{
-		auto txt = modlist->CreateChild<Text>();
-		txt->SetTextAlignment(HA_CENTER);
-		txt->SetFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"));
-		txt->SetFontSize(14);
-		txt->SetText(item);
-	};
-
-	AddItem(eqslot,modlist);
-
-	for(auto md : def.itemmods_)
-	{
-		auto entry = modtable.GetMod(md);
-		if(entry)
+		auto &def=item->def_;
+		if(!itemdesc_)
 		{
-			AddItem(entry->desc_,modlist);
+			itemdesc_=ui->LoadLayout(cache->GetResource<XMLFile>("UI/ItemDescriptionBox.xml"));
+			ui->GetRoot()->GetChild("HUDLayer",true)->AddChild(itemdesc_);
 		}
-	}
 
-	// DEBUGGING: Add item world position
-	AddItem(WriteVector3(nd->GetWorldPosition()), modlist);
+		if(!equippeddesc_)
+		{
+			equippeddesc_=ui->LoadLayout(cache->GetResource<XMLFile>("UI/ItemDescriptionBox.xml"));
+			ui->GetRoot()->GetChild("HUDLayer", true)->AddChild(equippeddesc_);
+			Text *title=dynamic_cast<Text *>(equippeddesc_->GetChild("Title", true));
+			if(title) title->SetText("Equipped Item");
+		}
 
-	itemdesc_->SetPosition(IntVector2(graphics->GetWidth()-itemdesc_->GetWidth(), graphics->GetHeight()/2 - itemdesc_->GetHeight()/2));
-	itemdesc_->SetVisible(true);
+		String eqslot;
+		switch(def.slot_)
+		{
+			case EqBlade: eqslot="Blade"; break;
+			case EqTurret: eqslot="Turret"; break;
+			case EqShell: eqslot="Shell"; break;
+			case EqProcessor: eqslot="Processor"; break;
+			case EqDriveSystem: eqslot="Drive System"; break;
+			case EqShield: eqslot="Shield"; break;
+			case EqGeneratorSystem: eqslot="Generator System"; break;
+			default: eqslot="Unknown"; break;
+		};
 
-	// Equipped item
-	EquipmentItemDef *eqdef=pd->GetEquipmentSlot(def.slot_);
-	if(eqdef)
-	{
-		modlist=equippeddesc_->GetChild("ModList", true);
+		auto modlist=itemdesc_->GetChild("ModList", true);
 		modlist->RemoveAllChildren();
+
+		auto AddItem=[cache](const String &item, UIElement *modlist)
+		{
+			auto txt = modlist->CreateChild<Text>();
+			txt->SetTextAlignment(HA_CENTER);
+			txt->SetFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"));
+			txt->SetFontSize(14);
+			txt->SetText(item);
+		};
+
 		AddItem(eqslot,modlist);
-		for(auto md : eqdef->itemmods_)
+
+		for(auto md : def.itemmods_)
 		{
 			auto entry = modtable.GetMod(md);
 			if(entry)
@@ -267,8 +250,31 @@ void ItemNameTagContainer::DoItemHover()
 				AddItem(entry->desc_,modlist);
 			}
 		}
-		equippeddesc_->SetPosition(IntVector2(0, graphics->GetHeight()/2 - equippeddesc_->GetHeight()/2));
-		equippeddesc_->SetVisible(true);
+
+		// DEBUGGING: Add item world position
+		//AddItem(WriteVector3(nd->GetWorldPosition()), modlist);
+
+		itemdesc_->SetPosition(IntVector2(graphics->GetWidth()-itemdesc_->GetWidth(), graphics->GetHeight()/2 - itemdesc_->GetHeight()/2));
+		itemdesc_->SetVisible(true);
+
+		// Equipped item
+		EquipmentItemDef *eqdef=pd->GetEquipmentSlot(def.slot_);
+		if(eqdef)
+		{
+			modlist=equippeddesc_->GetChild("ModList", true);
+			modlist->RemoveAllChildren();
+			AddItem(eqslot,modlist);
+			for(auto md : eqdef->itemmods_)
+			{
+				auto entry = modtable.GetMod(md);
+				if(entry)
+				{
+					AddItem(entry->desc_,modlist);
+				}
+			}
+			equippeddesc_->SetPosition(IntVector2(0, graphics->GetHeight()/2 - equippeddesc_->GetHeight()/2));
+			equippeddesc_->SetVisible(true);
+		}
 	}
 }
 

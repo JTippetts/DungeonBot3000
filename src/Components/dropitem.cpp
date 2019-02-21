@@ -9,12 +9,13 @@ DropItemContainer::DropItemContainer(Context *context) : LogicComponent(context)
 {
 }
 
-void DropItemContainer::SetItem(const EquipmentItemDef &item)
+void DropItemContainer::SetItem(GeneralItem *item)
 {
 	item_=item;
 }
 
-const EquipmentItemDef &DropItemContainer::GetItem() const
+GeneralItem *DropItemContainer::GetItem()
 {
-	return item_;
+	if(!item_.Expired()) return item_;
+	return nullptr;
 }
