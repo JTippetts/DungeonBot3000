@@ -54,7 +54,7 @@ void ItemNameTagContainer::AddNameTag(ItemNameTag *tag)
 void ItemNameTagContainer::RemoveNameTag(ItemNameTag *tag)
 {
 	//tags_.remove(tag);
-	/*for(unsigned int i=0; i<tags_.size(); ++i)
+	for(unsigned int i=0; i<tags_.size(); ++i)
 	{
 		if(tags_[i]==tag)
 		{
@@ -62,7 +62,7 @@ void ItemNameTagContainer::RemoveNameTag(ItemNameTag *tag)
 			tags_.pop_back();
 			return;
 		}
-	}*/
+	}
 }
 
 void ItemNameTagContainer::DelayedStart()

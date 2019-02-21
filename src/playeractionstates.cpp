@@ -27,6 +27,7 @@
 #include "Components/itemnametagcontainer.h"
 #include "Components/dropitem.h"
 #include "Components/levelchanger.h"
+#include "playerinventory.h"
 
 Node *TopLevelNode(Drawable *d, Scene *s)
 {
@@ -399,6 +400,17 @@ CombatActionState *CASPlayerLoot::Update(CombatController *actor, float dt)
 				item_->GetComponent<ItemNameTag>()->RemoveTag();
 				item_->Remove();*/
 				// TODO under new item system
+				auto pi=GetSubsystem<PlayerInventory>();
+				if(pi->AddItem(itemdrop->GetItem(), true))
+				{
+					itemdrop->ClearItem();
+					item_->GetComponent<ItemNameTag>()->RemoveTag();
+					item_->Remove();
+				}
+				else
+				{
+					Log::Write(LOG_INFO, "Not enough inventory space");
+				}
 			}
 			return actor->GetState<CASPlayerIdle>();
 		}
@@ -426,6 +438,17 @@ CombatActionState *CASPlayerLoot::Update(CombatController *actor, float dt)
 					pd->EquipItem(itemdrop->GetItem(), true);
 					item_->Remove();*/
 					//TODO under new item system
+					auto pi=GetSubsystem<PlayerInventory>();
+					if(pi->AddItem(itemdrop->GetItem(), true))
+					{
+						itemdrop->ClearItem();
+						item_->GetComponent<ItemNameTag>()->RemoveTag();
+						item_->Remove();
+					}
+					else
+					{
+						Log::Write(LOG_INFO, "Not enough inventory space");
+					}
 				}
 				return actor->GetState<CASPlayerIdle>();
 			}

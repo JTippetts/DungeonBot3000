@@ -139,5 +139,6 @@ void ItemNameTag::RemoveTag()
 
 void ItemNameTag::Stop()
 {
+	//RemoveTag();
 	if(element_) element_->Remove();
 }

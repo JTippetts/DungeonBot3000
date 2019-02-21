@@ -22,6 +22,9 @@ class DropItemContainer : public LogicComponent
 	//const EquipmentItemDef &GetItem() const;
 	void SetItem(GeneralItem *item);
 	GeneralItem *GetItem();
+	void ClearItem(); // Call if player loots item
+
+	virtual void Stop() override;
 
 	protected:
 	//EquipmentItemDef item_;

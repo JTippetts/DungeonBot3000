@@ -17,9 +17,9 @@ bool InventoryBag::FindAvailableLocation(IntVector2 &location, const IntVector2 
 {
 	if(location.x_<0 || location.y_<0 || location.x_>=bagwidth_-size.x_ || location.y_>=bagheight_-size.y_) return false;
 
-	for(unsigned int x=0; x<bagwidth_ - size.x_; ++x)
+	for(unsigned int x=0; x<=bagwidth_ - size.x_; ++x)
 	{
-		for(unsigned int y=0; y<bagheight_ - size.y_; ++y)
+		for(unsigned int y=0; y<=bagheight_ - size.y_; ++y)
 		{
 			bool blocked=false;
 			for(unsigned int k=0; k<size.x_; ++k)

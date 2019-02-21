@@ -299,6 +299,9 @@ void PlayerData::NewPlayer()
 	item=AddItem(EquipmentItemDef(EqTurret, IRNormal, "Starter Laser", "", "Objects/DungeonBot3000/Textures/testblade.png;0 0 63 63", {"StarterLaserImplicit"}));
 	pi->AddItem(item, true);
 
+	item=AddItem(EquipmentItemDef(EqTurret, IRNormal, "Starter Laser", "", "Objects/DungeonBot3000/Textures/testblade.png;0 0 63 63", {"StarterLaserImplicit"}));
+	pi->AddItem(item, true);
+
 	//EquipItem(EquipmentItemDef(EqBlade, IRNormal, "Starter Blade", "", "", {"StarterBladeImplicit"}), false);
 	//EquipItem(EquipmentItemDef(EqTurret, IRNormal, "Starter Laser", "", "", {"StarterLaserImplicit"}), false);
 	//EquipItem(EquipmentItemDef(EqShell, IRNormal, "Starter Shell", "", "", {"StarterShellGlobal"}), false);
@@ -389,6 +392,8 @@ GeneralItem *PlayerData::GenerateRandomEquipmentItem(EquipmentSlots slot, ItemRa
 	if(rarity==IRUnique) rarity=IRRare;   // TODO: Implement uniques
 	item.rarity_=rarity;
 	item.slot_=slot;
+
+	item.objectpath_="Objects/DungeonBot3000/Textures/testblade.png;0 0 63 95";
 
 	auto cls=GetItemClass(slot);
 	if(!cls) return nullptr;
