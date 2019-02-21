@@ -69,7 +69,22 @@ class GeneralItem : public Object
 	EquipmentItemDef def_;
 
 	GeneralItem(Context *context) : Object(context), type_(GITNumTypes){}
-	GeneralItem(Context *context, const EquipmentItemDef &def) : Object(context), type_(GITEquipment), inventoryimage_(def.objectpath_), def_(def){}
+	GeneralItem(Context *context, const EquipmentItemDef &def) : Object(context), type_(GITEquipment), inventoryimage_(def.objectpath_), def_(def)
+	{
+		switch(def_.slot_)
+		{
+			{
+				case EqBlade: invsize_=IntVector2(2,3); break;
+				case EqTurret: invsize_=IntVector2(2,2); break;
+				case EqShell: invsize_=IntVector2(2,3); break;
+				case EqProcessor: invsize_=IntVector2(1,1); break;
+				case EqDriveSystem: invsize_=IntVector2(2,2); break;
+				case EqGeneratorSystem: invsize_=IntVector2(2,2); break;
+				case EqShield: invsize_=IntVector2(2,3); break;
+				default: invsize_=IntVector2(0,0); break;
+			};
+		}
+	}
 	GeneralItem(const GeneralItem &rhs) : Object(rhs.context_), type_(rhs.type_), invsize_(rhs.invsize_), inventoryimage_(rhs.inventoryimage_), def_(rhs.def_)
 	{
 	}

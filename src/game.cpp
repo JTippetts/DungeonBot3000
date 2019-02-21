@@ -49,6 +49,7 @@
 #include "Components/enemynameplate.h"
 
 #include "playerdata.h"
+#include "playerinventory.h"
 #include "Components/itemnametagcontainer.h"
 #include "playeractionstates.h"
 #include "enemyactionstates.h"
@@ -140,6 +141,7 @@ void Game::Start()
 	context_->RegisterSubsystem(new PlayerData(context_));
 	//context_->RegisterSubsystem(new ItemNameTagContainer(context_));
 	context_->RegisterSubsystem(new GameStateHandler(context_));
+	context_->RegisterSubsystem(new PlayerInventory(context_));
 
 	auto pd=context_->GetSubsystem<PlayerData>();
 	auto gamestate=context_->GetSubsystem<GameStateHandler>();

@@ -1,13 +1,12 @@
 #pragma once
-
-// Inventory screen
-
 #include <Urho3D/Core/Object.h>
 #include <Urho3D/UI/UIElement.h>
 #include <vector>
 
 #include "items.h"
-#include "equipmentset.h"
+
+using namespace Urho3D;
+// Inventory screen
 
 class InventoryScreen : public Object
 {
@@ -19,28 +18,37 @@ class InventoryScreen : public Object
 	void SetVisible(bool vis);
 	bool IsVisible();
 
-	bool CanEquipItemInSlot(unsigned int slot, GeneralItem *item);
+	/*bool CanEquipItemInSlot(unsigned int slot, GeneralItem *item);
 	UIElement *GetHoveredSlot(const IntVector2 &mousepos, unsigned int &slot);
+	GeneralItem *GetHoveredSlotItem(const IntVector2 &mousepos);
 	IntVector2 GetInventorySizeByType(EquipmentSlots slot);
 	bool GetHoveredBagSlot(const IntVector2 &mousepos, IntVector2 &pos);
 	GeneralItem *GetHoveredBagItem(const IntVector2 &mousepos, IntVector2 &slot);
 
 	// Find a position available for an item of a given size
-	bool FindBagPosition(IntVector2 &slotpos, const IntVector2 &size);
+	bool FindBagPosition(IntVector2 &slotpos, const IntVector2 &size);*/
+
+
+
+	void PutItemInHand(GeneralItem *item);
+	bool HasItemInHand(GeneralItem *item);
+
 
 	protected:
 	SharedPtr<UIElement> element_;
-	UIElement *bag_;
+	UIElement *bagelement_;
+	UIElement *bagimageelement_;
+	UIElement *equipelement_;
 	std::vector<UIElement *> bagslots_;
-	std::vector<bool> bagslotsblocked_;
+	HashMap<StringHash, UIElement *> equipslots_;
 	unsigned int bagwidth_, bagheight_;
-	std::vector<WeakPtr<GeneralItem>> itemsinbag_;
 
-	std::vector<UIElement *> slots_;
-	//std::vector<unsigned int> equipmentsetslots_;
-
+	void BuildSlot(StringHash name, unsigned int x, unsigned int y, unsigned int width, unsigned int height, const String &allowedtypes);
 	void BuildBag(unsigned int width, unsigned int height);
-	void BuildSlot(unsigned int x, unsigned int y, unsigned int width, unsigned int height, const String &allowedtypes);
-	bool CanPlaceItemInSlot(const IntVector2 &pos, const IntVector2 &size, bool docolor=false);
+
+	void UpdateEquipmentImages();
+	void UpdateBagImages();
+
 	void ResetBagColors();
+	void HandleUpdate(StringHash eventType, VariantMap &eventData);
 };

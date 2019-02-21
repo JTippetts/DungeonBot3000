@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "inventoryscreen.h"
-#include "equipmentset.h"
 
 using namespace Urho3D;
 
@@ -40,15 +39,7 @@ class PlayerData : public Object
 
 	//StatSetCollection &GetStatSetCollection(int eqslot);
 
-	StatSetCollection &GetVitalsStats()  // Get the stat set collection pertinent to vitals.
-	{
-		vitalsstats_.clear();
-		vitalsstats_.push_back(&basestats_);
-		vitalsstats_.push_back(equipmentset_.GetGlobalStats());
-
-		return vitalsstats_;
-	}
-
+	StatSetCollection &GetVitalsStats();
 	Scene *GetCurrentScene();
 	Node *GetPlayerNode();
 
@@ -73,21 +64,13 @@ class PlayerData : public Object
 	PlayerAttack GetAttack(){return currentattack_;}
 	void SetAttack(PlayerAttack a){currentattack_=a;}
 
-	//bool GenerateRandomItem(EquipmentItemDef &item, EquipmentSlots slot, ItemRarity rarity, int level);
 	GeneralItem *GenerateRandomEquipmentItem(EquipmentSlots slot, ItemRarity rarity, int level);
-	/*EquipmentItemDef *GetEquipmentSlot(EquipmentSlots slot)
-	{
-		if(slot==EqNumEquipmentSlots) return nullptr;
-		return &equipment_[slot];
-	}*/
 
 	unsigned int GetDungeonLevel(){return dungeonlevel_;}
 	void SetDungeonLevel(unsigned int l){dungeonlevel_=l;}
 
 	void ShowInventoryScreen(bool show);
 	bool IsInventoryScreenVisible();
-
-	EquipmentSet &GetEquipmentSet();
 
 	GeneralItem *AddItem(const EquipmentItemDef &def);
 	void RemoveItem(GeneralItem *item);
@@ -96,10 +79,6 @@ class PlayerData : public Object
 	StatSet basestats_;
 	StatSetCollection vitalsstats_;
 	StatModifierHandle levelmodifier_;
-
-	//EquipmentItemDef equipment_[EqNumEquipmentSlots];
-	//StatSet equipmentglobalstats_[EqNumEquipmentSlots];
-	//StatSet equipmentlocalstats_[EqNumEquipmentSlots];
 
 
 	std::unordered_map<std::string, StatSet> skillstats_;
@@ -114,5 +93,5 @@ class PlayerData : public Object
 
 	std::vector<SharedPtr<GeneralItem>> globalitemlist_;
 	InventoryScreen inventoryscreen_;
-	EquipmentSet equipmentset_;
+	//EquipmentSet equipmentset_;
 };

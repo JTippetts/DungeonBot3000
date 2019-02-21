@@ -111,7 +111,7 @@ class CASPlayerLaserBeam : public CASPlayerBase
 	virtual CombatActionState *Update(CombatController *actor, float dt) override;
 
 	protected:
-	Node *endburst_, *beam_;
+	SharedPtr<Node> endburst_, beam_;
 	SoundSource *swing_;
 
 	Vector3 lastendpos_, endpos_;

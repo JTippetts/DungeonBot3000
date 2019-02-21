@@ -20,11 +20,13 @@
 #include "Components/vitals.h"
 #include "gamestatehandler.h"
 
+#include "playerinventory.h"
+
 int roll(int,int);
 float rollf(float,float);
 double rolld(double,double);
 
-PlayerData::PlayerData(Context *context) : Object(context), energy_(0), currentattack_(PASpinAttack), inventoryscreen_(context), equipmentset_(context)
+PlayerData::PlayerData(Context *context) : Object(context), energy_(0), currentattack_(PASpinAttack), inventoryscreen_(context)
 {
 }
 
@@ -142,14 +144,18 @@ StatSetCollection PlayerData::GetStatSetCollection(unsigned int slot, const std:
 	{
 		coll.push_back(&equipmentglobalstats_[g]);
 	}*/
-	coll.push_back(equipmentset_.GetGlobalStats());
+	//coll.push_back(equipmentset_.GetGlobalStats());
+	auto pi=GetSubsystem<PlayerInventory>();
+	coll.push_back(pi->GetEquipment().GetGlobalStats());
 
 	// Push local stats for requested slot
 	/*if(slot<EqNumEquipmentSlots)
 	{
 		coll.push_back(&equipmentlocalstats_[slot]);
 	}*/
-	auto imp=equipmentset_.GetLocalStats(slot);
+	//auto imp=equipmentset_.GetLocalStats(slot);
+	//if(imp) coll.push_back(imp);
+	auto imp=pi->GetEquipment().GetLocalStats(slot);
 	if(imp) coll.push_back(imp);
 
 	if(skillname != "")
@@ -274,9 +280,43 @@ void PlayerData::NewPlayer()
 
 	inventoryscreen_.Setup();
 
+	auto pi=GetSubsystem<PlayerInventory>();
+	auto item=AddItem(EquipmentItemDef(EqBlade, IRNormal, "Starter Blade", "", "Objects/DungeonBot3000/Textures/testblade.png;0 0 63 95", {"StarterBladeImplicit"}));
+	pi->AddItem(item, false);
+
+	item=AddItem(EquipmentItemDef(EqBlade, IRNormal, "Starter Blade", "", "Objects/DungeonBot3000/Textures/testblade.png;0 0 63 95", {"StarterBladeImplicit"}));
+	pi->AddItem(item, true);
+
+	item=AddItem(EquipmentItemDef(EqBlade, IRNormal, "Starter Blade", "", "Objects/DungeonBot3000/Textures/testblade.png;0 0 63 95", {"StarterBladeImplicit"}));
+	pi->AddItem(item, true);
+
+	item=AddItem(EquipmentItemDef(EqBlade, IRNormal, "Starter Blade", "", "Objects/DungeonBot3000/Textures/testblade.png;0 0 63 95", {"StarterBladeImplicit"}));
+	pi->AddItem(item, true);
+
+	item=AddItem(EquipmentItemDef(EqBlade, IRNormal, "Starter Blade", "", "Objects/DungeonBot3000/Textures/testblade.png;0 0 63 95", {"StarterBladeImplicit"}));
+	pi->AddItem(item, false);
+
+	item=AddItem(EquipmentItemDef(EqTurret, IRNormal, "Starter Laser", "", "Objects/DungeonBot3000/Textures/testblade.png;0 0 63 63", {"StarterLaserImplicit"}));
+	pi->AddItem(item, true);
+
 	//EquipItem(EquipmentItemDef(EqBlade, IRNormal, "Starter Blade", "", "", {"StarterBladeImplicit"}), false);
 	//EquipItem(EquipmentItemDef(EqTurret, IRNormal, "Starter Laser", "", "", {"StarterLaserImplicit"}), false);
 	//EquipItem(EquipmentItemDef(EqShell, IRNormal, "Starter Shell", "", "", {"StarterShellGlobal"}), false);
+}
+
+StatSetCollection &PlayerData::GetVitalsStats()
+{
+	vitalsstats_.clear();
+	vitalsstats_.push_back(&basestats_);
+	//vitalsstats_.push_back(equipmentset_.GetGlobalStats());
+	auto pi=GetSubsystem<PlayerInventory>();
+	if(pi)
+	{
+		auto &eq=pi->GetEquipment();
+		vitalsstats_.push_back(eq.GetGlobalStats());
+	}
+
+	return vitalsstats_;
 }
 
 void PlayerData::ShowInventoryScreen(bool show)
@@ -287,11 +327,6 @@ void PlayerData::ShowInventoryScreen(bool show)
 bool PlayerData::IsInventoryScreenVisible()
 {
 	return inventoryscreen_.IsVisible();
-}
-
-EquipmentSet &PlayerData::GetEquipmentSet()
-{
-	return equipmentset_;
 }
 
 GeneralItem *PlayerData::AddItem(const EquipmentItemDef &def)
@@ -305,7 +340,7 @@ void PlayerData::RemoveItem(GeneralItem *item)
 {
 	for(unsigned int c=0; c<globalitemlist_.size(); ++c)
 	{
-		if(globalitemlist_[c]==item)
+		if(globalitemlist_[c].Get()==item)
 		{
 			globalitemlist_[c].Reset();
 			globalitemlist_[c]=globalitemlist_[globalitemlist_.size()-1];

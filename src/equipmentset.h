@@ -38,11 +38,13 @@ class EquipmentSet : public Object
 	StatSet *GetLocalStats(unsigned int slot);
 	unsigned int GetImplicitStats(StatSetCollection &ssc, EquipmentSlots eqtype);
 	unsigned int GetNumberOfSlots();
+	bool IsDirty();
 
 	protected:
 	std::vector<EquipmentEntry> slots_;
 	StatSet globalstats_;
 	std::vector<StatSet> localstats_;
+	bool dirty_;
 
 	void RebuildGlobalStatSet();
 };

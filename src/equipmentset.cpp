@@ -1,6 +1,7 @@
 #include "equipmentset.h"
 
 #include "playerdata.h"
+#include <Urho3D/IO/Log.h>
 
 EquipmentEntry::EquipmentEntry() : used_(false), active_(true)
 {
@@ -35,6 +36,7 @@ enum EquipmentSlots
 	}
 }
 
+
 bool EquipmentEntry::Allowed(EquipmentSlots slot)
 {
 	for(auto i : allowabletypes_)
@@ -44,7 +46,7 @@ bool EquipmentEntry::Allowed(EquipmentSlots slot)
 	return false;
 }
 
-EquipmentSet::EquipmentSet(Context *context) : Object(context)
+EquipmentSet::EquipmentSet(Context *context) : Object(context), dirty_(false)
 {
 }
 
@@ -54,6 +56,13 @@ unsigned int EquipmentSet::CreateSlot(const String &allowables)
 	localstats_.push_back(StatSet());
 
 	return slots_.size()-1;
+}
+
+bool EquipmentSet::IsDirty()
+{
+	bool dirty=dirty_;
+	dirty_=false;
+	return dirty;
 }
 
 bool EquipmentSet::CanAddItemToSlot(unsigned int slot, GeneralItem *item, bool checkisused)
@@ -101,6 +110,7 @@ bool EquipmentSet::AddItemToSlot(unsigned int slot, GeneralItem *item)
 		}
 	}
 	RebuildGlobalStatSet();
+	dirty_=true;
 	return true;
 }
 
@@ -115,6 +125,7 @@ bool EquipmentSet::RemoveItemFromSlot(unsigned int slot)
 	localstats_[slot].Clear();
 	s.used_=false;
 	RebuildGlobalStatSet();
+	dirty_=true;
 	return true;
 }
 
@@ -126,7 +137,16 @@ GeneralItem *EquipmentSet::GetItemAtSlot(unsigned int slot)
 	}
 
 	auto &s=slots_[slot];
-	if(s.used_ && s.item_ && !s.item_.Expired()) return s.item_.Get();
+
+	Log::Write(LOG_INFO, String("Getting item at slot ")+String(slot));
+	if(s.used_ && s.item_ && !s.item_.Expired())
+	{
+		Log::Write(LOG_INFO, "Got the item, returning it");
+		return s.item_.Get();
+	}
+	if(!s.used_) Log::Write(LOG_INFO, "Item slot not used.");
+	if(!s.item_) Log::Write(LOG_INFO, "Item slot item ptr null");
+	if(s.item_ && s.item_.Expired()) Log::Write(LOG_INFO, "Item slot item ptr expired");
 	return nullptr;
 }
 
