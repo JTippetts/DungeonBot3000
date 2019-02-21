@@ -215,47 +215,9 @@ void ItemNameTagContainer::DoItemHover()
 			if(title) title->SetText("Equipped Item");
 		}
 
-		String eqslot;
-		switch(def.slot_)
-		{
-			case EqBlade: eqslot="Blade"; break;
-			case EqTurret: eqslot="Turret"; break;
-			case EqShell: eqslot="Shell"; break;
-			case EqProcessor: eqslot="Processor"; break;
-			case EqDriveSystem: eqslot="Drive System"; break;
-			case EqShield: eqslot="Shield"; break;
-			case EqGeneratorSystem: eqslot="Generator System"; break;
-			default: eqslot="Unknown"; break;
-		};
+		BuildItemDescription(itemdesc_, item, "Item on ground");
 
-		auto modlist=itemdesc_->GetChild("ModList", true);
-		modlist->RemoveAllChildren();
 
-		auto AddItem=[cache](const String &item, UIElement *modlist)
-		{
-			auto txt = modlist->CreateChild<Text>();
-			txt->SetTextAlignment(HA_CENTER);
-			txt->SetFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"));
-			txt->SetFontSize(14);
-			txt->SetText(item);
-		};
-
-		AddItem(eqslot,modlist);
-
-		for(auto md : def.itemmods_)
-		{
-			auto entry = modtable.GetMod(md);
-			if(entry)
-			{
-				AddItem(entry->desc_,modlist);
-			}
-		}
-
-		// DEBUGGING: Add item world position
-		//AddItem(WriteVector3(nd->GetWorldPosition()), modlist);
-
-		itemdesc_->SetPosition(IntVector2(graphics->GetWidth()-itemdesc_->GetWidth(), graphics->GetHeight()/2 - itemdesc_->GetHeight()/2));
-		itemdesc_->SetVisible(true);
 
 		// Equipped item
 		// TODO

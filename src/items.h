@@ -14,6 +14,7 @@ Item mods: Name, StatSet
 #include <vector>
 #include <Urho3D/Scene/Node.h>
 #include <Urho3D/Resource/JSONValue.h>
+#include <Urho3D/UI/UIElement.h>
 
 #include "itemmods.h"
 
@@ -123,6 +124,9 @@ class ItemBuilder
 		double weight_;
 		String modname_;
 	};
-
-
 };
+
+
+// Utility stuff
+void BuildItemDescription(UIElement *desc, GeneralItem *item, const String &title);
+

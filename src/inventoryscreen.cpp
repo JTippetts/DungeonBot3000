@@ -7,6 +7,8 @@
 #include <Urho3D/Graphics/Texture2D.h>
 #include <Urho3D/Graphics/Graphics.h>
 #include <Urho3D/Core/StringUtils.h>
+#include <Urho3D/UI/Cursor.h>
+#include <Urho3D/Input/Input.h>
 
 #include "playerdata.h"
 #include "playerinventory.h"
@@ -25,6 +27,7 @@ void InventoryScreen::Setup()
 	}
 	auto ui=GetSubsystem<UI>();
 	auto graphics=GetSubsystem<Graphics>();
+	auto cache=GetSubsystem<ResourceCache>();
 
 	element_=SharedPtr<UIElement>(new UIElement(context_));
 	element_->SetSize(IntVector2(320, 480));
@@ -59,6 +62,10 @@ void InventoryScreen::Setup()
 	element_->SetPosition(IntVector2(graphics->GetWidth()/2, graphics->GetHeight()/4));
 	element_->SetVisible(false);
 	ui->GetRoot()->GetChild("HUDLayer", true)->AddChild(element_);
+
+	hoveredelement_=ui->LoadLayout(cache->GetResource<XMLFile>("UI/ItemDescriptionBox.xml"));
+	ui->GetRoot()->GetChild("HUDLayer",true)->AddChild(hoveredelement_);
+	hoveredelement_->SetVisible(false);
 }
 
 void InventoryScreen::BuildBag(unsigned int width, unsigned int height)
@@ -214,6 +221,9 @@ void InventoryScreen::UpdateEquipmentImages()
 void InventoryScreen::HandleUpdate(StringHash eventType, VariantMap &eventData)
 {
 	auto pi=GetSubsystem<PlayerInventory>();
+	auto input=GetSubsystem<Input>();
+	auto ui=GetSubsystem<UI>();
+
 	if(pi->GetBag().IsDirty())
 	{
 		UpdateBagImages();
@@ -222,6 +232,79 @@ void InventoryScreen::HandleUpdate(StringHash eventType, VariantMap &eventData)
 	{
 		UpdateEquipmentImages();
 	}
+
+	// Do hover
+	if(hoveredelement_) hoveredelement_->SetVisible(false);
+	if(IsVisible())
+	{
+		IntVector2 location;
+		IntVector2 mousepos;
+		if(input->IsMouseVisible()) mousepos=input->GetMousePosition();
+		else mousepos=ui->GetCursorPosition();
+		unsigned int slot;
+		UIElement *elem;
+
+
+		if(GetHoveredBagLocation(location, mousepos))
+		{
+			auto item=pi->GetBag().FindItemInSlot(location);
+			if(item)
+			{
+				if(hoveredelement_)
+				{
+					BuildItemDescription(hoveredelement_, item, "Item in Inventory");
+					hoveredelement_->SetVisible(true);
+					hoveredelement_->SetPosition(IntVector2(element_->GetPosition().x_ - hoveredelement_->GetWidth(), element_->GetPosition().y_));
+				}
+			}
+		}
+		else if(GetHoveredEquipmentSlot(slot, elem, mousepos))
+		{
+			auto item=pi->GetEquipment().GetItemAtSlot(slot);
+			if(item)
+			{
+				if(hoveredelement_)
+				{
+					BuildItemDescription(hoveredelement_, item, "Equipped Item");
+					hoveredelement_->SetVisible(true);
+					hoveredelement_->SetPosition(IntVector2(element_->GetPosition().x_ - hoveredelement_->GetWidth(), element_->GetPosition().y_));
+				}
+			}
+		}
+	}
+}
+
+bool InventoryScreen::GetHoveredBagLocation(IntVector2 &location, const IntVector2 &mousepos)
+{
+	// Calculate which bag slot the mouse is over
+	// Return false if not over any
+	if(!bagelement_) return false;
+	auto rect=bagelement_->GetCombinedScreenRect();
+	if(rect.IsInside(mousepos)==OUTSIDE) return false;
+
+	IntVector2 bagpos=mousepos - bagelement_->GetScreenPosition();
+	location = bagpos / 32;
+	return true;
+}
+
+bool InventoryScreen::GetHoveredEquipmentSlot(unsigned int &slot, UIElement * &element, const IntVector2 &mousepos)
+{
+	if(!equipelement_) return false;
+	for(auto i=equipslots_.Begin(); i!=equipslots_.End(); ++i)
+	{
+		auto elem=(*i).second_;
+		auto rect=elem->GetCombinedScreenRect();
+		if(rect.IsInside(mousepos))
+		{
+			auto pi=GetSubsystem<PlayerInventory>();
+			if(pi->GetSlot((*i).first_, slot))
+			{
+				element=elem;
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 void InventoryScreen::ResetBagColors()

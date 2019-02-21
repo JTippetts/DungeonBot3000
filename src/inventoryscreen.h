@@ -18,21 +18,11 @@ class InventoryScreen : public Object
 	void SetVisible(bool vis);
 	bool IsVisible();
 
-	/*bool CanEquipItemInSlot(unsigned int slot, GeneralItem *item);
-	UIElement *GetHoveredSlot(const IntVector2 &mousepos, unsigned int &slot);
-	GeneralItem *GetHoveredSlotItem(const IntVector2 &mousepos);
-	IntVector2 GetInventorySizeByType(EquipmentSlots slot);
-	bool GetHoveredBagSlot(const IntVector2 &mousepos, IntVector2 &pos);
-	GeneralItem *GetHoveredBagItem(const IntVector2 &mousepos, IntVector2 &slot);
-
-	// Find a position available for an item of a given size
-	bool FindBagPosition(IntVector2 &slotpos, const IntVector2 &size);*/
-
-
-
 	void PutItemInHand(GeneralItem *item);
 	bool HasItemInHand(GeneralItem *item);
 
+	bool GetHoveredBagLocation(IntVector2 &location, const IntVector2 &mousepos);
+	bool GetHoveredEquipmentSlot(unsigned int &slot, UIElement * &element, const IntVector2 &mousepos);
 
 	protected:
 	SharedPtr<UIElement> element_;
@@ -42,6 +32,7 @@ class InventoryScreen : public Object
 	std::vector<UIElement *> bagslots_;
 	HashMap<StringHash, UIElement *> equipslots_;
 	unsigned int bagwidth_, bagheight_;
+	SharedPtr<UIElement> hoveredelement_;
 
 	void BuildSlot(StringHash name, unsigned int x, unsigned int y, unsigned int width, unsigned int height, const String &allowedtypes);
 	void BuildBag(unsigned int width, unsigned int height);

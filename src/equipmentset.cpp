@@ -138,15 +138,10 @@ GeneralItem *EquipmentSet::GetItemAtSlot(unsigned int slot)
 
 	auto &s=slots_[slot];
 
-	Log::Write(LOG_INFO, String("Getting item at slot ")+String(slot));
 	if(s.used_ && s.item_ && !s.item_.Expired())
 	{
-		Log::Write(LOG_INFO, "Got the item, returning it");
 		return s.item_.Get();
 	}
-	if(!s.used_) Log::Write(LOG_INFO, "Item slot not used.");
-	if(!s.item_) Log::Write(LOG_INFO, "Item slot item ptr null");
-	if(s.item_ && s.item_.Expired()) Log::Write(LOG_INFO, "Item slot item ptr expired");
 	return nullptr;
 }
 

@@ -51,6 +51,27 @@ CombatActionState *CASPlayerBase::CheckInputs(CombatController *actor)
 	auto input=GetSubsystem<Input>();
 	auto node=actor->GetNode();
 	auto pd=GetSubsystem<PlayerData>();
+	auto ui=GetSubsystem<UI>();
+
+	IntVector2 mousepos;
+	if(input->IsMouseVisible()) mousepos=input->GetMousePosition();
+	else mousepos=ui->GetCursorPosition();
+
+	auto hudlayer=ui->GetRoot()->GetChild("HUDLayer", true);
+	if(hudlayer)
+	{
+		unsigned int numchildren=hudlayer->GetNumChildren();
+		for(unsigned int c=0; c<numchildren; ++c)
+		{
+			auto child=hudlayer->GetChild(c);
+			auto rect=child->GetCombinedScreenRect();
+			if(child->IsVisible() && rect.IsInside(mousepos)==INSIDE) return nullptr;
+		}
+	}
+	else
+	{
+		Log::Write(LOG_INFO, "Couldn't obtain hudlayer");
+	}
 
 	/*auto vitals=node->GetComponent<PlayerVitals>();
 	if(vitals)
