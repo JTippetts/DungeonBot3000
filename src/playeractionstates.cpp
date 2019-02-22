@@ -52,6 +52,7 @@ CombatActionState *CASPlayerBase::CheckInputs(CombatController *actor)
 	auto node=actor->GetNode();
 	auto pd=GetSubsystem<PlayerData>();
 	auto ui=GetSubsystem<UI>();
+	auto &is=pd->GetInventoryScreen();
 
 	IntVector2 mousepos;
 	if(input->IsMouseVisible()) mousepos=input->GetMousePosition();
@@ -82,7 +83,7 @@ CombatActionState *CASPlayerBase::CheckInputs(CombatController *actor)
 		}
 	}*/
 
-	if(input->GetMouseButtonPress(MOUSEB_LEFT))
+	if(input->GetMouseButtonPress(MOUSEB_LEFT) && !is.HasItemInHand())
 	{
 		//auto nametags=GetSubsystem<ItemNameTagContainer>();
 		auto nametags=node->GetScene()->GetComponent<ItemNameTagContainer>();
@@ -119,7 +120,7 @@ CombatActionState *CASPlayerBase::CheckInputs(CombatController *actor)
 			} break;
 		};
 	}
-	else if(input->GetMouseButtonPress(MOUSEB_LEFT))
+	else if(input->GetMouseButtonPress(MOUSEB_LEFT) && !is.HasItemInHand())
 	{
 		// Look for stairs
 		auto cam=node->GetScene()->GetChild("Camera")->GetComponent<ThirdPersonCamera>();

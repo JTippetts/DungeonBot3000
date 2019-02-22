@@ -64,10 +64,6 @@ void LifeBubbleUI::DelayedStart()
 	energyelement_->SetPosition(IntVector2(0, graphics->GetHeight()-256+38-energyelement_->GetHeight()));
 	ui->GetRoot()->GetChild("HUDLayer",true)->AddChild(energyelement_);
 
-	help_=ui->LoadLayout(cache->GetResource<XMLFile>("UI/Help.xml"));
-	ui->GetRoot()->GetChild("HUDLayer",true)->AddChild(help_);
-	help_->SetPosition(IntVector2(graphics->GetWidth()-help_->GetWidth(), graphics->GetHeight()-help_->GetHeight()));
-
 	levelelement_=new Text(context_);
 	levelelement_->SetFont(cache->GetResource<Font>("Fonts/Anonymous Pro.ttf"));
 	levelelement_->SetFontSize(24);
@@ -133,25 +129,8 @@ void LifeBubbleUI::Update(float dt)
 
 void LifeBubbleUI::Stop()
 {
-/*
-SharedPtr<Scene> rttscene_;
-	SharedPtr<Node> rttcameranode_;
-	SharedPtr<Viewport> rttviewport_;
-	SharedPtr<Material> rttmaterial_;
-	SharedPtr<Texture2D> rttrendertexture_;
-	Material *healthmat_;
-
-	SharedPtr<Scene> overlayscene_;
-	SharedPtr<Node> overlaynode_;
-	SharedPtr<Viewport> overlayviewport_;
-
-	SharedPtr<UIElement> element_;
-	*/
-	//rttscene_->Remove();
 	element_->Remove();
-
 	energyelement_->Remove();
-	help_->Remove();
 	levelelement_->Remove();
 	gamblebutton_->Remove();
 	Log::Write(LOG_INFO, "Stopping bubble");

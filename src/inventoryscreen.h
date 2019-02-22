@@ -21,6 +21,7 @@ class InventoryScreen : public Object
 	void PutItemInHand(GeneralItem *item);
 	GeneralItem *GetItemInHand();
 	void RemoveItemInHand();
+	bool HasItemInHand();
 
 	bool GetHoveredBagLocation(IntVector2 &location, const IntVector2 &mousepos);
 	bool GetHoveredEquipmentSlot(unsigned int &slot, UIElement * &element, const IntVector2 &mousepos);
@@ -34,6 +35,7 @@ class InventoryScreen : public Object
 	HashMap<StringHash, UIElement *> equipslots_;
 	unsigned int bagwidth_, bagheight_;
 	SharedPtr<UIElement> hoveredelement_;
+	bool hasiteminhand_;
 
 	WeakPtr<GeneralItem> iteminhand_;
 	SharedPtr<UIElement> handitem_;

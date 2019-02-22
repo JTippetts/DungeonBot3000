@@ -54,7 +54,7 @@ bool InventoryBag::CanPlaceAtLocation(const IntVector2 &location, GeneralItem *i
 {
 	if(!item) return false;
 	IntVector2 size=item->invsize_;
-	if(location.x_<0 || location.y_<0 || location.x_>=bagwidth_-size.x_ || location.y_ >=bagheight_-size.y_) return false;
+	if(location.x_<0 || location.y_<0 || location.x_>bagwidth_-size.x_ || location.y_ >bagheight_-size.y_) return false;
 
 	if(checkblock)
 	{

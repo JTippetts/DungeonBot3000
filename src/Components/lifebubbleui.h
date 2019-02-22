@@ -9,10 +9,7 @@
 
 #include <Urho3D/Scene/Scene.h>
 #include <Urho3D/Scene/LogicComponent.h>
-#include <Urho3D/Graphics/Camera.h>
-#include <Urho3D/Graphics/Viewport.h>
 #include <Urho3D/Graphics/Material.h>
-#include <Urho3D/UI/Sprite.h>
 #include <Urho3D/UI/UIElement.h>
 #include <Urho3D/UI/Text.h>
 
@@ -27,20 +24,9 @@ class LifeBubbleUI : public LogicComponent
 
 	protected:
 
-	/*SharedPtr<Scene> rttscene_;
-	SharedPtr<Node> rttcameranode_;
-	SharedPtr<Viewport> rttviewport_;
-	SharedPtr<Material> rttmaterial_;
-	SharedPtr<Texture2D> rttrendertexture_;*/
 	Material *healthmat_;
-
-	/*SharedPtr<Scene> overlayscene_;
-	SharedPtr<Node> overlaynode_;
-	SharedPtr<Viewport> overlayviewport_;*/
-
 	SharedPtr<UIElement> element_;
 	SharedPtr<Text> energyelement_;
-	SharedPtr<UIElement> help_;
 	SharedPtr<Text> levelelement_;
 	SharedPtr<UIElement> gamblebutton_;
 

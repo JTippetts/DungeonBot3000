@@ -75,6 +75,8 @@ class PlayerData : public Object
 	GeneralItem *AddItem(const EquipmentItemDef &def);
 	void RemoveItem(GeneralItem *item);
 
+	InventoryScreen &GetInventoryScreen(){return inventoryscreen_;}
+
 	protected:
 	StatSet basestats_;
 	StatSetCollection vitalsstats_;

@@ -177,6 +177,31 @@ ItemNameTag *ItemNameTagContainer::GetHoveredTag()
 
 void ItemNameTagContainer::DoItemHover()
 {
+	auto ui=GetSubsystem<UI>();
+	auto cache=GetSubsystem<ResourceCache>();
+	auto graphics=GetSubsystem<Graphics>();
+	auto pd=GetSubsystem<PlayerData>();
+	auto input=GetSubsystem<Input>();
+
+	auto &is=pd->GetInventoryScreen();
+
+	// Don't do hover if over a HUD element
+	IntVector2 mousepos;
+	if(input->IsMouseVisible()) mousepos=input->GetMousePosition();
+	else mousepos=ui->GetCursorPosition();
+
+	auto hudlayer=ui->GetRoot()->GetChild("HUDLayer", true);
+	if(hudlayer)
+	{
+		unsigned int numchildren=hudlayer->GetNumChildren();
+		for(unsigned int c=0; c<numchildren; ++c)
+		{
+			auto child=hudlayer->GetChild(c);
+			auto rect=child->GetCombinedScreenRect();
+			if(child->IsVisible() && rect.IsInside(mousepos)==INSIDE) return;
+		}
+	}
+
 	ItemNameTag *tag=GetHoveredTag();
 	if(!tag)
 	{
@@ -192,10 +217,7 @@ void ItemNameTagContainer::DoItemHover()
 
 	WeakPtr<GeneralItem> item(drop->GetItem());
 	if(!item || item.Expired()) return;
-	auto ui=GetSubsystem<UI>();
-	auto cache=GetSubsystem<ResourceCache>();
-	auto graphics=GetSubsystem<Graphics>();
-	auto pd=GetSubsystem<PlayerData>();
+
 	auto &modtable=pd->GetItemModTable();
 
 	if(item->type_==GITEquipment)
@@ -204,13 +226,13 @@ void ItemNameTagContainer::DoItemHover()
 		if(!itemdesc_)
 		{
 			itemdesc_=ui->LoadLayout(cache->GetResource<XMLFile>("UI/ItemDescriptionBox.xml"));
-			ui->GetRoot()->GetChild("HUDLayer",true)->AddChild(itemdesc_);
+			ui->GetRoot()->GetChild("AboveHUDLayer",true)->AddChild(itemdesc_);
 		}
 
 		if(!equippeddesc_)
 		{
 			equippeddesc_=ui->LoadLayout(cache->GetResource<XMLFile>("UI/ItemDescriptionBox.xml"));
-			ui->GetRoot()->GetChild("HUDLayer", true)->AddChild(equippeddesc_);
+			ui->GetRoot()->GetChild("AboveHUDLayer", true)->AddChild(equippeddesc_);
 			Text *title=dynamic_cast<Text *>(equippeddesc_->GetChild("Title", true));
 			if(title) title->SetText("Equipped Item");
 		}

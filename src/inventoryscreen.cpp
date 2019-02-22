@@ -226,6 +226,8 @@ void InventoryScreen::HandleUpdate(StringHash eventType, VariantMap &eventData)
 	auto input=GetSubsystem<Input>();
 	auto ui=GetSubsystem<UI>();
 
+	if(!GetItemInHand()) hasiteminhand_=false;
+
 	if(pi->GetBag().IsDirty())
 	{
 		UpdateBagImages();
@@ -442,6 +444,11 @@ void InventoryScreen::ResetBagColors()
 	}
 }
 
+bool InventoryScreen::HasItemInHand()
+{
+	return (GetItemInHand()!=nullptr || hasiteminhand_);
+}
+
 void InventoryScreen::PutItemInHand(GeneralItem *item)
 {
 	if(!item) return;
@@ -477,6 +484,7 @@ void InventoryScreen::PutItemInHand(GeneralItem *item)
 		chld->SetSize(invsize*32);
 	}
 	handitem_ = SharedPtr<UIElement>(hi);
+	hasiteminhand_=true;
 }
 
 void InventoryScreen::RemoveItemInHand()
