@@ -159,6 +159,7 @@ void Game::Start()
 	ui->GetRoot()->CreateChild<UIElement>("ItemTagLayer");
 	ui->GetRoot()->CreateChild<UIElement>("ObjectTagLayer");
 	ui->GetRoot()->CreateChild<UIElement>("HUDLayer");
+	ui->GetRoot()->CreateChild<UIElement>("AboveHUDLayer");
 	ui->GetRoot()->CreateChild<UIElement>("FadeLayer");
 
 	gamestate->SwitchToState(SharedPtr<GameStateBase>(new MainMenuState(context_)));

@@ -453,7 +453,10 @@ void InventoryScreen::PutItemInHand(GeneralItem *item)
 
 	auto ui=GetSubsystem<UI>();
 	auto cache=GetSubsystem<ResourceCache>();
-	auto hudlayer=ui->GetRoot()->GetChild("HUDLayer", true);
+	auto input=GetSubsystem<Input>();
+
+	UIElement* hudlayer=ui->GetRoot()->GetChild("AboveHUDLayer", true);
+
 	auto &invsize=item->invsize_;
 
 	iteminhand_=WeakPtr<GeneralItem>(item);
