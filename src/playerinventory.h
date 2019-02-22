@@ -17,7 +17,7 @@ class InventoryBag
 
 	bool FindAvailableLocation(IntVector2 &location, const IntVector2 &size);
 	bool FindAvailableLocation(IntVector2 &locatioin, GeneralItem *item);
-	bool CanPlaceAtLocation(const IntVector2 &location, GeneralItem *item);
+	bool CanPlaceAtLocation(const IntVector2 &location, GeneralItem *item, bool checkblock=true);
 	void PlaceAtLocation(const IntVector2 &location, GeneralItem *item);
 	GeneralItem *FindItemInSlot(const IntVector2 &location);
 	void RemoveItem(GeneralItem *item);
@@ -25,6 +25,7 @@ class InventoryBag
 
 	bool IsDirty();
 	std::vector<WeakPtr<GeneralItem>> &GetItems(){return items_;}
+	GeneralItem *GetCoveredItem(const IntVector2 &location, const IntVector2 &size);
 
 	protected:
 	std::vector<WeakPtr<GeneralItem>> items_;

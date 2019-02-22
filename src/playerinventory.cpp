@@ -50,23 +50,27 @@ bool InventoryBag::FindAvailableLocation(IntVector2 &location, GeneralItem *item
 	return FindAvailableLocation(location, size);
 }
 
-bool InventoryBag::CanPlaceAtLocation(const IntVector2 &location, GeneralItem *item)
+bool InventoryBag::CanPlaceAtLocation(const IntVector2 &location, GeneralItem *item, bool checkblock)
 {
 	if(!item) return false;
 	IntVector2 size=item->invsize_;
 	if(location.x_<0 || location.y_<0 || location.x_>=bagwidth_-size.x_ || location.y_ >=bagheight_-size.y_) return false;
 
-	bool blocked=false;
-	for(unsigned int x=location.x_; x<location.x_+size.x_; ++x)
+	if(checkblock)
 	{
-		for(unsigned int y=location.y_; y<location.y_+size.y_; ++y)
+		bool blocked=false;
+		for(unsigned int x=location.x_; x<location.x_+size.x_; ++x)
 		{
-			unsigned int index=y*bagwidth_+x;
-			if(index>=blocked_.size()) return false;
-			if(blocked_[index]) blocked=true;
+			for(unsigned int y=location.y_; y<location.y_+size.y_; ++y)
+			{
+				unsigned int index=y*bagwidth_+x;
+				if(index>=blocked_.size()) return false;
+				if(blocked_[index]) blocked=true;
+			}
 		}
+		return blocked;
 	}
-	return blocked;
+	else return true;
 }
 
 void InventoryBag::PlaceAtLocation(const IntVector2 &location, GeneralItem *item)
@@ -101,11 +105,11 @@ GeneralItem *InventoryBag::FindItemInSlot(const IntVector2 &location)
 
 void InventoryBag::RemoveItem(GeneralItem *item)
 {
-	for(auto i=items_.begin(); i!=items_.end(); ++i)
+	if(!item) return;
+	for(unsigned int i=0; i<items_.size(); ++i)
 	{
-		if(i->Get()==item)
+		if(items_[i]==item)
 		{
-			auto item=i->Get();
 			IntVector2 &invsize=item->invsize_;
 			IntVector2 &invloc=item->invlocation_;
 			for(unsigned int x=0; x<invsize.x_; ++x)
@@ -121,7 +125,11 @@ void InventoryBag::RemoveItem(GeneralItem *item)
 					}
 				}
 			}
-			items_.erase(i);
+			items_[i]=items_[items_.size()-1];
+			items_.pop_back();
+			dirty_=true;
+			return;
+			//items_.erase(i);
 		}
 	}
 	dirty_=true;
@@ -150,6 +158,22 @@ unsigned int InventoryBag::CountCoveredItems(const IntVector2 &location, const I
 	}
 
 	return items.size();
+}
+
+GeneralItem * InventoryBag::GetCoveredItem(const IntVector2 &location, const IntVector2 &size)
+{
+	for(unsigned int x=location.x_; x<location.x_ + size.x_; ++x)
+	{
+		for(unsigned int y=location.y_; y<location.y_ + size.y_; ++y)
+		{
+			auto i=FindItemInSlot(IntVector2(x,y));
+			if(i)
+			{
+				return i;
+			}
+		}
+	}
+	return nullptr;
 }
 
 bool InventoryBag::IsDirty()

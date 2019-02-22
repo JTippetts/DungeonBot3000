@@ -19,7 +19,8 @@ class InventoryScreen : public Object
 	bool IsVisible();
 
 	void PutItemInHand(GeneralItem *item);
-	bool HasItemInHand(GeneralItem *item);
+	GeneralItem *GetItemInHand();
+	void RemoveItemInHand();
 
 	bool GetHoveredBagLocation(IntVector2 &location, const IntVector2 &mousepos);
 	bool GetHoveredEquipmentSlot(unsigned int &slot, UIElement * &element, const IntVector2 &mousepos);
@@ -33,6 +34,9 @@ class InventoryScreen : public Object
 	HashMap<StringHash, UIElement *> equipslots_;
 	unsigned int bagwidth_, bagheight_;
 	SharedPtr<UIElement> hoveredelement_;
+
+	WeakPtr<GeneralItem> iteminhand_;
+	SharedPtr<UIElement> handitem_;
 
 	void BuildSlot(StringHash name, unsigned int x, unsigned int y, unsigned int width, unsigned int height, const String &allowedtypes);
 	void BuildBag(unsigned int width, unsigned int height);

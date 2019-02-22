@@ -13,7 +13,9 @@
 #include "playerdata.h"
 #include "playerinventory.h"
 
-InventoryScreen::InventoryScreen(Context *context) : Object(context), bagelement_(nullptr), equipelement_(nullptr), bagwidth_(0), bagheight_(0)
+float rollf(float,float);
+
+InventoryScreen::InventoryScreen(Context *context) : Object(context), bagelement_(nullptr), equipelement_(nullptr), bagwidth_(0), bagheight_(0), handitem_(nullptr)
 {
 	SubscribeToEvent(StringHash("Update"), URHO3D_HANDLER(InventoryScreen, HandleUpdate));
 }
@@ -271,6 +273,123 @@ void InventoryScreen::HandleUpdate(StringHash eventType, VariantMap &eventData)
 				}
 			}
 		}
+
+		auto inhand=GetItemInHand();
+		if(inhand)
+		{
+			if(handitem_)
+			{
+				handitem_->SetPosition(mousepos-IntVector2(-1,-1));
+			}
+		}
+
+		// Check for lmb/rmb
+		if(input->GetMouseButtonPress(MOUSEB_LEFT))
+		{
+			// If no item in hand, and over an item in bag, pick it up
+			auto iteminhand=GetItemInHand();
+			if(!iteminhand)
+			{
+				if(GetHoveredBagLocation(location, mousepos))
+				{
+					auto item=pi->GetBag().FindItemInSlot(location);
+					if(item)
+					{
+						pi->GetBag().RemoveItem(item);
+						PutItemInHand(item);
+					}
+				}
+				else if(GetHoveredEquipmentSlot(slot, elem, mousepos)) // Hovering over a slot
+				{
+					auto item=pi->GetEquipment().GetItemAtSlot(slot);
+					if(item)
+					{
+						pi->GetEquipment().RemoveItemFromSlot(slot);
+						PutItemInHand(item);
+					}
+				}
+			}
+			else // Have item in hand
+			{
+				// HAve an item in hand, check to see if we can place it in inventory
+				if(GetHoveredBagLocation(location, mousepos))
+				{
+					unsigned int coveredcount=pi->GetBag().CountCoveredItems(location, iteminhand->invsize_);
+					if(coveredcount==0) // Not covering any items in inventory, check if can place it and place it
+					{
+						if(pi->GetBag().CanPlaceAtLocation(location, iteminhand, false))
+						{
+							// No covered items, and can place there so place it
+							pi->GetBag().PlaceAtLocation(location, iteminhand);
+							RemoveItemInHand();
+						}
+					}
+					else if(coveredcount==1)
+					{
+						if(pi->GetBag().CanPlaceAtLocation(location, iteminhand, false))
+						{
+							// Covering 1 item, can place item there, so swap
+							auto ci = pi->GetBag().GetCoveredItem(location, iteminhand->invsize_);
+							if(ci)
+							{
+								auto &bag=pi->GetBag();
+								bag.RemoveItem(ci);
+								bag.PlaceAtLocation(location, iteminhand);
+								RemoveItemInHand();
+								PutItemInHand(ci);
+							}
+							else // If this happens, it's a bug in getcovereditem
+							{
+								Log::Write(LOG_INFO, "wut");
+							}
+						}
+					}
+					else
+					{
+						// Too many items, can't do anything
+					}
+				}
+				else if(GetHoveredEquipmentSlot(slot, elem, mousepos)) // Item in hand, hovered over equipment slot
+				{
+					auto item=pi->GetEquipment().GetItemAtSlot(slot);
+					if(item)   // There is an item there
+					{
+						if(pi->GetEquipment().CanAddItemToSlot(slot, iteminhand)) // Can add item in hand into slot
+						{
+							// Swap item in hand with item in equipment
+							pi->GetEquipment().RemoveItemFromSlot(slot);
+							pi->GetEquipment().AddItemToSlot(slot, iteminhand);
+							RemoveItemInHand();
+							PutItemInHand(item);
+						}
+						else  // Can not equip item in hand to that slot, do nothing
+						{
+						}
+					}
+					else // No item there
+					{
+						if(pi->GetEquipment().CanAddItemToSlot(slot, iteminhand)) // Can add the item there, so add it
+						{
+							RemoveItemInHand();
+							pi->GetEquipment().AddItemToSlot(slot, iteminhand);
+						}
+						else // Can't add it to that slot, do nothing
+						{
+						}
+					}
+				}
+				else // Have item in hand, drop it on ground
+				{
+					auto pd=GetSubsystem<PlayerData>();
+					auto pn=pd->GetPlayerNode();
+					RemoveItemInHand();
+					pd->DropItem(iteminhand, pn->GetWorldPosition(), pn->GetWorldPosition()+Vector3(rollf(-5.0,5.0), 0, rollf(-5.0,5.0)));
+				}
+			}
+		}
+		else if(input->GetMouseButtonPress(MOUSEB_RIGHT))
+		{
+		}
 	}
 }
 
@@ -321,4 +440,55 @@ void InventoryScreen::ResetBagColors()
 			}
 		}
 	}
+}
+
+void InventoryScreen::PutItemInHand(GeneralItem *item)
+{
+	if(!item) return;
+	if(handitem_)
+	{
+		handitem_->Remove();
+		handitem_.Reset();
+	}
+
+	auto ui=GetSubsystem<UI>();
+	auto cache=GetSubsystem<ResourceCache>();
+	auto hudlayer=ui->GetRoot()->GetChild("HUDLayer", true);
+	auto &invsize=item->invsize_;
+
+	iteminhand_=WeakPtr<GeneralItem>(item);
+	SharedPtr<BorderImage> hi(hudlayer->CreateChild<BorderImage>());
+	hi->SetTexture(cache->GetResource<Texture2D>("UI/buttons.png"));
+	hi->SetImageRect(IntRect(26,152,27,153));
+	hi->SetColor(Color(0.5,0.5,0.5));
+	hi->SetOpacity(0.5);
+	hi->SetSize(invsize*32);
+
+	auto chld=hi->CreateChild<BorderImage>();
+	auto splits=item->inventoryimage_.Split(';');
+	if(splits.Size()>=2)
+	{
+		chld->SetTexture(cache->GetResource<Texture2D>(splits[0]));
+		IntRect rect=FromString<IntRect>(splits[1]);
+		chld->SetImageRect(rect);
+		chld->SetSize(invsize*32);
+	}
+	handitem_ = SharedPtr<UIElement>(hi);
+}
+
+void InventoryScreen::RemoveItemInHand()
+{
+	iteminhand_=WeakPtr<GeneralItem>(nullptr);
+
+	if(handitem_)
+	{
+		handitem_->Remove();
+		handitem_.Reset();
+	}
+}
+
+GeneralItem * InventoryScreen::GetItemInHand()
+{
+	if(!iteminhand_ || iteminhand_.Expired()) return nullptr;
+	return iteminhand_;
 }
