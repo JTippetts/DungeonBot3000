@@ -417,21 +417,37 @@ CombatActionState *CASPlayerLoot::Update(CombatController *actor, float dt)
 			auto itemdrop = item_->GetComponent<DropItemContainer>();
 			if(itemdrop)
 			{
-				/*auto pd=node->GetSubsystem<PlayerData>();
-				pd->EquipItem(itemdrop->GetItem(), true);
-				item_->GetComponent<ItemNameTag>()->RemoveTag();
-				item_->Remove();*/
-				// TODO under new item system
-				auto pi=GetSubsystem<PlayerInventory>();
-				if(pi->AddItem(itemdrop->GetItem(), true))
+				auto pd=GetSubsystem<PlayerData>();
+				auto &is=pd->GetInventoryScreen();
+				if(is.IsVisible())
 				{
-					itemdrop->ClearItem();
-					item_->GetComponent<ItemNameTag>()->RemoveTag();
-					item_->Remove();
+					// Inventory screen visible, so check to see if there is an item in hand.
+					// If item in hand, just do nothing and bail.
+					if(!is.HasItemInHand())
+					{
+						is.PutItemInHand(itemdrop->GetItem());
+						itemdrop->ClearItem();
+						item_->GetComponent<ItemNameTag>()->RemoveTag();
+						item_->Remove();
+					}
+					else
+					{
+						// Item already in hand, do nothing
+					}
 				}
 				else
 				{
-					Log::Write(LOG_INFO, "Not enough inventory space");
+					auto pi=GetSubsystem<PlayerInventory>();
+					if(pi->AddItem(itemdrop->GetItem(), true))
+					{
+						itemdrop->ClearItem();
+						item_->GetComponent<ItemNameTag>()->RemoveTag();
+						item_->Remove();
+					}
+					else
+					{
+						Log::Write(LOG_INFO, "Not enough inventory space");
+					}
 				}
 			}
 			return actor->GetState<CASPlayerIdle>();
@@ -456,20 +472,37 @@ CombatActionState *CASPlayerLoot::Update(CombatController *actor, float dt)
 				auto itemdrop = item_->GetComponent<DropItemContainer>();
 				if(itemdrop)
 				{
-					/*auto pd=node->GetSubsystem<PlayerData>();
-					pd->EquipItem(itemdrop->GetItem(), true);
-					item_->Remove();*/
-					//TODO under new item system
-					auto pi=GetSubsystem<PlayerInventory>();
-					if(pi->AddItem(itemdrop->GetItem(), true))
+					auto pd=GetSubsystem<PlayerData>();
+					auto &is=pd->GetInventoryScreen();
+					if(is.IsVisible())
 					{
-						itemdrop->ClearItem();
-						item_->GetComponent<ItemNameTag>()->RemoveTag();
-						item_->Remove();
+						// Inventory screen visible, so check to see if there is an item in hand.
+						// If item in hand, just do nothing and bail.
+						if(!is.HasItemInHand())
+						{
+							is.PutItemInHand(itemdrop->GetItem());
+							itemdrop->ClearItem();
+							item_->GetComponent<ItemNameTag>()->RemoveTag();
+							item_->Remove();
+						}
+						else
+						{
+							// Item already in hand, do nothing
+						}
 					}
 					else
 					{
-						Log::Write(LOG_INFO, "Not enough inventory space");
+						auto pi=GetSubsystem<PlayerInventory>();
+						if(pi->AddItem(itemdrop->GetItem(), true))
+						{
+							itemdrop->ClearItem();
+							item_->GetComponent<ItemNameTag>()->RemoveTag();
+							item_->Remove();
+						}
+						else
+						{
+							Log::Write(LOG_INFO, "Not enough inventory space");
+						}
 					}
 				}
 				return actor->GetState<CASPlayerIdle>();
