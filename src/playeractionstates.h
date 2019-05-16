@@ -119,3 +119,20 @@ class CASPlayerLaserBeam : public CASPlayerBase
 
 	Vector3 GetEndPoint(Node *node);
 };
+
+class CASPlayerCharge : public CASPlayerBase
+{
+	URHO3D_OBJECT(CASPlayerCharge, CASPlayerBase);
+	public:
+	CASPlayerCharge(Context *context);
+
+	virtual void Start(CombatController *actor) override;
+	virtual void End(CombatController *actor) override;
+	virtual CombatActionState *Update(CombatController *actor, float dt) override;
+	virtual void HandleTrigger(CombatController *actor, String animname, unsigned int value) override;
+
+	protected:
+	float timetodest_, counter_;
+	Vector3 dest_, dir_;
+	bool charging_;
+};

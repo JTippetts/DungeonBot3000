@@ -118,6 +118,23 @@ CombatActionState *CASPlayerBase::CheckInputs(CombatController *actor)
 				double energy=pd->GetEnergy();
 				if(energy>=energycost) return actor->GetState<CASPlayerLaserBeam>();
 			} break;
+			case PACharge:
+			{
+				// First, check cooldown
+				static StringHash Charge("Charge");
+				float cd=actor->GetCooldown(Charge);
+				if(cd<=0.0)
+				{
+					auto stats=pd->GetStatSetCollection(EqDriveSystem, "Charge");
+					double energycost=GetStatValue(stats, "EnergyCost");
+					double energy=pd->GetEnergy();
+					if(energy>=energycost)
+					{
+						auto charge = actor->GetState<CASPlayerCharge>();
+						return charge;
+					}
+				}
+			} break;
 		};
 	}
 	else if(input->GetMouseButtonPress(MOUSEB_LEFT) && !is.HasItemInHand())
@@ -1019,4 +1036,131 @@ CombatActionState *CASPlayerLaserBeam::Update(CombatController *actor, float dt)
 		if(input->GetMouseButtonDown(MOUSEB_LEFT)) return actor->GetState<CASPlayerMove>();
 		return actor->GetState<CASPlayerIdle>();
 	}
+}
+
+CASPlayerCharge::CASPlayerCharge(Context *context) : CASPlayerBase(context)
+{
+}
+
+void CASPlayerCharge::Start(CombatController *actor)
+{
+	auto node=actor->GetNode();
+	auto input=actor->GetSubsystem<Input>();
+	auto pd=actor->GetSubsystem<PlayerData>();
+
+	if(node)
+	{
+		auto stats=pd->GetStatSetCollection(EqDriveSystem, "Charge");
+		auto ac=node->GetComponent<AnimationController>();
+		if(ac)
+		{
+			ac->Play(actor->GetAnimPath() + "/Models/Action.ani", 0, false, 0.1f);
+			float attackspeed=std::max(0.01, GetStatValue(stats, "AttackSpeed"));
+			ac->SetSpeed(actor->GetAnimPath() + "/Models/Action.ani", attackspeed);
+		}
+
+		auto ca=node->GetComponent<CrowdAgent>();
+		if(ca)
+		{
+			//ca->SetNavigationPushiness(NAVIGATIONPUSHINESS_HIGH);
+			ca->SetEnabled(false);
+		}
+
+		auto cam=node->GetScene()->GetChild("Camera")->GetComponent<ThirdPersonCamera>();
+		IntVector2 mousepos;
+		if(input->IsMouseVisible()) mousepos=input->GetMousePosition();
+		else mousepos=node->GetSubsystem<UI>()->GetCursorPosition();
+		Vector2 ground=cam->GetScreenGround(mousepos.x_,mousepos.y_);
+
+		auto nav=node->GetScene()->GetComponent<DynamicNavigationMesh>();
+
+		Vector3 gnd(ground.x_, 0.0f, ground.y_);
+		dir_=gnd-node->GetWorldPosition();
+		dir_.Normalize();
+		float chargedist=GetStatValue(stats, "ChargeDistance");
+		Vector3 end=node->GetWorldPosition()+dir_*chargedist;
+		timetodest_ = GetStatValue(stats, "WarpTime");
+		counter_=timetodest_;
+
+		dest_=nav->Raycast(node->GetWorldPosition(), end, Vector3(10,10,10));
+		charging_=false;
+	}
+}
+
+void CASPlayerCharge::End(CombatController *actor)
+{
+	auto node=actor->GetNode();
+
+	if(node)
+	{
+		auto ac=node->GetComponent<AnimationController>();
+		if(ac)
+		{
+			ac->Stop(actor->GetAnimPath() + "/Models/Action.ani", 0.1f);
+		}
+
+		auto ca=node->GetComponent<CrowdAgent>();
+		if(ca)
+		{
+			ca->SetEnabled(true);
+			ca->SetNavigationPushiness(NAVIGATIONPUSHINESS_MEDIUM);
+			ca->SetTargetPosition(node->GetWorldPosition());
+		}
+	}
+}
+
+CombatActionState *CASPlayerCharge::Update(CombatController *actor, float dt)
+{
+	auto node=actor->GetNode();
+	auto input=actor->GetSubsystem<Input>();
+
+	auto ac=node->GetComponent<AnimationController>();
+	/*if(ac)
+	{
+		if(ac->IsAtEnd(actor->GetAnimPath() + "/Models/Action.ani"))
+		{
+			//return actor->GetState<CASEnemyIdle>();
+			if(input->GetMouseButtonDown(MOUSEB_LEFT)) return actor->GetState<CASPlayerMove>();
+			return actor->GetState<CASPlayerIdle>();
+		}
+	}*/
+
+	if(charging_)
+	{
+		if(counter_>0.0f)
+		{
+			counter_-=dt;
+			counter_=std::max(0.0f, counter_);
+			Vector3 pos=dest_.Lerp(node->GetWorldPosition(), counter_/timetodest_);
+			node->SetWorldPosition(pos);
+		}
+		else
+		{
+			if(input->GetMouseButtonDown(MOUSEB_LEFT)) return actor->GetState<CASPlayerMove>();
+			return actor->GetState<CASPlayerIdle>();
+		}
+	}
+	else
+	{
+
+		auto playerpos = node->GetWorldPosition();
+		auto delta = dest_ - node->GetWorldPosition();
+
+		node->SetRotation(node->GetRotation().Slerp(Quaternion(Vector3::FORWARD, delta), 10.0f * dt));
+	}
+	return nullptr;
+}
+
+void CASPlayerCharge::HandleTrigger(CombatController *actor, String animname, unsigned int value)
+{
+	auto node=actor->GetNode();
+	auto pd=actor->GetSubsystem<PlayerData>();
+	auto stats=pd->GetStatSetCollection(EqDriveSystem, "Charge");
+
+	double energy=pd->GetEnergy();
+	double cost=GetStatValue(stats, "EnergyCost");
+	pd->SetEnergy(energy-cost);
+
+	//node->SetWorldPosition(dest_);
+	charging_=true;
 }

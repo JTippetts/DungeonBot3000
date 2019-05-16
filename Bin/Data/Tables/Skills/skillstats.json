@@ -16,4 +16,11 @@
 		"LaserBeamTrackSpeed": [["Flat", "30.0*(1.0+IncreasedAttackSpeed)"]],
 		"EnergyCost": [["Flat", "2.0*LaserBeamLevel"]],
 	},
+
+	"Charge": {
+		"AttackSpeed": [["Flat", "4.0"]],
+		"EnergyCost": [["Flat", "5.0"]],
+		"ChargeDistance": [["Flat", "40.0"]],
+		"WarpTime": [["Flat", "0.125"]],
+	},
 }

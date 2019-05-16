@@ -19,6 +19,7 @@ enum PlayerAttack
 {
 	PASpinAttack,
 	PALaserBeam,
+	PACharge
 };
 
 class PlayerData : public Object

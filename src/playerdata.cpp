@@ -282,36 +282,19 @@ void PlayerData::NewPlayer()
 
 	auto pi=GetSubsystem<PlayerInventory>();
 	auto item=AddItem(EquipmentItemDef(EqBlade, IRNormal, "Starter Blade", "", "Objects/DungeonBot3000/Textures/testblade.png;0 0 63 95", {"StarterBladeImplicit"}));
-	pi->AddItem(item, false);
-
-	item=AddItem(EquipmentItemDef(EqBlade, IRNormal, "Starter Blade", "", "Objects/DungeonBot3000/Textures/testblade.png;0 0 63 95", {"StarterBladeImplicit"}));
-	pi->AddItem(item, true);
-
-	item=AddItem(EquipmentItemDef(EqBlade, IRNormal, "Starter Blade", "", "Objects/DungeonBot3000/Textures/testblade.png;0 0 63 95", {"StarterBladeImplicit"}));
-	pi->AddItem(item, true);
-
-	item=AddItem(EquipmentItemDef(EqBlade, IRNormal, "Starter Blade", "", "Objects/DungeonBot3000/Textures/testblade.png;0 0 63 95", {"StarterBladeImplicit"}));
-	pi->AddItem(item, true);
-
-	item=AddItem(EquipmentItemDef(EqBlade, IRNormal, "Starter Blade", "", "Objects/DungeonBot3000/Textures/testblade.png;0 0 63 95", {"StarterBladeImplicit"}));
-	pi->AddItem(item, false);
-
-	item=AddItem(EquipmentItemDef(EqTurret, IRNormal, "Starter Laser", "", "Objects/DungeonBot3000/Textures/testblade.png;0 0 63 63", {"StarterLaserImplicit"}));
 	pi->AddItem(item, true);
 
 	item=AddItem(EquipmentItemDef(EqTurret, IRNormal, "Starter Laser", "", "Objects/DungeonBot3000/Textures/testblade.png;0 0 63 63", {"StarterLaserImplicit"}));
 	pi->AddItem(item, true);
 
-	//EquipItem(EquipmentItemDef(EqBlade, IRNormal, "Starter Blade", "", "", {"StarterBladeImplicit"}), false);
-	//EquipItem(EquipmentItemDef(EqTurret, IRNormal, "Starter Laser", "", "", {"StarterLaserImplicit"}), false);
-	//EquipItem(EquipmentItemDef(EqShell, IRNormal, "Starter Shell", "", "", {"StarterShellGlobal"}), false);
+	item=AddItem(EquipmentItemDef(EqShell, IRNormal, "Starter Shell", "", "Objects/DungeonBot3000/Textures/testblade.png;0 0 63 95", {"StarterShellGlobal"}));
+	pi->AddItem(item, true);
 }
 
 StatSetCollection &PlayerData::GetVitalsStats()
 {
 	vitalsstats_.clear();
 	vitalsstats_.push_back(&basestats_);
-	//vitalsstats_.push_back(equipmentset_.GetGlobalStats());
 	auto pi=GetSubsystem<PlayerInventory>();
 	if(pi)
 	{

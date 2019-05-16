@@ -119,6 +119,7 @@ void LifeBubbleUI::Update(float dt)
 	auto input=GetSubsystem<Input>();
 	if(input->GetKeyPress(KEY_Q)) pd->SetAttack(PASpinAttack);
 	else if(input->GetKeyPress(KEY_W)) pd->SetAttack(PALaserBeam);
+	else if(input->GetKeyPress(KEY_E)) pd->SetAttack(PACharge);
 
 	if(input->GetKeyPress(KEY_I))
 	{
