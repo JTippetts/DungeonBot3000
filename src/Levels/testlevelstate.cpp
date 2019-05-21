@@ -96,9 +96,9 @@ void TestLevelState::Start()
 
 	nav->SetAgentHeight(1.0);
 	nav->SetAgentRadius(2.0f);
-	nav->SetAgentMaxClimb(0.01);
+	nav->SetAgentMaxClimb(1.0f);
 	nav->SetCellSize(1.0);
-	nav->SetCellHeight(0.5);
+	nav->SetCellHeight(0.125);
 	nav->SetTileSize(64);
 
 	Maze2 maze;
@@ -229,7 +229,7 @@ void TestLevelState::Start()
 					}
 				}
 
-				int numusers=roll(6*level,8*level);
+				int numusers=roll(60*level,80*level);
 				for(int c=0; c<numusers; ++c)
 				{
 					Vector3 pt=nav->FindNearestPoint(roomcenter+Vector3(rollf(-size*0.5f, size*0.5f), 0.0f, rollf(-size*0.5f, size*0.5f)), extents);

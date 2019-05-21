@@ -3,12 +3,19 @@
 #include <stack>
 #include <sstream>
 
-Token::Token() : type_(Token::NONE), token_("") {}
-Token::Token(ETokenTypes t, const std::string token) : type_(t), token_(token) {}
+#include <Urho3D/IO/Log.h>
+using namespace Urho3D;
+
+extern StringHasherType shasher;
+
+Token::Token() : type_(Token::NONE), token_(shasher("")), val_(0) {}
+Token::Token(ETokenTypes t, const std::string token, double val) : type_(t), token_(shasher(token)), val_(val) {}
+Token::Token(ETokenTypes t, const StringHashType token, double val) : type_(t), token_(token), val_(val) {}
 Token::Token(const Token &rhs)
 {
     type_=rhs.type_;
     token_=rhs.token_;
+	val_=rhs.val_;
 }
 Token::~Token() {}
 
@@ -16,7 +23,7 @@ const Token::ETokenTypes Token::GetType() const
 {
     return type_;
 }
-const std::string &Token::GetToken() const
+const StringHashType &Token::GetToken() const
 {
     return token_;
 }
@@ -101,7 +108,7 @@ Token Tokenizer::ParseNumberToken(char ch)
     if(expression_.end()==(offset+len))
     {
         ss<<ch;
-        lastToken_=Token(Token::NUMBER, ss.str());
+        lastToken_=Token(Token::NUMBER, ss.str(), std::stod(ss.str()));
         return lastToken_;
     }
 
@@ -116,7 +123,9 @@ Token Tokenizer::ParseNumberToken(char ch)
         pos_--;
     }
     for(std::string::iterator i=offset; i!=pos_; ++i) ss << *i;
-    lastToken_=Token(Token::NUMBER, ss.str());
+    lastToken_=Token(Token::NUMBER, ss.str(), std::stod(ss.str()));
+
+	Log::Write(LOG_INFO, String("Parsed number token: ") + String(ss.str().c_str()));
     return lastToken_;
 }
 
@@ -170,7 +179,7 @@ Token Tokenizer::ParseOperator(char ch)
 Token Tokenizer::ParseFunctionOrVariable(char ch)
 {
     std::string::iterator offset=pos_;
-    if(offset==expression_.end()) pos_++;
+    //if(offset==expression_.end()) pos_++;
     std::stringstream tok;
 
     while((offset)!=expression_.end() &&
@@ -180,7 +189,7 @@ Token Tokenizer::ParseFunctionOrVariable(char ch)
         ++offset;
     }
 
-    if(IsFunctionName(tok.str()))
+    if(IsFunctionName(shasher(tok.str())))
     {
         lastToken_=Token(Token::FUNCTION, tok.str());
     }
@@ -199,13 +208,7 @@ bool Tokenizer::IsNumeric(char ch, bool lastCharE)
             ch=='.' || ch=='e' || ch=='E' || (lastCharE && (ch=='-' || ch=='+')));
 }
 
-bool Tokenizer::IsSpecialToken(const std::string &t)
-{
-    //for(auto i : vars_) if(t==i) return true;
-    return false;
-}
-
-bool Tokenizer::IsFunctionName(const std::string &t)
+bool Tokenizer::IsFunctionName(const StringHashType &t)
 {
     return (functions_.find(t) != functions_.end());
 }
@@ -313,23 +316,26 @@ int ExpressionToPostfix::GetNumOperands(const Token &tk)
 
 bool ExpressionToPostfix::IsLeftAssociative(const Token &tk)
 {
-    const std::string tok=tk.GetToken();
-    if(tok=="+" || tok=="-" || tok=="/" || tok=="*") return true;
+    //const std::string tok=tk.GetToken();
+	const StringHashType tok=tk.GetToken();
+	static const StringHashType plus(shasher("+")), minus(shasher("-")), multiply(shasher("*")), divide(shasher("/"));
+    if(tok==plus || tok==minus || tok==divide || tok==multiply) return true;
     return false;
 }
 
 int ExpressionToPostfix::GetPrecedence(const Token &tk)
 {
-    std::string c=tk.GetToken();
-    if(c == "^")
+	static const StringHashType carat(shasher("^")), multiply(shasher("*")), divide(shasher("/")), plus(shasher("+")), minus(shasher("-"));
+    StringHashType c=tk.GetToken();
+    if(c == carat)
     {
         return 3;
     }
-    if(c == "*" || c == "/")
+    if(c == multiply || c == divide)
     {
         return 2;
     }
-    if(c== "+" || c == "-")
+    if(c== plus || c == minus)
     {
         return 1;
     }

@@ -30,16 +30,21 @@ public:
     };
 
     Token();
-    Token(ETokenTypes t, const std::string token);
+    Token(ETokenTypes t, const std::string token, double val=0);
+	Token(ETokenTypes t, const StringHashType token, double val=0);
     Token(const Token &rhs);
     virtual ~Token();
 
     const ETokenTypes GetType() const;
-    const std::string &GetToken() const;
+    //const std::string &GetToken() const;
+	const StringHashType &GetToken() const;
+	double GetValue() {return val_;}
 
 protected:
     ETokenTypes type_;
-    std::string token_;
+    //std::string token_;
+	StringHashType token_;
+	double val_;
 };
 
 using TokenStream = std::vector<Token>;
@@ -52,7 +57,8 @@ struct ExpressionFunction
 };
 
 // Function map
-using FunctionMapType = std::unordered_map<std::string, ExpressionFunction>;
+//using FunctionMapType = std::unordered_map<std::string, ExpressionFunction>;
+using FunctionMapType = std::unordered_map<StringHashType, ExpressionFunction>;
 
 class Tokenizer
 {
@@ -80,8 +86,8 @@ protected:
     Token ParseOperator(char ch);
     Token ParseFunctionOrVariable(char ch);
     bool IsNumeric(char ch, bool lastCharE);
-    bool IsSpecialToken(const std::string &t);
-    bool IsFunctionName(const std::string &t);
+    //bool IsFunctionName(const std::string &t);
+	bool IsFunctionName(const StringHashType &t);
 };
 
 class ExpressionToPostfix

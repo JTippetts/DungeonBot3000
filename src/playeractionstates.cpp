@@ -41,6 +41,40 @@ Node *TopLevelNode(Drawable *d, Scene *s)
 	return n;
 }
 
+Vector3 NearestPointOnWorld(Vector3 pos, Scene *s)
+{
+	auto octree=s->GetComponent<Octree>();
+	Ray ray(pos+Vector3(0,8.0f,0), Vector3(0,-1.0f,0));
+	static PODVector<RayQueryResult> result;
+	result.Clear();
+	RayOctreeQuery query(result, ray, RAY_TRIANGLE, 1000.0f, DRAWABLE_GEOMETRY);
+	octree->Raycast(query);
+	if(result.Size()>0)
+	{
+		// Use first result
+		//return ray.origin_+ray.direction_*result[0].distance_;
+		for(unsigned int i=0; i<result.Size(); ++i)
+		{
+			if(result[i].distance_>=0)
+			{
+				//hitPos=ray.origin_+ray.direction_*result[i].distance_;
+				//ground=Vector2(hitPos.x_, hitPos.z_);
+				Node *n=TopLevelNode(result[i].drawable_, s);
+				bool isworld=n->GetVar("world").GetBool();
+				if(isworld)
+				{
+					//Vector3 pos=n->GetPosition();
+
+					Vector3 p=ray.origin_+ray.direction_*result[i].distance_;
+					return p;
+				}
+			}
+		}
+	}
+
+	return pos;
+}
+
 //// Base for player states
 CASPlayerBase::CASPlayerBase(Context *context) : CombatActionState(context)
 {
@@ -99,7 +133,7 @@ CombatActionState *CASPlayerBase::CheckInputs(CombatController *actor)
 		}
 	}
 
-	if(input->GetMouseButtonPress(MOUSEB_RIGHT))
+	if(input->GetMouseButtonDown(MOUSEB_RIGHT))
 	{
 		PlayerAttack a=pd->GetAttack();
 		switch(a)
@@ -325,7 +359,16 @@ CombatActionState *CASPlayerMove::Update(CombatController *actor, float dt)
 		IntVector2 mousepos;
 		if(input->IsMouseVisible()) mousepos=input->GetMousePosition();
 		else mousepos=node->GetSubsystem<UI>()->GetCursorPosition();
-		Vector2 ground=cam->GetScreenGround(mousepos.x_,mousepos.y_);
+		//Vector2 ground=cam->GetScreenGround(mousepos.x_,mousepos.y_);
+
+		Vector3 ground;
+		bool success = cam->PickGround(ground, mousepos.x_, mousepos.y_);
+		if(!success)
+		{
+			Vector2 gnd=cam->GetScreenGround(mousepos.x_, mousepos.y_);
+			ground=Vector3(gnd.x_, 0.0f, gnd.y_);
+		}
+
 
 		auto nav=node->GetScene()->GetComponent<DynamicNavigationMesh>();
 		auto pd=node->GetSubsystem<PlayerData>();
@@ -334,7 +377,9 @@ CombatActionState *CASPlayerMove::Update(CombatController *actor, float dt)
 		StatSetCollection ssc=pd->GetStatSetCollection(EqNumEquipmentSlots, "");
 		double movespeed=GetStatValue(ssc, "MovementSpeed");
 		ca->SetMaxSpeed(movespeed);
-		Vector3 gp=nav->FindNearestPoint(Vector3(ground.x_,0,ground.y_), Vector3(10,10,10));
+		Vector3 gp=nav->FindNearestPoint(ground, Vector3(10,10,10));
+		//gp.y_=ground.y_;
+		gp=NearestPointOnWorld(gp,node->GetScene());
 		ca->SetTargetPosition(gp);
 
 		return nullptr;
@@ -365,6 +410,12 @@ CombatActionState *CASPlayerMove::Update(CombatController *actor, float dt)
 
 bool CASPlayerMove::HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt)
 {
+	auto node=actor->GetNode();
+	Vector3 pos=node->GetWorldPosition();
+	auto scene=node->GetScene();
+
+	pos=NearestPointOnWorld(pos,scene);
+	node->SetWorldPosition(pos);
 	return false;
 }
 
@@ -730,7 +781,14 @@ CombatActionState *CASPlayerSpinAttack::Update(CombatController *actor, float dt
 		IntVector2 mousepos;
 		if(input->IsMouseVisible()) mousepos=input->GetMousePosition();
 		else mousepos=node->GetSubsystem<UI>()->GetCursorPosition();
-		Vector2 ground=cam->GetScreenGround(mousepos.x_,mousepos.y_);
+		//Vector2 ground=cam->GetScreenGround(mousepos.x_,mousepos.y_);
+		Vector3 ground;
+		bool success = cam->PickGround(ground, mousepos.x_, mousepos.y_);
+		if(!success)
+		{
+			Vector2 gnd=cam->GetScreenGround(mousepos.x_, mousepos.y_);
+			ground=Vector3(gnd.x_, 0.0f, gnd.y_);
+		}
 
 		auto nav=node->GetScene()->GetComponent<DynamicNavigationMesh>();
 		auto pd=node->GetSubsystem<PlayerData>();
@@ -739,7 +797,7 @@ CombatActionState *CASPlayerSpinAttack::Update(CombatController *actor, float dt
 		StatSetCollection ssc=pd->GetStatSetCollection(EqNumEquipmentSlots, "SpinAttack");
 		double movespeed=GetStatValue(ssc, "MovementSpeed");
 		ca->SetMaxSpeed(movespeed);
-		Vector3 gp=nav->FindNearestPoint(Vector3(ground.x_,0,ground.y_), Vector3(10,10,10));
+		Vector3 gp=nav->FindNearestPoint(ground, Vector3(10,10,10));
 		ca->SetTargetPosition(gp);
 
 		double attackspeed=GetStatValue(ssc, "AttackSpeed");
@@ -801,6 +859,17 @@ void CASPlayerSpinAttack::HandleTrigger(CombatController *actor, String animname
 			}
 		}
 	}
+}
+
+bool CASPlayerSpinAttack::HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt)
+{
+	auto node=actor->GetNode();
+	Vector3 pos=node->GetWorldPosition();
+	auto scene=node->GetScene();
+
+	pos=NearestPointOnWorld(pos,scene);
+	node->SetWorldPosition(pos);
+	return false;
 }
 
 //////// Friggin laser beams
@@ -904,20 +973,27 @@ Vector3 CASPlayerLaserBeam::GetEndPoint(Node *node)
 	IntVector2 mousepos;
 	if(input->IsMouseVisible()) mousepos=input->GetMousePosition();
 	else mousepos=node->GetSubsystem<UI>()->GetCursorPosition();
-	Vector2 ground=cam->GetScreenGround(mousepos.x_,mousepos.y_);
+	//Vector2 ground=cam->GetScreenGround(mousepos.x_,mousepos.y_);
 
-	Vector3 groundpos(ground.x_, 0.0, ground.y_);
+	//Vector3 groundpos(ground.x_, 0.0, ground.y_);
+	Vector3 ground;
+	bool success = cam->PickGround(ground, mousepos.x_, mousepos.y_);
+	if(!success)
+	{
+		Vector2 gnd=cam->GetScreenGround(mousepos.x_, mousepos.y_);
+		ground=Vector3(gnd.x_, 0.0f, gnd.y_);
+	}
 	auto turretnode = node->GetComponent<AnimatedModel>()->GetSkeleton().GetBone("Turret")->node_;
 	auto turretpos = turretnode->GetWorldPosition();
 
 	// Do a raycast from turret pos to ground pos to find actual endpoint
-	Ray ray(turretpos, groundpos-turretpos);
+	Ray ray(turretpos, ground-turretpos);
 	PODVector<RayQueryResult> result;
 	result.Clear();
 	RayOctreeQuery query(result, ray, RAY_TRIANGLE, 100.0f, DRAWABLE_GEOMETRY);
 	octree->Raycast(query);
 
-	Vector3 endpos = groundpos;
+	Vector3 endpos = ground;
 	for(unsigned int i=0; i<result.Size(); ++i)
 	{
 		if(result[i].distance_>=0 && TopLevelNode(result[i].drawable_, scene)->GetVar("world").GetBool())
@@ -1070,12 +1146,19 @@ void CASPlayerCharge::Start(CombatController *actor)
 		IntVector2 mousepos;
 		if(input->IsMouseVisible()) mousepos=input->GetMousePosition();
 		else mousepos=node->GetSubsystem<UI>()->GetCursorPosition();
-		Vector2 ground=cam->GetScreenGround(mousepos.x_,mousepos.y_);
+		//Vector2 ground=cam->GetScreenGround(mousepos.x_,mousepos.y_);
+		Vector3 ground;
+		bool success = cam->PickGround(ground, mousepos.x_, mousepos.y_);
+		if(!success)
+		{
+			Vector2 gnd=cam->GetScreenGround(mousepos.x_, mousepos.y_);
+			ground=Vector3(gnd.x_, 0.0f, gnd.y_);
+		}
 
 		auto nav=node->GetScene()->GetComponent<DynamicNavigationMesh>();
 
-		Vector3 gnd(ground.x_, 0.0f, ground.y_);
-		dir_=gnd-node->GetWorldPosition();
+		//Vector3 gnd(ground.x_, 0.0f, ground.y_);
+		dir_=ground-node->GetWorldPosition();
 		dir_.Normalize();
 		float chargedist=GetStatValue(stats, "ChargeDistance");
 		Vector3 end=node->GetWorldPosition()+dir_*chargedist;
@@ -1083,6 +1166,7 @@ void CASPlayerCharge::Start(CombatController *actor)
 		counter_=timetodest_;
 
 		dest_=nav->Raycast(node->GetWorldPosition(), end, Vector3(10,10,10));
+		dest_=nav->FindNearestPoint(dest_, Vector3(10,10,10));
 		charging_=false;
 	}
 }
@@ -1090,13 +1174,16 @@ void CASPlayerCharge::Start(CombatController *actor)
 void CASPlayerCharge::End(CombatController *actor)
 {
 	auto node=actor->GetNode();
+	auto pd=actor->GetSubsystem<PlayerData>();
+	auto stats=pd->GetStatSetCollection(EqDriveSystem, "Charge");
+	static StringHash Charge("Charge");
 
 	if(node)
 	{
 		auto ac=node->GetComponent<AnimationController>();
 		if(ac)
 		{
-			ac->Stop(actor->GetAnimPath() + "/Models/Action.ani", 0.1f);
+			ac->Stop(actor->GetAnimPath() + "/Models/Action.ani", 0.0f);
 		}
 
 		auto ca=node->GetComponent<CrowdAgent>();
@@ -1106,6 +1193,9 @@ void CASPlayerCharge::End(CombatController *actor)
 			ca->SetNavigationPushiness(NAVIGATIONPUSHINESS_MEDIUM);
 			ca->SetTargetPosition(node->GetWorldPosition());
 		}
+
+		float cd=GetStatValue(stats, "ChargeCooldown");
+		actor->SetCooldown(Charge, cd);
 	}
 }
 
@@ -1132,6 +1222,8 @@ CombatActionState *CASPlayerCharge::Update(CombatController *actor, float dt)
 			counter_-=dt;
 			counter_=std::max(0.0f, counter_);
 			Vector3 pos=dest_.Lerp(node->GetWorldPosition(), counter_/timetodest_);
+			auto nav=node->GetScene()->GetComponent<DynamicNavigationMesh>();
+			pos=nav->FindNearestPoint(pos, Vector3(10,10,10));
 			node->SetWorldPosition(pos);
 		}
 		else

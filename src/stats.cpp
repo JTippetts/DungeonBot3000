@@ -12,7 +12,7 @@ static StringHasherType shasher;
 static FunctionMapType modfuncs=
 {
 	{
-		"test",
+		shasher("test"),
 		{
 			2,
 			[](const double *a, unsigned int n)->double{Log::Write(LOG_INFO, "test"); return (n>=2) ? (a[0]+a[1]*400) : 0;}
@@ -20,7 +20,7 @@ static FunctionMapType modfuncs=
 	},
 
 	{
-		"logistic",
+		shasher("logistic"),
 		{
 			3,
 			[](const double *a, unsigned int n)->double
@@ -37,7 +37,7 @@ static FunctionMapType modfuncs=
 	},
 
 	{
-		"spread",
+		shasher("spread"),
 		{
 			3,
 			[](const double *a, unsigned int n)->double
@@ -56,7 +56,7 @@ static FunctionMapType modfuncs=
 	},
 
 	{
-		"center",
+		shasher("center"),
 		{
 			1,
 			[](const double *a, unsigned int n)->double
@@ -68,7 +68,7 @@ static FunctionMapType modfuncs=
 	},
 
 	{
-		"clamp",
+		shasher("clamp"),
 		{
 			3,
 			[](const double *a, unsigned int n)->double
@@ -83,7 +83,7 @@ static FunctionMapType modfuncs=
 	},
 
 	{
-		"min",
+		shasher("min"),
 		{
 			2,
 			[](const double *a, unsigned int n)->double
@@ -97,7 +97,7 @@ static FunctionMapType modfuncs=
 	},
 
 	{
-		"max",
+		shasher("max"),
 		{
 			2,
 			[](const double *a, unsigned int n)->double
@@ -111,7 +111,7 @@ static FunctionMapType modfuncs=
 	},
 
 	{
-		"pow",
+		shasher("pow"),
 		{
 			2,
 			[](const double *a, unsigned int n)->double
@@ -125,7 +125,7 @@ static FunctionMapType modfuncs=
 	},
 
 	{
-		"saturate",
+		shasher("saturate"),
 		{
 			1,
 			[](const double *a, unsigned int n)->double
@@ -138,7 +138,7 @@ static FunctionMapType modfuncs=
 	},
 
 	{
-		"saturatecenter",
+		shasher("saturatecenter"),
 		{
 			1,
 			[](const double *a, unsigned int n)->double
@@ -335,13 +335,18 @@ double GetStatValue(const StatSetCollection &stats, StringHashType stat)
 
 double EvaluateStatMod(const StatSetCollection &stats, const StatModifier &mod)
 {
+	static const StringHashType carat(shasher("^")), multiply(shasher("*")), divide(shasher("/")), plus(shasher("+")), minus(shasher("-"));
 	std::stack<double> stk;
+
+	String st;
 
 	for(auto i : mod.expr_)
     {
         if(i.GetType()==Token::NUMBER)
         {
-            stk.push(std::stod(i.GetToken()));
+            //stk.push(std::stod(i.GetToken()));
+			stk.push(i.GetValue());
+			//Log::Write(LOG_INFO, String("Pushed number: ") + String(i.GetValue()));
         }
         else if(i.GetType()==Token::OPERATOR)
         {
@@ -349,11 +354,33 @@ double EvaluateStatMod(const StatSetCollection &stats, const StatModifier &mod)
             stk.pop();
             double left=stk.top();
             stk.pop();
-            if(i.GetToken()=="+") stk.push(left+right);
-            else if(i.GetToken()=="-") stk.push(left-right);
-            else if(i.GetToken()=="*") stk.push(left*right);
-            else if(i.GetToken()=="/") stk.push(left/right);
-            else if(i.GetToken()=="^") stk.push(std::pow(left,right));
+
+			//Log::Write(LOG_INFO, String("Popped numbers :") + String(left) + "," + String(right));
+            if(i.GetToken()==plus)
+			{
+				stk.push(left+right);
+				//Log::Write(LOG_INFO, String("Pushed add: ") + String(left+right));
+			}
+            else if(i.GetToken()==minus)
+			{
+				stk.push(left-right);
+				//Log::Write(LOG_INFO, String("Pushed subtract: ") + String(left-right));
+			}
+            else if(i.GetToken()==multiply)
+			{
+				stk.push(left*right);
+				//Log::Write(LOG_INFO, String("Pushed mult: ") + String(left*right));
+			}
+            else if(i.GetToken()==divide)
+			{
+				stk.push(left/right);
+				//Log::Write(LOG_INFO, String("Pushed div: ") + String(left/right));
+			}
+            else if(i.GetToken()==carat)
+			{
+				stk.push(std::pow(left,right));
+				//Log::Write(LOG_INFO, String("Pushed exp: ") + String(std::pow(left,right)));
+			}
         }
         else if(i.GetType()==Token::UNARYOPERATOR)
         {
@@ -391,7 +418,9 @@ double EvaluateStatMod(const StatSetCollection &stats, const StatModifier &mod)
         }
         else if(i.GetType()==Token::VAR)
         {
-           stk.push(GetStatValue(stats, shasher(i.GetToken())));
+			double v=GetStatValue(stats,i.GetToken());
+           stk.push(v);
+		   //Log::Write(LOG_INFO, String("Pushed var token value: ") + String(v));
         }
     }
 

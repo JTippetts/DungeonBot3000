@@ -19,8 +19,9 @@
 
 	"Charge": {
 		"AttackSpeed": [["Flat", "4.0"]],
-		"EnergyCost": [["Flat", "5.0"]],
+		"EnergyCost": [["Flat", "2.0"]],
 		"ChargeDistance": [["Flat", "40.0"]],
-		"WarpTime": [["Flat", "0.125"]],
+		"WarpTime": [["Flat", "0.25"]],
+		"ChargeCooldown": [["Flat", "0.125"]],
 	},
 }

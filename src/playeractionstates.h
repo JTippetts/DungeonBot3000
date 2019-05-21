@@ -95,6 +95,7 @@ class CASPlayerSpinAttack : public CASPlayerBase
 	virtual void End(CombatController *actor) override;
 	virtual CombatActionState *Update(CombatController *actor, float dt) override;
 	virtual void HandleTrigger(CombatController *actor, String animname, unsigned int value) override;
+	virtual bool HandleAgentReposition(CombatController *actor, Vector3 velocity, float dt) override;
 
 	protected:
 	SoundSource *swing_;

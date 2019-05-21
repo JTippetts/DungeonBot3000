@@ -55,7 +55,7 @@ class ThirdPersonCamera : public LogicComponent
 	Ray GetMouseRay();
 	Ray GetScreenRay(int mx, int my);
 	Vector2 GetMouseGround();
-	bool PickGround(Vector2 &ground, int mx, int my, float maxdistance=1000.0f);
+	bool PickGround(Vector3 &ground, int mx, int my, float maxdistance=1000.0f);
 	Vector2 GetScreenGround(int mx, int my);
 	float CameraPick(Ray &ray, float followdist);
 

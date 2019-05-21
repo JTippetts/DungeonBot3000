@@ -159,7 +159,7 @@ void ThirdPersonCamera::HandleRequestMouseGround(StringHash eventType, VariantMa
 
 	if(input->IsMouseVisible()) mousepos=input->GetMousePosition();
 	else mousepos=context_->GetSubsystem<UI>()->GetCursorPosition();
-	Vector2 ground;
+	Vector3 ground;
 	if(PickGround(ground,mousepos.x_,mousepos.y_)) eventData[location]=ground;
 	else eventData[location]=Vector2(-1,-1);
 	//LOGINFO(String("Pick: ")+String(ground.x_)+String(",")+String(ground.y_));
@@ -269,7 +269,7 @@ Vector2 ThirdPersonCamera::GetMouseGround()
 	return Vector2(dx,dz);
 }
 
-bool ThirdPersonCamera::PickGround(Vector2 &ground, int mx, int my, float maxdistance)
+bool ThirdPersonCamera::PickGround(Vector3 &ground, int mx, int my, float maxdistance)
 {
 	Scene *scene=node_->GetScene();
 	Vector3 hitPos(0,0,0);
@@ -294,11 +294,11 @@ bool ThirdPersonCamera::PickGround(Vector2 &ground, int mx, int my, float maxdis
 			//hitPos=ray.origin_+ray.direction_*result[i].distance_;
 			//ground=Vector2(hitPos.x_, hitPos.z_);
 			Node *n=TopLevelNode(result[i].drawable_, scene);
-			bool nopick=n->GetVar("nopick").GetBool();
-			if(!nopick)
+			bool isworld=n->GetVar("world").GetBool();
+			if(isworld)
 			{
-				Vector3 pos=n->GetPosition();
-				ground=Vector2(pos.x_,pos.z_);
+				//Vector3 pos=n->GetPosition();
+				ground=ray.origin_+ray.direction_*result[i].distance_;
 				return true;
 			}
 		}
