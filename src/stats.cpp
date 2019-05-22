@@ -186,14 +186,6 @@ StatModifierHandle StatSet::AddMod(StringHashType stat, StatModifier::Type type,
 	ExpressionToPostfix pf(expr, modfuncs);
 	s.push_back(StatModifier(type, pf.ToPostfix()));
 
-	// Debug
-
-	/*auto p=pf.ToPostfix();
-	for(auto i : p)
-	{
-		Log::Write(LOG_INFO, String(i.GetToken().c_str()) + String(" ") + String((int)i.GetType()));
-	}*/
-
 	return StatModifierHandle(&s,--s.end());
 }
 
@@ -344,9 +336,7 @@ double EvaluateStatMod(const StatSetCollection &stats, const StatModifier &mod)
     {
         if(i.GetType()==Token::NUMBER)
         {
-            //stk.push(std::stod(i.GetToken()));
-			stk.push(i.GetValue());
-			//Log::Write(LOG_INFO, String("Pushed number: ") + String(i.GetValue()));
+            stk.push(i.GetValue());
         }
         else if(i.GetType()==Token::OPERATOR)
         {
@@ -355,31 +345,25 @@ double EvaluateStatMod(const StatSetCollection &stats, const StatModifier &mod)
             double left=stk.top();
             stk.pop();
 
-			//Log::Write(LOG_INFO, String("Popped numbers :") + String(left) + "," + String(right));
-            if(i.GetToken()==plus)
+			if(i.GetToken()==plus)
 			{
 				stk.push(left+right);
-				//Log::Write(LOG_INFO, String("Pushed add: ") + String(left+right));
 			}
             else if(i.GetToken()==minus)
 			{
 				stk.push(left-right);
-				//Log::Write(LOG_INFO, String("Pushed subtract: ") + String(left-right));
 			}
             else if(i.GetToken()==multiply)
 			{
 				stk.push(left*right);
-				//Log::Write(LOG_INFO, String("Pushed mult: ") + String(left*right));
 			}
             else if(i.GetToken()==divide)
 			{
 				stk.push(left/right);
-				//Log::Write(LOG_INFO, String("Pushed div: ") + String(left/right));
 			}
             else if(i.GetToken()==carat)
 			{
 				stk.push(std::pow(left,right));
-				//Log::Write(LOG_INFO, String("Pushed exp: ") + String(std::pow(left,right)));
 			}
         }
         else if(i.GetType()==Token::UNARYOPERATOR)

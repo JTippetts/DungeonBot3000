@@ -3,9 +3,6 @@
 #include <stack>
 #include <sstream>
 
-#include <Urho3D/IO/Log.h>
-using namespace Urho3D;
-
 extern StringHasherType shasher;
 
 Token::Token() : type_(Token::NONE), token_(shasher("")), val_(0) {}
@@ -29,8 +26,8 @@ const StringHashType &Token::GetToken() const
 }
 
 
-Tokenizer::Tokenizer(const std::string expr, const FunctionMapType &fmap/*, const VarMapType &vars*/) :
-    expression_(expr), pos_(expression_.begin()), lastToken_(Token::NONE, ""), functions_(fmap)/*, vars_(vars)*/
+Tokenizer::Tokenizer(const std::string expr, const FunctionMapType &fmap) :
+    expression_(expr), pos_(expression_.begin()), lastToken_(Token::NONE, ""), functions_(fmap)
 {
 }
 
@@ -125,8 +122,7 @@ Token Tokenizer::ParseNumberToken(char ch)
     for(std::string::iterator i=offset; i!=pos_; ++i) ss << *i;
     lastToken_=Token(Token::NUMBER, ss.str(), std::stod(ss.str()));
 
-	Log::Write(LOG_INFO, String("Parsed number token: ") + String(ss.str().c_str()));
-    return lastToken_;
+	return lastToken_;
 }
 
 Token Tokenizer::ParseComma(char ch)
@@ -215,7 +211,7 @@ bool Tokenizer::IsFunctionName(const StringHashType &t)
 
 
 ExpressionToPostfix::ExpressionToPostfix(const std::string &expr, const FunctionMapType &fmap) : expr_(expr),
-    f_(fmap)/*, vars_(v)*/
+    f_(fmap)
 {
 
 
@@ -223,7 +219,7 @@ ExpressionToPostfix::ExpressionToPostfix(const std::string &expr, const Function
 
 std::vector<Token> ExpressionToPostfix::ToPostfix()
 {
-    Tokenizer tz(expr_, f_/*, vars_*/);
+    Tokenizer tz(expr_, f_);
     std::stack<Token> stk;
     std::vector<Token> output;
 
@@ -316,8 +312,7 @@ int ExpressionToPostfix::GetNumOperands(const Token &tk)
 
 bool ExpressionToPostfix::IsLeftAssociative(const Token &tk)
 {
-    //const std::string tok=tk.GetToken();
-	const StringHashType tok=tk.GetToken();
+    const StringHashType tok=tk.GetToken();
 	static const StringHashType plus(shasher("+")), minus(shasher("-")), multiply(shasher("*")), divide(shasher("/"));
     if(tok==plus || tok==minus || tok==divide || tok==multiply) return true;
     return false;

@@ -57,7 +57,6 @@ struct ExpressionFunction
 };
 
 // Function map
-//using FunctionMapType = std::unordered_map<std::string, ExpressionFunction>;
 using FunctionMapType = std::unordered_map<StringHashType, ExpressionFunction>;
 
 class Tokenizer
@@ -71,11 +70,7 @@ protected:
     std::string expression_;
     std::string::iterator pos_;
     Token lastToken_;
-    //std::map<std::string, int> functions_;
-    //std::vector<std::string> vars_;
-
-	const FunctionMapType &functions_;
-	//const VarMapType &vars_;
+    const FunctionMapType &functions_;
 
     bool IsValidOperator(char ch);
     bool IsDigit(char ch);
@@ -86,20 +81,18 @@ protected:
     Token ParseOperator(char ch);
     Token ParseFunctionOrVariable(char ch);
     bool IsNumeric(char ch, bool lastCharE);
-    //bool IsFunctionName(const std::string &t);
-	bool IsFunctionName(const StringHashType &t);
+    bool IsFunctionName(const StringHashType &t);
 };
 
 class ExpressionToPostfix
 {
 public:
-    ExpressionToPostfix(const std::string &expr, const FunctionMapType &fmap/*, const VarMapType &vars*/);
+    ExpressionToPostfix(const std::string &expr, const FunctionMapType &fmap);
     std::vector<Token> ToPostfix();
 
 protected:
     std::string expr_;
     const FunctionMapType &f_;
-    //const VarMapType &vars_;
 
     int GetNumOperands(const Token &tk);
     bool IsLeftAssociative(const Token &tk);

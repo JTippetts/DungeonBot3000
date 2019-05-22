@@ -44,7 +44,6 @@ struct StatModifierHandle
 	StatModifierHandle(Stat *l, Stat::iterator i) : list_(l), iter_(i){}
 	StatModifierHandle(const StatModifierHandle &rhs) : list_(rhs.list_), iter_(rhs.iter_){}
 };
-//using StatModifierHandle = std::list<StatModifier>::iterator;
 
 class StatSet
 {
