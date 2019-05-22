@@ -393,6 +393,37 @@ void InventoryScreen::HandleUpdate(StringHash eventType, VariantMap &eventData)
 		{
 		}
 	}
+	else
+	{
+		IntVector2 location;
+		IntVector2 mousepos;
+		if(input->IsMouseVisible()) mousepos=input->GetMousePosition();
+		else mousepos=ui->GetCursorPosition();
+		unsigned int slot;
+		UIElement *elem;
+
+		auto inhand=GetItemInHand();
+		if(inhand)
+		{
+			if(handitem_)
+			{
+				handitem_->SetPosition(mousepos-IntVector2(-1,-1));
+			}
+		}
+		if(input->GetMouseButtonPress(MOUSEB_LEFT))
+		{
+			// If no item in hand, and over an item in bag, pick it up
+			if(inhand)
+			{
+				// HAve an item in hand, check to see if we can place it in inventory
+				auto pd=GetSubsystem<PlayerData>();
+				auto pn=pd->GetPlayerNode();
+				RemoveItemInHand();
+				pd->DropItem(inhand, pn->GetWorldPosition(), pn->GetWorldPosition()+Vector3(rollf(-5.0,5.0), 0, rollf(-5.0,5.0)));
+			}
+		}
+
+	}
 }
 
 bool InventoryScreen::GetHoveredBagLocation(IntVector2 &location, const IntVector2 &mousepos)
